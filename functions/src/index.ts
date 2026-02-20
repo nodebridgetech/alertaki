@@ -1,4 +1,8 @@
-// Cloud Functions entry point
-// Functions will be implemented in Phase 5
+import { initializeApp } from 'firebase-admin/app';
 
-export {};
+initializeApp();
+
+export { onAlertCreated } from './alerts/onAlertCreated';
+export { onInviteCreated } from './invites/onInviteCreated';
+export { onInviteAccepted } from './invites/onInviteAccepted';
+export { deleteUserAccount } from './users/onAccountDeleted';

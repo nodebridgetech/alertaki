@@ -1,32 +1,208 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import messaging from '@react-native-firebase/messaging';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { RootNavigator, navigationRef } from './navigation/RootNavigator';
+import { useAuthStore } from './stores/authStore';
+import { useContactStore } from './stores/contactStore';
+import { notificationService } from './services/notificationService';
+import { userService } from './services/userService';
+import { contactService } from './services/contactService';
+
+// Configure Google Sign-In (replace with your actual webClientId)
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+});
+
+// Background message handler — must be registered outside component
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  const data = remoteMessage.data;
+  if (data?.fullscreen === '1') {
+    await notificationService.showAlertNotification({
+      alertId: (data.alertId as string) || '',
+      type: (data.type as string) || '',
+      lat: (data.lat as string) || '',
+      lng: (data.lng as string) || '',
+      userName: (data.userName as string) || '',
+      userPhotoURL: (data.userPhotoURL as string) || '',
+      address: (data.address as string) || '',
+      customMessage: (data.customMessage as string) || '',
+      userId: (data.userId as string) || '',
+    });
+  }
+});
 
 function App(): React.JSX.Element {
+  const setUser = useAuthStore((s) => s.setUser);
+  const setLoading = useAuthStore((s) => s.setLoading);
+  const setContacts = useContactStore((s) => s.setContacts);
+  const setContactOf = useContactStore((s) => s.setContactOf);
+  const setPendingInvites = useContactStore((s) => s.setPendingInvites);
+  const setBlockedUsers = useContactStore((s) => s.setBlockedUsers);
+
+  useEffect(() => {
+    // Create notification channels on startup
+    notificationService.createChannels();
+    notificationService.requestPermission();
+
+    // Auth state listener
+    const unsubAuth = auth().onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = await userService.getUser(firebaseUser.uid);
+        setUser(userData);
+        setLoading(false);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return unsubAuth;
+  }, [setUser, setLoading]);
+
+  // Set up Firestore listeners when authenticated
+  const user = useAuthStore((s) => s.user);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const uid = user.uid;
+    const unsubContacts = contactService.onContacts(uid, setContacts);
+    const unsubContactOf = contactService.onContactOf(uid, setContactOf);
+    const unsubInvites = contactService.onPendingInvites(uid, setPendingInvites);
+    const unsubBlocked = contactService.onBlockedUsers(uid, setBlockedUsers);
+    const unsubTokenRefresh = notificationService.onTokenRefresh(uid);
+
+    return () => {
+      unsubContacts();
+      unsubContactOf();
+      unsubInvites();
+      unsubBlocked();
+      unsubTokenRefresh();
+    };
+  }, [user, setContacts, setContactOf, setPendingInvites, setBlockedUsers]);
+
+  // FCM foreground message handler
+  useEffect(() => {
+    const unsubMessage = messaging().onMessage(async (remoteMessage) => {
+      const data = remoteMessage.data;
+      if (!data) return;
+
+      if (data.fullscreen === '1') {
+        await notificationService.showAlertNotification({
+          alertId: (data.alertId as string) || '',
+          type: (data.type as string) || '',
+          lat: (data.lat as string) || '',
+          lng: (data.lng as string) || '',
+          userName: (data.userName as string) || '',
+          userPhotoURL: (data.userPhotoURL as string) || '',
+          address: (data.address as string) || '',
+          customMessage: (data.customMessage as string) || '',
+          userId: (data.userId as string) || '',
+        });
+
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: (data.alertId as string) || '',
+              type: (data.type as string) || '',
+              userId: (data.userId as string) || '',
+              userName: (data.userName as string) || '',
+              userPhotoURL: (data.userPhotoURL as string) || '',
+              lat: (data.lat as string) || '',
+              lng: (data.lng as string) || '',
+              address: (data.address as string) || '',
+              customMessage: (data.customMessage as string) || '',
+            },
+          });
+        }
+      } else if (data.screen === 'invites') {
+        await notificationService.showInviteNotification(
+          (data.fromDisplayName as string) || '',
+          (data.fromEmail as string) || '',
+        );
+      }
+    });
+
+    // Handle notification tap when app is in background
+    const unsubNotifOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+      const data = remoteMessage.data;
+      if (data?.fullscreen === '1' && navigationRef.isReady()) {
+        navigationRef.navigate('AlertOverlay', {
+          alertData: {
+            alertId: (data.alertId as string) || '',
+            type: (data.type as string) || '',
+            userId: (data.userId as string) || '',
+            userName: (data.userName as string) || '',
+            userPhotoURL: (data.userPhotoURL as string) || '',
+            lat: (data.lat as string) || '',
+            lng: (data.lng as string) || '',
+            address: (data.address as string) || '',
+            customMessage: (data.customMessage as string) || '',
+          },
+        });
+      } else if (data?.screen === 'invites' && navigationRef.isReady()) {
+        navigationRef.navigate('Invites');
+      }
+    });
+
+    // Handle notification tap when app was terminated
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage?.data?.fullscreen === '1' && navigationRef.isReady()) {
+          const data = remoteMessage.data;
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: (data.alertId as string) || '',
+              type: (data.type as string) || '',
+              userId: (data.userId as string) || '',
+              userName: (data.userName as string) || '',
+              userPhotoURL: (data.userPhotoURL as string) || '',
+              lat: (data.lat as string) || '',
+              lng: (data.lng as string) || '',
+              address: (data.address as string) || '',
+              customMessage: (data.customMessage as string) || '',
+            },
+          });
+        }
+      });
+
+    // Notifee foreground event handler
+    const unsubNotifee = notificationService.setupForegroundEvent((data) => {
+      if (data.fullscreen === '1' && navigationRef.isReady()) {
+        navigationRef.navigate('AlertOverlay', {
+          alertData: {
+            alertId: data.alertId || '',
+            type: data.type || '',
+            userId: data.userId || '',
+            userName: data.userName || '',
+            userPhotoURL: data.userPhotoURL || '',
+            lat: data.lat || '',
+            lng: data.lng || '',
+            address: data.address || '',
+            customMessage: data.customMessage || '',
+          },
+        });
+      }
+    });
+
+    return () => {
+      unsubMessage();
+      unsubNotifOpen();
+      unsubNotifee();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Alertaki</Text>
-      <Text style={styles.subtitle}>Carregando...</Text>
-    </View>
+    <SafeAreaProvider>
+      <NavigationContainer ref={navigationRef}>
+        <RootNavigator />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#212121',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#757575',
-    marginTop: 8,
-  },
-});
 
 export default App;

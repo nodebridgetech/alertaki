@@ -14,6 +14,7 @@ export interface Alert {
   address: string | null;
   radiusKm: number;
   customMessage: string | null;
+  selectedContacts: string[] | null;
   createdAt: FirebaseTimestamp;
 }
 
