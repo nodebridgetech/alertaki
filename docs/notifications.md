@@ -5,6 +5,7 @@
 O sistema de notificações é o coração do Alertaki. Quando um alerta é disparado, os destinatários devem ser notificados de forma **intrusiva e imediata**, similar a um despertador ou chamada telefônica.
 
 ### Stack de Notificações
+
 - **Firebase Cloud Messaging (FCM)**: Entrega de push notifications remotas.
 - **Notifee** (`@notifee/react-native`): Notificações locais avançadas no Android e iOS (substituição do `flutter_local_notifications`). Suporte a full-screen intent, canais, sons, vibração contínua.
 
@@ -13,6 +14,7 @@ O sistema de notificações é o coração do Alertaki. Quando um alerta é disp
 ## Configuração de Canais (Android)
 
 ### Canal: `alert_channel`
+
 ```typescript
 import notifee, { AndroidImportance, AndroidVisibility } from '@notifee/react-native';
 
@@ -31,6 +33,7 @@ await notifee.createChannel({
 ```
 
 ### Canal: `invite_channel`
+
 ```typescript
 await notifee.createChannel({
   id: 'invite_channel',
@@ -46,6 +49,7 @@ await notifee.createChannel({
 ## Permissões Necessárias
 
 ### Android (`AndroidManifest.xml`)
+
 ```xml
 <!-- Notificações (Android 13+) -->
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -74,6 +78,7 @@ await notifee.createChannel({
 ```
 
 ### iOS (`Info.plist`)
+
 ```xml
 <!-- Background modes -->
 <key>UIBackgroundModes</key>
@@ -183,19 +188,19 @@ async function showAlertNotification(data: AlertNotificationData) {
         id: 'default',
         launchActivity: 'default',
       },
-      ongoing: true,            // Não pode ser dismissido com swipe
-      autoCancel: false,        // Não cancela ao tocar
+      ongoing: true, // Não pode ser dismissido com swipe
+      autoCancel: false, // Não cancela ao tocar
       sound: 'default',
       vibrationPattern: [0, 1000, 500, 1000, 500, 1000],
       pressAction: {
         id: 'default',
         launchActivity: 'default',
       },
-      loopSound: true,          // Som em loop
+      loopSound: true, // Som em loop
     },
     ios: {
       sound: 'default',
-      critical: true,           // Requer entitlement
+      critical: true, // Requer entitlement
       criticalVolume: 1.0,
       interruptionLevel: 'critical',
     },
@@ -325,12 +330,14 @@ messaging().onNotificationOpenedApp((remoteMessage) => {
 });
 
 // 4. Notificação tocada (app terminado)
-messaging().getInitialNotification().then((remoteMessage) => {
-  if (remoteMessage?.data) {
-    // Salvar para navegar após o app carregar
-    initialNotificationData = remoteMessage.data;
-  }
-});
+messaging()
+  .getInitialNotification()
+  .then((remoteMessage) => {
+    if (remoteMessage?.data) {
+      // Salvar para navegar após o app carregar
+      initialNotificationData = remoteMessage.data;
+    }
+  });
 
 // 5. Notifee foreground event (para quando toca na notificação local)
 notifee.onForegroundEvent(({ type, detail }) => {

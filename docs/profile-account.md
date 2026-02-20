@@ -4,12 +4,12 @@
 
 ### Campos editáveis
 
-| Campo | Tipo | Obrigatório | Validação |
-|-------|------|-------------|-----------|
-| Nome | string | Sim | Não vazio, 2-100 caracteres |
-| Email | string | Sim | Formato válido de email |
-| Telefone | string | Não | Formato brasileiro (com máscara) |
-| Foto | image | Não | JPG/PNG, max 5MB |
+| Campo    | Tipo   | Obrigatório | Validação                        |
+| -------- | ------ | ----------- | -------------------------------- |
+| Nome     | string | Sim         | Não vazio, 2-100 caracteres      |
+| Email    | string | Sim         | Formato válido de email          |
+| Telefone | string | Não         | Formato brasileiro (com máscara) |
+| Foto     | image  | Não         | JPG/PNG, max 5MB                 |
 
 ### Origem dos dados
 
@@ -26,8 +26,10 @@ ProfileScreen ──► EditProfileScreen ──► Salvar ──► Firestore +
 ```
 
 ### Editar Nome
+
 1. Usuário altera o campo "Nome".
 2. Ao salvar:
+
    ```typescript
    // Atualiza no Firebase Auth
    await auth().currentUser.updateProfile({ displayName: newName });
@@ -40,8 +42,10 @@ ProfileScreen ──► EditProfileScreen ──► Salvar ──► Firestore +
    ```
 
 ### Editar Email
+
 1. Usuário altera o campo "Email".
 2. Ao salvar:
+
    ```typescript
    // Atualiza no Firebase Auth (pode pedir re-autenticação)
    await auth().currentUser.updateEmail(newEmail);
@@ -52,9 +56,11 @@ ProfileScreen ──► EditProfileScreen ──► Salvar ──► Firestore +
      updatedAt: serverTimestamp(),
    });
    ```
+
 3. **Nota**: Alterar email no Firebase Auth pode exigir re-autenticação recente. Tratar o erro `auth/requires-recent-login`.
 
 ### Editar Telefone
+
 1. Usuário altera o campo "Telefone".
 2. Ao salvar, atualiza apenas no Firestore (sem verificação OTP):
    ```typescript
@@ -65,10 +71,12 @@ ProfileScreen ──► EditProfileScreen ──► Salvar ──► Firestore +
    ```
 
 ### Editar Foto
+
 1. Usuário toca em "Trocar foto".
 2. Abre opções: "Tirar foto" ou "Escolher da galeria".
 3. Usa `react-native-image-picker`.
 4. Upload para Firebase Storage:
+
    ```typescript
    const reference = storage().ref(`profile_photos/${uid}.jpg`);
    await reference.putFile(imageUri);
@@ -83,6 +91,7 @@ ProfileScreen ──► EditProfileScreen ──► Salvar ──► Firestore +
      updatedAt: serverTimestamp(),
    });
    ```
+
 5. Imagem é redimensionada/comprimida antes do upload (max 500x500px, qualidade 80%).
 
 ---
@@ -208,9 +217,12 @@ async function logout() {
   // 1. Remover FCM token
   if (uid) {
     const token = await messaging().getToken();
-    await firestore().collection('users').doc(uid).update({
-      tokens: firestore.FieldValue.arrayRemove(token),
-    });
+    await firestore()
+      .collection('users')
+      .doc(uid)
+      .update({
+        tokens: firestore.FieldValue.arrayRemove(token),
+      });
   }
 
   // 2. Sign out do Firebase

@@ -21,6 +21,7 @@ O Alertaki suporta três métodos de login:
 ```
 
 ### Passos detalhados:
+
 1. Usuário toca em "Entrar com Google".
 2. O SDK do Google Sign-In abre o modal de seleção de conta.
 3. Usuário seleciona ou faz login na conta Google.
@@ -47,6 +48,7 @@ O Alertaki suporta três métodos de login:
 ```
 
 ### Passos detalhados:
+
 1. Usuário navega para a tela de registro.
 2. Preenche: Nome, Email, Senha, Confirmar Senha.
 3. Validação local:
@@ -61,6 +63,7 @@ O Alertaki suporta três métodos de login:
 8. Navega para a `HomeScreen`.
 
 ### Tratamento de erros:
+
 - `auth/email-already-in-use` — "Este email já está cadastrado."
 - `auth/invalid-email` — "Email inválido."
 - `auth/weak-password` — "Senha muito fraca. Use no mínimo 6 caracteres."
@@ -78,6 +81,7 @@ O Alertaki suporta três métodos de login:
 ```
 
 ### Passos detalhados:
+
 1. Usuário preenche Email e Senha.
 2. Chama `firebase.auth().signInWithEmailAndPassword(email, password)`.
 3. Se bem-sucedido, atualiza `updatedAt` no Firestore.
@@ -85,6 +89,7 @@ O Alertaki suporta três métodos de login:
 5. Navega para a `HomeScreen`.
 
 ### Tratamento de erros:
+
 - `auth/user-not-found` — "Usuário não encontrado."
 - `auth/wrong-password` — "Senha incorreta."
 - `auth/too-many-requests` — "Muitas tentativas. Tente novamente mais tarde."
@@ -102,6 +107,7 @@ O Alertaki suporta três métodos de login:
 ```
 
 ### Passos detalhados:
+
 1. Usuário toca em "Entrar com Apple" (disponível apenas no iOS).
 2. O SDK do Apple Authentication apresenta o modal nativo.
 3. Usuário autoriza com Face ID/Touch ID/senha.
@@ -164,6 +170,7 @@ firebase.auth().onAuthStateChanged((firebaseUser) => {
 ## Recuperação de Senha
 
 Para usuários com email/senha:
+
 1. Na tela de login, link "Esqueci minha senha".
 2. Usuário digita o email.
 3. Chama `firebase.auth().sendPasswordResetEmail(email)`.

@@ -26,7 +26,7 @@ interface User {
   email: string;
   displayName: string;
   phoneNumber: string | null;
-  photoURL: string | null;        // URL da foto (Google ou Firebase Storage)
+  photoURL: string | null; // URL da foto (Google ou Firebase Storage)
 
   // FCM tokens (múltiplos dispositivos)
   tokens: string[];
@@ -65,7 +65,7 @@ Registro de quem adicionou este usuário como contato de segurança. Permite a v
 
 ```typescript
 interface ContactOf {
-  ownerUid: string;           // UID do dono da lista de contatos
+  ownerUid: string; // UID do dono da lista de contatos
   ownerDisplayName: string;
   ownerEmail: string;
   ownerPhotoURL: string | null;
@@ -95,11 +95,11 @@ Armazena cada alerta disparado.
 
 ```typescript
 interface Alert {
-  id: string;                     // auto-generated
+  id: string; // auto-generated
 
   // Remetente
-  userId: string;                 // UID de quem enviou
-  userName: string;               // Nome (preenchido pela Cloud Function)
+  userId: string; // UID de quem enviou
+  userName: string; // Nome (preenchido pela Cloud Function)
   userEmail: string;
   userPhotoURL: string | null;
 
@@ -109,11 +109,11 @@ interface Alert {
   // Localização no momento do alerta
   lat: number;
   lng: number;
-  address: string | null;         // Endereço (reverse geocoding, preenchido pela CF)
+  address: string | null; // Endereço (reverse geocoding, preenchido pela CF)
 
   // Dados específicos
-  radiusKm: number;               // 5 (para health/security), 0 (para custom)
-  customMessage: string | null;   // Apenas para type='custom'
+  radiusKm: number; // 5 (para health/security), 0 (para custom)
+  customMessage: string | null; // Apenas para type='custom'
 
   // Metadados
   createdAt: Timestamp;
@@ -128,7 +128,7 @@ Registra quem recebeu cada alerta. Necessário para o histórico de "recebidos".
 interface AlertRecipient {
   uid: string;
   receivedAt: Timestamp;
-  source: 'contact' | 'proximity';  // Como foi incluído
+  source: 'contact' | 'proximity'; // Como foi incluído
 }
 ```
 
@@ -140,7 +140,7 @@ Armazena convites de contato de segurança.
 
 ```typescript
 interface Invite {
-  id: string;                     // auto-generated
+  id: string; // auto-generated
 
   // Remetente
   fromUid: string;
@@ -196,9 +196,7 @@ interface Invite {
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "locationUpdatedAt", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "locationUpdatedAt", "order": "DESCENDING" }]
     }
   ]
 }
@@ -296,36 +294,39 @@ service cloud.firestore {
 ## Notas sobre Consultas
 
 ### Histórico de alertas enviados
+
 ```typescript
 // Query simples pelo userId
-firestore.collection('alerts')
-  .where('userId', '==', currentUid)
-  .orderBy('createdAt', 'desc')
+firestore.collection('alerts').where('userId', '==', currentUid).orderBy('createdAt', 'desc');
 ```
 
 ### Histórico de alertas recebidos
+
 ```typescript
 // Collection group query na subcollection recipients
-firestore.collectionGroup('recipients')
+firestore
+  .collectionGroup('recipients')
   .where('uid', '==', currentUid)
-  .orderBy('receivedAt', 'desc')
+  .orderBy('receivedAt', 'desc');
 ```
+
 Depois, para cada recipient, buscar o documento pai (alert) para exibir os detalhes.
 
 ### Usuários próximos (Cloud Function)
+
 ```typescript
 // Buscar usuários com localização recente e calcular distância Haversine
-firestore.collection('users')
+firestore
+  .collection('users')
   .where('locationUpdatedAt', '!=', null)
   .orderBy('locationUpdatedAt', 'desc')
-  .limit(500)
+  .limit(500);
 // Filtrar por distância no código da Cloud Function
 ```
 
 ### De quem sou contato
+
 ```typescript
 // Subcollection contactOf do usuário
-firestore.collection('users').doc(currentUid)
-  .collection('contactOf')
-  .orderBy('addedAt', 'desc')
+firestore.collection('users').doc(currentUid).collection('contactOf').orderBy('addedAt', 'desc');
 ```

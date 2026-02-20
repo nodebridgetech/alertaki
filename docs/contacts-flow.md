@@ -27,19 +27,19 @@ Não há limite de contatos de segurança.
 2. Toca em "Convidar contato".
 3. Digita o **email** ou **telefone** do contato desejado.
 4. O app busca no Firestore:
+
    ```typescript
    // Busca por email
-   const snap = await firestore.collection('users')
-     .where('email', '==', inputEmail)
-     .limit(1)
-     .get();
+   const snap = await firestore.collection('users').where('email', '==', inputEmail).limit(1).get();
 
    // OU busca por telefone
-   const snap = await firestore.collection('users')
+   const snap = await firestore
+     .collection('users')
      .where('phoneNumber', '==', inputPhone)
      .limit(1)
      .get();
    ```
+
 5. Se **não encontrado**: Mensagem "Nenhum usuário encontrado com este email/telefone."
 6. Se **encontrado**, validações:
    - Não é o próprio usuário.
@@ -63,6 +63,7 @@ Não há limite de contatos de segurança.
 8. Feedback: "Convite enviado para [nome]!"
 
 ### Erros:
+
 - "Nenhum usuário encontrado." — email/telefone não cadastrado.
 - "Este usuário já é seu contato." — relação já existe.
 - "Já existe um convite pendente para este usuário." — duplicata.
@@ -165,6 +166,7 @@ firestore.collection('users').doc(currentUid)
 ```
 
 Cada item exibe:
+
 - Foto, nome, email do contato.
 - Botão para **remover** o contato.
 
@@ -181,6 +183,7 @@ firestore.collection('users').doc(currentUid)
 ```
 
 Cada item exibe:
+
 - Foto, nome, email do "dono".
 - Informativo (sem ação de remoção — o dono é quem gerencia).
 
@@ -191,15 +194,25 @@ Cada item exibe:
 1. Usuário toca em "Remover" em um contato.
 2. Confirmação: "Remover [nome] dos seus contatos de segurança?"
 3. Deleta o documento:
+
    ```typescript
    // Remove da lista de contatos do usuário
-   await firestore.collection('users').doc(currentUid)
-     .collection('contacts').doc(contactUid).delete();
+   await firestore
+     .collection('users')
+     .doc(currentUid)
+     .collection('contacts')
+     .doc(contactUid)
+     .delete();
 
    // Remove o registro contactOf do ex-contato
-   await firestore.collection('users').doc(contactUid)
-     .collection('contactOf').doc(currentUid).delete();
+   await firestore
+     .collection('users')
+     .doc(contactUid)
+     .collection('contactOf')
+     .doc(currentUid)
+     .delete();
    ```
+
 4. O contato removido **não é notificado**.
 
 ---
@@ -212,8 +225,12 @@ Cada item exibe:
 2. Confirmação: "Bloquear [nome]? Você não receberá mais alertas desta pessoa."
 3. Cria o documento de bloqueio:
    ```typescript
-   await firestore.collection('users').doc(currentUid)
-     .collection('blockedUsers').doc(blockedUid).set({
+   await firestore
+     .collection('users')
+     .doc(currentUid)
+     .collection('blockedUsers')
+     .doc(blockedUid)
+     .set({
        uid: blockedUid,
        displayName: blockedUser.displayName,
        email: blockedUser.email,
@@ -234,8 +251,12 @@ Cada item exibe:
 4. Confirmação: "Desbloquear [nome]?"
 5. Deleta o documento:
    ```typescript
-   await firestore.collection('users').doc(currentUid)
-     .collection('blockedUsers').doc(blockedUid).delete();
+   await firestore
+     .collection('users')
+     .doc(currentUid)
+     .collection('blockedUsers')
+     .doc(blockedUid)
+     .delete();
    ```
 
 ---
@@ -269,7 +290,8 @@ Na HomeScreen, o ícone de navegação para Convites exibe um badge (bolinha ver
 
 ```typescript
 // Real-time listener para count de pendentes
-firestore.collection('invites')
+firestore
+  .collection('invites')
   .where('toUid', '==', currentUid)
   .where('status', '==', 'pending')
   .onSnapshot((snap) => {

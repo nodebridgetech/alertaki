@@ -36,12 +36,12 @@ App Entry
 
 ## Bottom Tab Navigation
 
-| Tab | Ícone | Label | Tela |
-|-----|-------|-------|------|
-| 1 | 🏠 Home | Início | HomeScreen |
-| 2 | 📋 History | Histórico | AlertHistoryScreen |
-| 3 | 👥 Contacts | Contatos | ContactsScreen |
-| 4 | 👤 Profile | Perfil | ProfileScreen |
+| Tab | Ícone       | Label     | Tela               |
+| --- | ----------- | --------- | ------------------ |
+| 1   | 🏠 Home     | Início    | HomeScreen         |
+| 2   | 📋 History  | Histórico | AlertHistoryScreen |
+| 3   | 👥 Contacts | Contatos  | ContactsScreen     |
+| 4   | 👤 Profile  | Perfil    | ProfileScreen      |
 
 ---
 
@@ -106,6 +106,7 @@ App Entry
 ```
 
 **Elementos**:
+
 - Logo do Alertaki no topo.
 - Campos de email e senha.
 - Link "Esqueci minha senha" → abre dialog para enviar email de reset.
@@ -150,6 +151,7 @@ App Entry
 ```
 
 **Validações**:
+
 - Nome: obrigatório.
 - Email: obrigatório, formato válido.
 - Telefone: opcional.
@@ -199,6 +201,7 @@ App Entry
 ```
 
 **Comportamento dos botões**:
+
 - **Saúde**: Dialog de confirmação → captura GPS → cria alerta → discagem 192.
 - **Segurança**: Dialog de confirmação → captura GPS → cria alerta → discagem 190.
 - **Emergência**: Navega para EmergencyScreen.
@@ -242,6 +245,7 @@ App Entry
 ```
 
 **Validações**:
+
 - Pelo menos 1 contato selecionado.
 - Mensagem obrigatória (não vazia).
 - Máximo 500 caracteres.
@@ -477,6 +481,7 @@ Detalhado em [alerts-flow.md](alerts-flow.md).
 ## Tema e Design
 
 ### Cores Principais
+
 - **Saúde**: Gradiente vermelho-laranja (`#FF4444` → `#FF8800`)
 - **Segurança**: Gradiente azul-roxo (`#4444FF` → `#8800FF`)
 - **Emergência**: Gradiente roxo-vermelho (`#8800FF` → `#FF4444`)
@@ -486,6 +491,7 @@ Detalhado em [alerts-flow.md](alerts-flow.md).
 - **Accent**: Vermelho de emergência (`#FF4444`)
 
 ### Princípios de Design
+
 - **Simplicidade**: Mínimo de elementos por tela.
 - **Botões grandes**: Os 3 botões de alerta devem ser grandes e fáceis de pressionar em emergência.
 - **Contraste alto**: Textos legíveis, botões com cores fortes.

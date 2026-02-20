@@ -10,10 +10,26 @@
       "Bash(git clone:*)",
       "Read(//tmp/**)",
       "Read(//c/Users/Nickolas/AppData/Local/Temp/alertaki-old/lib//**)",
-      "Read(//c/Users/Nickolas/AppData/Local/Temp/alertaki-old/**)"
+      "Read(//c/Users/Nickolas/AppData/Local/Temp/alertaki-old/**)",
+      "Bash(git -C /c/Users/Nickolas/Documents/GitHub/alertaki log --oneline --all)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(yarn:*)",
+      "Bash(npx:*)",
+      "Bash(firebase:*)",
+      "Bash(corepack:*)",
+      "Bash(java:*)",
+      "Bash(ruby:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm config:*)",
+      "Bash(echo:*)",
+      "Bash(npm install:*)",
+      "Bash(for dir in src/screens/auth src/screens/home src/screens/alerts src/screens/contacts src/screens/emergency src/screens/profile src/components src/services src/stores src/hooks src/navigation src/utils src/types src/config)",
+      "Bash(do touch \"/c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/$dir/.gitkeep\")",
+      "Bash(done)",
+      "Bash(for dir in functions/src/alerts functions/src/invites functions/src/users functions/src/utils)",
+      "Bash(do touch \"/c/Users/Nickolas/Documents/GitHub/alertaki/$dir/.gitkeep\")"
     ],
-    "additionalDirectories": [
-      "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old"
-    ]
+    "additionalDirectories": ["C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old"]
   }
 }

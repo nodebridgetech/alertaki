@@ -18,22 +18,22 @@ Não carregue todos os documentos de uma vez. Use a tabela abaixo para saber qua
 
 ## Tabela de Fases e Documentos
 
-| Fase | O que implementar | Documentos necessários |
-|------|-------------------|----------------------|
-| 1 | Setup do monorepo + Firebase | `architecture.md` |
-| 2 | Autenticação (Google + Email + Apple) | `auth-flow.md` + `data-model.md` |
-| 3 | Tela Home + Envio de Alertas (Saúde/Segurança) | `alerts-flow.md` + `screens.md` + `data-model.md` |
-| 4 | Tela de Emergência (alerta personalizado) | `alerts-flow.md` + `screens.md` + `data-model.md` |
-| 5 | Cloud Functions (onAlertCreated, onInviteCreated, onInviteAccepted) | `cloud-functions.md` + `data-model.md` |
-| 6 | Notificações + Overlay de alerta recebido | `notifications.md` + `alerts-flow.md` |
-| 7 | Contatos de segurança (convite, aceitar, recusar) | `contacts-flow.md` + `data-model.md` |
-| 8 | Bloqueio/Desbloqueio | `contacts-flow.md` + `data-model.md` |
-| 9 | Histórico de alertas (enviados/recebidos) | `alerts-flow.md` + `screens.md` + `data-model.md` |
-| 10 | Perfil + Edição + Upload de foto | `profile-account.md` + `screens.md` |
-| 11 | Exclusão de conta (LGPD) | `profile-account.md` + `cloud-functions.md` |
-| 12 | Localização em background | `notifications.md` + `data-model.md` |
-| 13 | Política de privacidade (tela) | `privacy-policy.md` |
-| 14 | Testes + Polishing | Todos |
+| Fase | O que implementar                                                   | Documentos necessários                            |
+| ---- | ------------------------------------------------------------------- | ------------------------------------------------- |
+| 1    | Setup do monorepo + Firebase                                        | `architecture.md`                                 |
+| 2    | Autenticação (Google + Email + Apple)                               | `auth-flow.md` + `data-model.md`                  |
+| 3    | Tela Home + Envio de Alertas (Saúde/Segurança)                      | `alerts-flow.md` + `screens.md` + `data-model.md` |
+| 4    | Tela de Emergência (alerta personalizado)                           | `alerts-flow.md` + `screens.md` + `data-model.md` |
+| 5    | Cloud Functions (onAlertCreated, onInviteCreated, onInviteAccepted) | `cloud-functions.md` + `data-model.md`            |
+| 6    | Notificações + Overlay de alerta recebido                           | `notifications.md` + `alerts-flow.md`             |
+| 7    | Contatos de segurança (convite, aceitar, recusar)                   | `contacts-flow.md` + `data-model.md`              |
+| 8    | Bloqueio/Desbloqueio                                                | `contacts-flow.md` + `data-model.md`              |
+| 9    | Histórico de alertas (enviados/recebidos)                           | `alerts-flow.md` + `screens.md` + `data-model.md` |
+| 10   | Perfil + Edição + Upload de foto                                    | `profile-account.md` + `screens.md`               |
+| 11   | Exclusão de conta (LGPD)                                            | `profile-account.md` + `cloud-functions.md`       |
+| 12   | Localização em background                                           | `notifications.md` + `data-model.md`              |
+| 13   | Política de privacidade (tela)                                      | `privacy-policy.md`                               |
+| 14   | Testes + Polishing                                                  | Todos                                             |
 
 ---
 
@@ -76,20 +76,22 @@ Os alertas são recebidos como push notifications com sobreposição de tela che
 ## Estrutura do Projeto
 
 ```
+
 alertaki/
 ├── apps/mobile/src/
-│   ├── screens/          # Telas organizadas por feature
-│   ├── components/       # Componentes reutilizáveis
-│   ├── services/         # Firebase services
-│   ├── stores/           # Zustand stores
-│   ├── hooks/            # Custom hooks
-│   ├── navigation/       # React Navigation config
-│   ├── utils/            # Helpers
-│   ├── types/            # TypeScript interfaces
-│   └── config/           # Constantes, Firebase config
-├── functions/src/        # Cloud Functions
-├── packages/shared/src/  # Types e constantes compartilhados
-└── docs/                 # Documentação
+│ ├── screens/ # Telas organizadas por feature
+│ ├── components/ # Componentes reutilizáveis
+│ ├── services/ # Firebase services
+│ ├── stores/ # Zustand stores
+│ ├── hooks/ # Custom hooks
+│ ├── navigation/ # React Navigation config
+│ ├── utils/ # Helpers
+│ ├── types/ # TypeScript interfaces
+│ └── config/ # Constantes, Firebase config
+├── functions/src/ # Cloud Functions
+├── packages/shared/src/ # Types e constantes compartilhados
+└── docs/ # Documentação
+
 ```
 
 ## Documentação de Referência

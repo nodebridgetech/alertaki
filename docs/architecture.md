@@ -126,53 +126,55 @@ alertaki/
 
 ### Mobile (React Native)
 
-| Biblioteca | Propósito |
-|-----------|-----------|
-| `react-native` (0.76+) | Framework mobile |
-| `typescript` (5.x) | Tipagem estática |
-| `@react-navigation/native` | Navegação entre telas |
-| `@react-navigation/bottom-tabs` | Tabs (histórico enviados/recebidos) |
-| `@react-navigation/native-stack` | Stack navigation |
-| `zustand` | State management |
-| `@react-native-firebase/app` | Firebase core |
-| `@react-native-firebase/auth` | Autenticação |
-| `@react-native-firebase/firestore` | Banco de dados |
-| `@react-native-firebase/messaging` | Push notifications |
-| `@react-native-firebase/storage` | Upload de fotos |
-| `@react-native-google-signin/google-signin` | Google Sign-In |
-| `@invertase/react-native-apple-authentication` | Apple Sign-In |
-| `react-native-geolocation-service` | GPS |
-| `react-native-background-fetch` | Background location updates |
-| `react-native-permissions` | Permissões |
-| `react-native-image-picker` | Seleção/captura de foto |
-| `react-native-maps` | Exibição de mapa (se necessário) |
-| `notifee` | Notificações locais avançadas (full-screen) |
-| `react-native-url-launcher` ou `Linking` | Abrir maps/telefone |
+| Biblioteca                                     | Propósito                                   |
+| ---------------------------------------------- | ------------------------------------------- |
+| `react-native` (0.76+)                         | Framework mobile                            |
+| `typescript` (5.x)                             | Tipagem estática                            |
+| `@react-navigation/native`                     | Navegação entre telas                       |
+| `@react-navigation/bottom-tabs`                | Tabs (histórico enviados/recebidos)         |
+| `@react-navigation/native-stack`               | Stack navigation                            |
+| `zustand`                                      | State management                            |
+| `@react-native-firebase/app`                   | Firebase core                               |
+| `@react-native-firebase/auth`                  | Autenticação                                |
+| `@react-native-firebase/firestore`             | Banco de dados                              |
+| `@react-native-firebase/messaging`             | Push notifications                          |
+| `@react-native-firebase/storage`               | Upload de fotos                             |
+| `@react-native-google-signin/google-signin`    | Google Sign-In                              |
+| `@invertase/react-native-apple-authentication` | Apple Sign-In                               |
+| `react-native-geolocation-service`             | GPS                                         |
+| `react-native-background-fetch`                | Background location updates                 |
+| `react-native-permissions`                     | Permissões                                  |
+| `react-native-image-picker`                    | Seleção/captura de foto                     |
+| `react-native-maps`                            | Exibição de mapa (se necessário)            |
+| `notifee`                                      | Notificações locais avançadas (full-screen) |
+| `react-native-url-launcher` ou `Linking`       | Abrir maps/telefone                         |
 
 ### Backend (Cloud Functions)
 
-| Biblioteca | Propósito |
-|-----------|-----------|
-| `firebase-functions` (v6) | Cloud Functions framework |
-| `firebase-admin` | Admin SDK (Firestore, FCM, Auth) |
-| `typescript` | Tipagem |
+| Biblioteca                | Propósito                        |
+| ------------------------- | -------------------------------- |
+| `firebase-functions` (v6) | Cloud Functions framework        |
+| `firebase-admin`          | Admin SDK (Firestore, FCM, Auth) |
+| `typescript`              | Tipagem                          |
 
 ### Ferramentas de Build
 
-| Ferramenta | Propósito |
-|-----------|-----------|
-| `yarn` ou `npm` workspaces | Monorepo management |
-| `jest` | Testes unitários |
+| Ferramenta                      | Propósito             |
+| ------------------------------- | --------------------- |
+| `yarn` ou `npm` workspaces      | Monorepo management   |
+| `jest`                          | Testes unitários      |
 | `@testing-library/react-native` | Testes de componentes |
-| `eslint` + `prettier` | Linting e formatação |
-| `husky` + `lint-staged` | Git hooks |
+| `eslint` + `prettier`           | Linting e formatação  |
+| `husky` + `lint-staged`         | Git hooks             |
 
 ---
 
 ## Padrões Arquiteturais
 
 ### Services Layer
+
 Cada serviço Firebase é encapsulado em uma classe/módulo:
+
 - `AuthService` — login, logout, registro, estado de autenticação
 - `AlertService` — criar e consultar alertas
 - `ContactService` — convites, aceitar/recusar, bloquear/desbloquear
@@ -182,12 +184,14 @@ Cada serviço Firebase é encapsulado em uma classe/módulo:
 - `UserService` — CRUD do perfil
 
 ### Stores (Zustand)
+
 - `useAuthStore` — estado de autenticação, dados do usuário logado
 - `useAlertStore` — alertas enviados/recebidos, loading states
 - `useContactStore` — contatos, convites pendentes, bloqueados
 - `useLocationStore` — localização atual, permissões
 
 ### Navegação
+
 ```
 Root (Auth Gate)
 ├── AuthStack (não autenticado)
@@ -212,6 +216,7 @@ Root (Auth Gate)
 ## Comunicação em Tempo Real
 
 O Firestore provê **listeners em tempo real** (onSnapshot) para:
+
 - Lista de convites pendentes (badge no app bar).
 - Lista de contatos de segurança.
 - Histórico de alertas recebidos.

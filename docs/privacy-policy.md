@@ -15,6 +15,7 @@ Ao utilizar o Alertaki, você concorda com as práticas descritas nesta polític
 ## 2. Dados que Coletamos
 
 ### 2.1 Dados fornecidos por você
+
 - **Nome completo**: Para identificação no app.
 - **Endereço de email**: Para autenticação e identificação.
 - **Número de telefone** (opcional): Para ser encontrado por outros usuários.
@@ -22,11 +23,13 @@ Ao utilizar o Alertaki, você concorda com as práticas descritas nesta polític
 - **Mensagens personalizadas em alertas de emergência**: Texto livre digitado pelo usuário.
 
 ### 2.2 Dados coletados automaticamente
+
 - **Localização geográfica (GPS)**: Coletada no momento do envio de um alerta e periodicamente (a cada 1 hora) para permitir que usuários próximos recebam alertas de emergência.
 - **Token de dispositivo (FCM)**: Identificador único do dispositivo para envio de notificações push.
 - **Dados de autenticação**: Informações fornecidas pelo provedor de login (Google ou Apple), incluindo nome, email e foto.
 
 ### 2.3 Dados que NÃO coletamos
+
 - Não acessamos sua lista de contatos do dispositivo.
 - Não acessamos mensagens, fotos (exceto quando você escolhe uma foto de perfil) ou outros dados pessoais do dispositivo.
 - Não utilizamos cookies ou rastreadores de terceiros.
@@ -35,13 +38,13 @@ Ao utilizar o Alertaki, você concorda com as práticas descritas nesta polític
 
 ## 3. Como Usamos seus Dados
 
-| Dado | Finalidade | Base Legal (LGPD) |
-|------|-----------|-------------------|
-| Nome, email, foto | Identificação e perfil no app | Execução de contrato (Art. 7, V) |
-| Telefone | Permitir que outros usuários o encontrem | Consentimento (Art. 7, I) |
-| Localização (GPS) | Enviar alertas para usuários próximos; mostrar sua localização em alertas | Proteção da vida (Art. 7, VII) |
-| Token FCM | Enviar notificações push de alertas | Execução de contrato (Art. 7, V) |
-| Histórico de alertas | Registro para consulta do usuário | Execução de contrato (Art. 7, V) |
+| Dado                 | Finalidade                                                                | Base Legal (LGPD)                |
+| -------------------- | ------------------------------------------------------------------------- | -------------------------------- |
+| Nome, email, foto    | Identificação e perfil no app                                             | Execução de contrato (Art. 7, V) |
+| Telefone             | Permitir que outros usuários o encontrem                                  | Consentimento (Art. 7, I)        |
+| Localização (GPS)    | Enviar alertas para usuários próximos; mostrar sua localização em alertas | Proteção da vida (Art. 7, VII)   |
+| Token FCM            | Enviar notificações push de alertas                                       | Execução de contrato (Art. 7, V) |
+| Histórico de alertas | Registro para consulta do usuário                                         | Execução de contrato (Art. 7, V) |
 
 ---
 
@@ -50,13 +53,16 @@ Ao utilizar o Alertaki, você concorda com as práticas descritas nesta polític
 Seus dados são compartilhados **apenas** nas seguintes situações:
 
 ### 4.1 Com outros usuários do Alertaki
+
 - Quando você envia um alerta, seus **contatos de segurança** e **usuários próximos** (em um raio de 5km) recebem: seu nome, sua localização no momento do alerta e, no caso de alerta de emergência, sua mensagem personalizada.
 - Quando você convida alguém, o destinatário vê seu nome, email e foto.
 
 ### 4.2 Com prestadores de serviço
+
 - **Google Firebase**: Infraestrutura de banco de dados, autenticação, armazenamento de arquivos e envio de notificações. Os dados são processados nos servidores do Google conforme seus [Termos de Serviço](https://firebase.google.com/terms).
 
 ### 4.3 Não vendemos seus dados
+
 Não vendemos, alugamos ou compartilhamos seus dados pessoais com terceiros para fins comerciais ou publicitários.
 
 ---
@@ -71,13 +77,13 @@ Não vendemos, alugamos ou compartilhamos seus dados pessoais com terceiros para
 
 ## 6. Retenção de Dados
 
-| Dado | Período de Retenção |
-|------|-------------------|
-| Dados do perfil | Até a exclusão da conta |
-| Histórico de alertas enviados | Indefinidamente (anonimizado após exclusão da conta) |
-| Histórico de alertas recebidos | Indefinidamente |
-| Localização em background | Sobrescrita a cada atualização (apenas último registro) |
-| Convites | Até aceitação/recusa ou exclusão da conta |
+| Dado                           | Período de Retenção                                     |
+| ------------------------------ | ------------------------------------------------------- |
+| Dados do perfil                | Até a exclusão da conta                                 |
+| Histórico de alertas enviados  | Indefinidamente (anonimizado após exclusão da conta)    |
+| Histórico de alertas recebidos | Indefinidamente                                         |
+| Localização em background      | Sobrescrita a cada atualização (apenas último registro) |
+| Convites                       | Até aceitação/recusa ou exclusão da conta               |
 
 ---
 
@@ -104,6 +110,7 @@ Conforme a LGPD, você tem os seguintes direitos:
 ## 8. Exclusão de Conta
 
 Ao solicitar a exclusão da sua conta:
+
 - Seus dados de perfil, tokens e convites são **permanentemente deletados**.
 - Você é removido da lista de contatos de segurança de todos os outros usuários.
 - Alertas enviados por você permanecem no histórico de outros usuários de forma **anonimizada** (nome substituído por "Usuário removido").

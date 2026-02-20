@@ -8,13 +8,13 @@ O backend do Alertaki é composto por **Firebase Cloud Functions v2** escritas e
 
 ## Lista de Cloud Functions
 
-| Function | Trigger | Propósito |
-|----------|---------|-----------|
-| `onAlertCreated` | `onDocumentCreated('alerts/{alertId}')` | Processar alerta: notificar contatos e próximos |
-| `onInviteCreated` | `onDocumentCreated('invites/{inviteId}')` | Notificar destinatário do convite |
-| `onInviteAccepted` | `onDocumentUpdated('invites/{inviteId}')` | Criar relação de contato bidirecional |
-| `deleteUserAccount` | `onCall` (HTTPS Callable) | Deletar conta e limpar dados (LGPD) |
-| `cleanupExpiredTokens` | `onSchedule('every 24 hours')` | Limpar tokens FCM expirados (opcional) |
+| Function               | Trigger                                   | Propósito                                       |
+| ---------------------- | ----------------------------------------- | ----------------------------------------------- |
+| `onAlertCreated`       | `onDocumentCreated('alerts/{alertId}')`   | Processar alerta: notificar contatos e próximos |
+| `onInviteCreated`      | `onDocumentCreated('invites/{inviteId}')` | Notificar destinatário do convite               |
+| `onInviteAccepted`     | `onDocumentUpdated('invites/{inviteId}')` | Criar relação de contato bidirecional           |
+| `deleteUserAccount`    | `onCall` (HTTPS Callable)                 | Deletar conta e limpar dados (LGPD)             |
+| `cleanupExpiredTokens` | `onSchedule('every 24 hours')`            | Limpar tokens FCM expirados (opcional)          |
 
 ---
 
@@ -29,174 +29,168 @@ import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
 
-export const onAlertCreated = onDocumentCreated(
-  'alerts/{alertId}',
-  async (event) => {
-    const alertId = event.params.alertId;
-    const alertData = event.data?.data();
-    if (!alertData) return;
+export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event) => {
+  const alertId = event.params.alertId;
+  const alertData = event.data?.data();
+  if (!alertData) return;
 
-    const db = getFirestore();
-    const messaging = getMessaging();
+  const db = getFirestore();
+  const messaging = getMessaging();
 
-    // 1. Buscar dados do remetente
-    const senderDoc = await db.collection('users').doc(alertData.userId).get();
-    const sender = senderDoc.data();
+  // 1. Buscar dados do remetente
+  const senderDoc = await db.collection('users').doc(alertData.userId).get();
+  const sender = senderDoc.data();
 
-    // 2. Atualizar alerta com dados do remetente
-    await event.data.ref.update({
-      userName: sender?.displayName || 'Usuário',
-      userPhotoURL: sender?.photoURL || null,
-    });
+  // 2. Atualizar alerta com dados do remetente
+  await event.data.ref.update({
+    userName: sender?.displayName || 'Usuário',
+    userPhotoURL: sender?.photoURL || null,
+  });
 
-    // 3. Determinar destinatários
-    let recipientUids: Set<string> = new Set();
+  // 3. Determinar destinatários
+  let recipientUids: Set<string> = new Set();
 
-    if (alertData.type === 'custom') {
-      // Alerta personalizado: apenas contatos selecionados
-      for (const uid of alertData.selectedContacts || []) {
-        recipientUids.add(uid);
-      }
-    } else {
-      // Saúde/Segurança: contatos + próximos
-
-      // 3a. Buscar contatos de segurança
-      const contactsSnap = await db.collection('users')
-        .doc(alertData.userId)
-        .collection('contacts')
-        .get();
-
-      contactsSnap.forEach(doc => recipientUids.add(doc.id));
-
-      // 3b. Buscar usuários próximos (raio de 5km)
-      const nearbyUsers = await findNearbyUsers(
-        db,
-        alertData.lat,
-        alertData.lng,
-        alertData.radiusKm || 5,
-      );
-
-      nearbyUsers.forEach(uid => recipientUids.add(uid));
+  if (alertData.type === 'custom') {
+    // Alerta personalizado: apenas contatos selecionados
+    for (const uid of alertData.selectedContacts || []) {
+      recipientUids.add(uid);
     }
+  } else {
+    // Saúde/Segurança: contatos + próximos
 
-    // Remover o próprio remetente
-    recipientUids.delete(alertData.userId);
+    // 3a. Buscar contatos de segurança
+    const contactsSnap = await db
+      .collection('users')
+      .doc(alertData.userId)
+      .collection('contacts')
+      .get();
 
-    if (recipientUids.size === 0) return;
+    contactsSnap.forEach((doc) => recipientUids.add(doc.id));
 
-    // 4. Verificar bloqueios e coletar tokens
-    const validRecipients: string[] = [];
-    const allTokens: string[] = [];
-    const tokenToUid: Map<string, string> = new Map();
-
-    for (const uid of recipientUids) {
-      // Verificar se o destinatário bloqueou o remetente
-      const blockedDoc = await db.collection('users')
-        .doc(uid)
-        .collection('blockedUsers')
-        .doc(alertData.userId)
-        .get();
-
-      if (blockedDoc.exists) continue; // Bloqueado, pular
-
-      validRecipients.push(uid);
-
-      // Buscar tokens do destinatário
-      const userDoc = await db.collection('users').doc(uid).get();
-      const tokens = userDoc.data()?.tokens || [];
-      tokens.forEach((token: string) => {
-        allTokens.push(token);
-        tokenToUid.set(token, uid);
-      });
-    }
-
-    // 5. Criar registros de recipients
-    const batch = db.batch();
-    for (const uid of validRecipients) {
-      const recipientRef = db.collection('alerts')
-        .doc(alertId)
-        .collection('recipients')
-        .doc(uid);
-
-      batch.set(recipientRef, {
-        uid,
-        receivedAt: FieldValue.serverTimestamp(),
-        source: contactsSnap?.docs.some(d => d.id === uid)
-          ? 'contact' : 'proximity',
-      });
-    }
-    await batch.commit();
-
-    // 6. Resolver endereço (reverse geocoding)
-    const address = await reverseGeocode(alertData.lat, alertData.lng);
-    await event.data.ref.update({ address });
-
-    // 7. Construir e enviar notificação
-    const title = getAlertTitle(alertData.type);
-    const body = getAlertBody(
-      alertData.type,
-      sender?.displayName,
-      alertData.customMessage,
+    // 3b. Buscar usuários próximos (raio de 5km)
+    const nearbyUsers = await findNearbyUsers(
+      db,
+      alertData.lat,
+      alertData.lng,
+      alertData.radiusKm || 5,
     );
 
-    // Enviar em chunks de 100
-    const chunks = chunkArray(allTokens, 100);
-    const invalidTokens: string[] = [];
+    nearbyUsers.forEach((uid) => recipientUids.add(uid));
+  }
 
-    for (const chunk of chunks) {
-      const response = await messaging.sendEachForMulticast({
-        tokens: chunk,
-        notification: { title, body },
-        data: {
-          alertId,
-          type: alertData.type,
-          userId: alertData.userId,
-          userName: sender?.displayName || 'Usuário',
-          userPhotoURL: sender?.photoURL || '',
-          lat: String(alertData.lat),
-          lng: String(alertData.lng),
-          address: address || 'Endereço indisponível',
-          customMessage: alertData.customMessage || '',
-          fullscreen: '1',
+  // Remover o próprio remetente
+  recipientUids.delete(alertData.userId);
+
+  if (recipientUids.size === 0) return;
+
+  // 4. Verificar bloqueios e coletar tokens
+  const validRecipients: string[] = [];
+  const allTokens: string[] = [];
+  const tokenToUid: Map<string, string> = new Map();
+
+  for (const uid of recipientUids) {
+    // Verificar se o destinatário bloqueou o remetente
+    const blockedDoc = await db
+      .collection('users')
+      .doc(uid)
+      .collection('blockedUsers')
+      .doc(alertData.userId)
+      .get();
+
+    if (blockedDoc.exists) continue; // Bloqueado, pular
+
+    validRecipients.push(uid);
+
+    // Buscar tokens do destinatário
+    const userDoc = await db.collection('users').doc(uid).get();
+    const tokens = userDoc.data()?.tokens || [];
+    tokens.forEach((token: string) => {
+      allTokens.push(token);
+      tokenToUid.set(token, uid);
+    });
+  }
+
+  // 5. Criar registros de recipients
+  const batch = db.batch();
+  for (const uid of validRecipients) {
+    const recipientRef = db.collection('alerts').doc(alertId).collection('recipients').doc(uid);
+
+    batch.set(recipientRef, {
+      uid,
+      receivedAt: FieldValue.serverTimestamp(),
+      source: contactsSnap?.docs.some((d) => d.id === uid) ? 'contact' : 'proximity',
+    });
+  }
+  await batch.commit();
+
+  // 6. Resolver endereço (reverse geocoding)
+  const address = await reverseGeocode(alertData.lat, alertData.lng);
+  await event.data.ref.update({ address });
+
+  // 7. Construir e enviar notificação
+  const title = getAlertTitle(alertData.type);
+  const body = getAlertBody(alertData.type, sender?.displayName, alertData.customMessage);
+
+  // Enviar em chunks de 100
+  const chunks = chunkArray(allTokens, 100);
+  const invalidTokens: string[] = [];
+
+  for (const chunk of chunks) {
+    const response = await messaging.sendEachForMulticast({
+      tokens: chunk,
+      notification: { title, body },
+      data: {
+        alertId,
+        type: alertData.type,
+        userId: alertData.userId,
+        userName: sender?.displayName || 'Usuário',
+        userPhotoURL: sender?.photoURL || '',
+        lat: String(alertData.lat),
+        lng: String(alertData.lng),
+        address: address || 'Endereço indisponível',
+        customMessage: alertData.customMessage || '',
+        fullscreen: '1',
+      },
+      android: {
+        priority: 'high' as const,
+        notification: {
+          channelId: 'alert_channel',
+          visibility: 'public' as const,
+          sound: 'default',
         },
-        android: {
-          priority: 'high' as const,
-          notification: {
-            channelId: 'alert_channel',
-            visibility: 'public' as const,
+      },
+      apns: {
+        payload: {
+          aps: {
             sound: 'default',
+            'interruption-level': 'critical',
+            'content-available': 1,
           },
         },
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-              'interruption-level': 'critical',
-              'content-available': 1,
-            },
-          },
-        },
-      });
+      },
+    });
 
-      // Identificar tokens inválidos
-      response.responses.forEach((resp, idx) => {
-        if (!resp.success && resp.error?.code === 'messaging/registration-token-not-registered') {
-          invalidTokens.push(chunk[idx]);
-        }
-      });
-    }
+    // Identificar tokens inválidos
+    response.responses.forEach((resp, idx) => {
+      if (!resp.success && resp.error?.code === 'messaging/registration-token-not-registered') {
+        invalidTokens.push(chunk[idx]);
+      }
+    });
+  }
 
-    // 8. Limpar tokens inválidos
-    for (const token of invalidTokens) {
-      const uid = tokenToUid.get(token);
-      if (uid) {
-        await db.collection('users').doc(uid).update({
+  // 8. Limpar tokens inválidos
+  for (const token of invalidTokens) {
+    const uid = tokenToUid.get(token);
+    if (uid) {
+      await db
+        .collection('users')
+        .doc(uid)
+        .update({
           tokens: FieldValue.arrayRemove(token),
         });
-      }
     }
   }
-);
+});
 ```
 
 ### Funções auxiliares
@@ -205,10 +199,14 @@ export const onAlertCreated = onDocumentCreated(
 // Título por tipo de alerta
 function getAlertTitle(type: string): string {
   switch (type) {
-    case 'health': return '🏥 Alerta de Saúde!';
-    case 'security': return '🛡️ Alerta de Segurança!';
-    case 'custom': return '⚠️ Alerta de Emergência!';
-    default: return '🚨 Alerta!';
+    case 'health':
+      return '🏥 Alerta de Saúde!';
+    case 'security':
+      return '🛡️ Alerta de Segurança!';
+    case 'custom':
+      return '⚠️ Alerta de Emergência!';
+    default:
+      return '🚨 Alerta!';
   }
 }
 
@@ -236,7 +234,8 @@ async function findNearbyUsers(
   lng: number,
   radiusKm: number,
 ): Promise<string[]> {
-  const snapshot = await db.collection('users')
+  const snapshot = await db
+    .collection('users')
     .where('locationUpdatedAt', '!=', null)
     .orderBy('locationUpdatedAt', 'desc')
     .limit(500)
@@ -244,11 +243,12 @@ async function findNearbyUsers(
 
   const nearbyUids: string[] = [];
 
-  snapshot.forEach(doc => {
+  snapshot.forEach((doc) => {
     const userData = doc.data();
     if (userData.lastLocation) {
       const distance = haversineDistance(
-        lat, lng,
+        lat,
+        lng,
         userData.lastLocation.lat,
         userData.lastLocation.lng,
       );
@@ -262,16 +262,13 @@ async function findNearbyUsers(
 }
 
 // Fórmula de Haversine (distância entre dois pontos em km)
-function haversineDistance(
-  lat1: number, lng1: number,
-  lat2: number, lng2: number,
-): number {
+function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371; // Raio da Terra em km
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLng / 2) ** 2;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -284,7 +281,7 @@ function toRad(deg: number): number {
 async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
   try {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}&language=pt-BR`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}&language=pt-BR`,
     );
     const data = await response.json();
     if (data.results && data.results.length > 0) {
@@ -313,51 +310,48 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 **Trigger**: Quando um novo documento é criado em `invites/{inviteId}`.
 
 ```typescript
-export const onInviteCreated = onDocumentCreated(
-  'invites/{inviteId}',
-  async (event) => {
-    const invite = event.data?.data();
-    if (!invite) return;
+export const onInviteCreated = onDocumentCreated('invites/{inviteId}', async (event) => {
+  const invite = event.data?.data();
+  if (!invite) return;
 
-    const db = getFirestore();
-    const messaging = getMessaging();
+  const db = getFirestore();
+  const messaging = getMessaging();
 
-    // Buscar tokens do destinatário
-    const toUserDoc = await db.collection('users').doc(invite.toUid).get();
-    const tokens = toUserDoc.data()?.tokens || [];
+  // Buscar tokens do destinatário
+  const toUserDoc = await db.collection('users').doc(invite.toUid).get();
+  const tokens = toUserDoc.data()?.tokens || [];
 
-    if (tokens.length === 0) return;
+  if (tokens.length === 0) return;
 
-    // Enviar push notification
-    await messaging.sendEachForMulticast({
-      tokens,
+  // Enviar push notification
+  await messaging.sendEachForMulticast({
+    tokens,
+    notification: {
+      title: 'Novo convite de segurança',
+      body: `${invite.fromDisplayName || invite.fromEmail} quer adicioná-lo como contato de segurança`,
+    },
+    data: {
+      screen: 'invites',
+      inviteId: event.params.inviteId,
+      fromUid: invite.fromUid,
+      fromEmail: invite.fromEmail,
+    },
+    android: {
       notification: {
-        title: 'Novo convite de segurança',
-        body: `${invite.fromDisplayName || invite.fromEmail} quer adicioná-lo como contato de segurança`,
+        channelId: 'invite_channel',
+        sound: 'default',
       },
-      data: {
-        screen: 'invites',
-        inviteId: event.params.inviteId,
-        fromUid: invite.fromUid,
-        fromEmail: invite.fromEmail,
-      },
-      android: {
-        notification: {
-          channelId: 'invite_channel',
+    },
+    apns: {
+      payload: {
+        aps: {
           sound: 'default',
+          'interruption-level': 'time-sensitive',
         },
       },
-      apns: {
-        payload: {
-          aps: {
-            sound: 'default',
-            'interruption-level': 'time-sensitive',
-          },
-        },
-      },
-    });
-  }
-);
+    },
+  });
+});
 ```
 
 ---
@@ -367,64 +361,63 @@ export const onInviteCreated = onDocumentCreated(
 **Trigger**: Quando um documento em `invites/{inviteId}` é atualizado.
 
 ```typescript
-export const onInviteAccepted = onDocumentUpdated(
-  'invites/{inviteId}',
-  async (event) => {
-    const before = event.data?.before.data();
-    const after = event.data?.after.data();
+export const onInviteAccepted = onDocumentUpdated('invites/{inviteId}', async (event) => {
+  const before = event.data?.before.data();
+  const after = event.data?.after.data();
 
-    if (!before || !after) return;
+  if (!before || !after) return;
 
-    // Só processar quando status muda para 'accepted'
-    if (before.status === 'accepted' || after.status !== 'accepted') return;
+  // Só processar quando status muda para 'accepted'
+  if (before.status === 'accepted' || after.status !== 'accepted') return;
 
-    const db = getFirestore();
+  const db = getFirestore();
 
-    // Buscar dados dos dois usuários
-    const [fromUserDoc, toUserDoc] = await Promise.all([
-      db.collection('users').doc(after.fromUid).get(),
-      db.collection('users').doc(after.toUid).get(),
-    ]);
+  // Buscar dados dos dois usuários
+  const [fromUserDoc, toUserDoc] = await Promise.all([
+    db.collection('users').doc(after.fromUid).get(),
+    db.collection('users').doc(after.toUid).get(),
+  ]);
 
-    const fromUser = fromUserDoc.data();
-    const toUser = toUserDoc.data();
+  const fromUser = fromUserDoc.data();
+  const toUser = toUserDoc.data();
 
-    if (!fromUser || !toUser) return;
+  if (!fromUser || !toUser) return;
 
-    const batch = db.batch();
+  const batch = db.batch();
 
-    // 1. Adicionar o destinatário como contato do remetente
-    // (quem aceitou vira contato de quem convidou)
-    const contactRef = db.collection('users')
-      .doc(after.fromUid)
-      .collection('contacts')
-      .doc(after.toUid);
+  // 1. Adicionar o destinatário como contato do remetente
+  // (quem aceitou vira contato de quem convidou)
+  const contactRef = db
+    .collection('users')
+    .doc(after.fromUid)
+    .collection('contacts')
+    .doc(after.toUid);
 
-    batch.set(contactRef, {
-      uid: after.toUid,
-      displayName: toUser.displayName,
-      email: toUser.email,
-      photoURL: toUser.photoURL || null,
-      addedAt: FieldValue.serverTimestamp(),
-    });
+  batch.set(contactRef, {
+    uid: after.toUid,
+    displayName: toUser.displayName,
+    email: toUser.email,
+    photoURL: toUser.photoURL || null,
+    addedAt: FieldValue.serverTimestamp(),
+  });
 
-    // 2. Registrar no destinatário que ele é contato do remetente
-    const contactOfRef = db.collection('users')
-      .doc(after.toUid)
-      .collection('contactOf')
-      .doc(after.fromUid);
+  // 2. Registrar no destinatário que ele é contato do remetente
+  const contactOfRef = db
+    .collection('users')
+    .doc(after.toUid)
+    .collection('contactOf')
+    .doc(after.fromUid);
 
-    batch.set(contactOfRef, {
-      ownerUid: after.fromUid,
-      ownerDisplayName: fromUser.displayName,
-      ownerEmail: fromUser.email,
-      ownerPhotoURL: fromUser.photoURL || null,
-      addedAt: FieldValue.serverTimestamp(),
-    });
+  batch.set(contactOfRef, {
+    ownerUid: after.fromUid,
+    ownerDisplayName: fromUser.displayName,
+    ownerEmail: fromUser.email,
+    ownerPhotoURL: fromUser.photoURL || null,
+    addedAt: FieldValue.serverTimestamp(),
+  });
 
-    await batch.commit();
-  }
-);
+  await batch.commit();
+});
 ```
 
 ---
@@ -450,12 +443,10 @@ export const deleteUserAccount = onCall(async (request) => {
 
   try {
     // 1. Anonimizar alertas enviados
-    const alertsSnap = await db.collection('alerts')
-      .where('userId', '==', uid)
-      .get();
+    const alertsSnap = await db.collection('alerts').where('userId', '==', uid).get();
 
     const alertBatch = db.batch();
-    alertsSnap.forEach(doc => {
+    alertsSnap.forEach((doc) => {
       alertBatch.update(doc.ref, {
         userName: 'Usuário removido',
         userEmail: null,
@@ -466,25 +457,21 @@ export const deleteUserAccount = onCall(async (request) => {
 
     // 2. Remover de listas de contatos de outros usuários
     // Buscar onde este user é contato de alguém
-    const contactOfSnap = await db.collection('users').doc(uid)
-      .collection('contactOf').get();
+    const contactOfSnap = await db.collection('users').doc(uid).collection('contactOf').get();
 
     for (const doc of contactOfSnap.docs) {
       const ownerUid = doc.data().ownerUid;
       // Remover dos contatos do owner
-      await db.collection('users').doc(ownerUid)
-        .collection('contacts').doc(uid).delete();
+      await db.collection('users').doc(ownerUid).collection('contacts').doc(uid).delete();
     }
 
     // Buscar onde este user tem outros como contatos
-    const contactsSnap = await db.collection('users').doc(uid)
-      .collection('contacts').get();
+    const contactsSnap = await db.collection('users').doc(uid).collection('contacts').get();
 
     for (const doc of contactsSnap.docs) {
       const contactUid = doc.id;
       // Remover o contactOf no outro usuário
-      await db.collection('users').doc(contactUid)
-        .collection('contactOf').doc(uid).delete();
+      await db.collection('users').doc(contactUid).collection('contactOf').doc(uid).delete();
     }
 
     // 3. Deletar subcollections do user
@@ -493,25 +480,21 @@ export const deleteUserAccount = onCall(async (request) => {
     await deleteSubcollection(db, `users/${uid}/blockedUsers`);
 
     // 4. Deletar recipients deste user
-    const recipientsSnap = await db.collectionGroup('recipients')
-      .where('uid', '==', uid)
-      .get();
+    const recipientsSnap = await db.collectionGroup('recipients').where('uid', '==', uid).get();
 
     const recipientBatch = db.batch();
-    recipientsSnap.forEach(doc => {
+    recipientsSnap.forEach((doc) => {
       recipientBatch.delete(doc.ref);
     });
     await recipientBatch.commit();
 
     // 5. Deletar convites
-    const invitesFromSnap = await db.collection('invites')
-      .where('fromUid', '==', uid).get();
-    const invitesToSnap = await db.collection('invites')
-      .where('toUid', '==', uid).get();
+    const invitesFromSnap = await db.collection('invites').where('fromUid', '==', uid).get();
+    const invitesToSnap = await db.collection('invites').where('toUid', '==', uid).get();
 
     const inviteBatch = db.batch();
-    invitesFromSnap.forEach(doc => inviteBatch.delete(doc.ref));
-    invitesToSnap.forEach(doc => inviteBatch.delete(doc.ref));
+    invitesFromSnap.forEach((doc) => inviteBatch.delete(doc.ref));
+    invitesToSnap.forEach((doc) => inviteBatch.delete(doc.ref));
     await inviteBatch.commit();
 
     // 6. Deletar foto do Storage
@@ -535,13 +518,10 @@ export const deleteUserAccount = onCall(async (request) => {
 });
 
 // Helper para deletar subcollections
-async function deleteSubcollection(
-  db: FirebaseFirestore.Firestore,
-  path: string,
-) {
+async function deleteSubcollection(db: FirebaseFirestore.Firestore, path: string) {
   const snap = await db.collection(path).get();
   const batch = db.batch();
-  snap.forEach(doc => batch.delete(doc.ref));
+  snap.forEach((doc) => batch.delete(doc.ref));
   await batch.commit();
 }
 ```
@@ -601,11 +581,13 @@ GOOGLE_MAPS_API_KEY=<chave para reverse geocoding>
 ```
 
 Configurar via:
+
 ```bash
 firebase functions:config:set google.maps_api_key="YOUR_KEY"
 ```
 
 Ou usar `.env` com Cloud Functions v2:
+
 ```bash
 # functions/.env
 GOOGLE_MAPS_API_KEY=your_key_here

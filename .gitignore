@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+lib/
+dist/
+
+# React Native
+apps/mobile/android/app/build/
+apps/mobile/android/.gradle/
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+
+# Metro
+.metro-health-check-*
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+functions/.env
+
+# TypeScript
+*.tsbuildinfo

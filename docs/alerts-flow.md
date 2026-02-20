@@ -2,11 +2,11 @@
 
 ## Tipos de Alerta
 
-| Tipo | Identificador | Destinatários | Discagem Rápida | Mensagem Personalizada |
-|------|--------------|---------------|-----------------|----------------------|
-| Saúde | `health` | Contatos + Próximos (5km) | SAMU (192) | Não |
-| Segurança | `security` | Contatos + Próximos (5km) | Polícia (190) | Não |
-| Emergência | `custom` | Contatos selecionados | Não | Sim (até 500 chars) |
+| Tipo       | Identificador | Destinatários             | Discagem Rápida | Mensagem Personalizada |
+| ---------- | ------------- | ------------------------- | --------------- | ---------------------- |
+| Saúde      | `health`      | Contatos + Próximos (5km) | SAMU (192)      | Não                    |
+| Segurança  | `security`    | Contatos + Próximos (5km) | Polícia (190)   | Não                    |
+| Emergência | `custom`      | Contatos selecionados     | Não             | Sim (até 500 chars)    |
 
 ---
 
@@ -62,6 +62,7 @@
 ## Fluxo de Envio — Alerta de Segurança
 
 Idêntico ao de Saúde, com as diferenças:
+
 - `type: 'security'`
 - Discagem automática para **Polícia (190)**: `Linking.openURL('tel:190')`
 
@@ -99,9 +100,9 @@ Idêntico ao de Saúde, com as diferenças:
      type: 'custom',
      lat: position.coords.latitude,
      lng: position.coords.longitude,
-     radiusKm: 0,                    // Não envia para próximos
+     radiusKm: 0, // Não envia para próximos
      customMessage: messageText,
-     selectedContacts: contactUids,   // UIDs dos contatos selecionados
+     selectedContacts: contactUids, // UIDs dos contatos selecionados
      createdAt: serverTimestamp(),
    });
    ```
@@ -227,6 +228,7 @@ Usuário toca ──► getInitialNotification ──► AlertOverlayScreen
 A tela de overlay recebida é diferente para cada tipo de alerta:
 
 ### Alerta de Saúde (recebido)
+
 ```
 ┌──────────────────────────┐
 │     🏥 ALERTA DE SAÚDE    │
@@ -255,9 +257,11 @@ A tela de overlay recebida é diferente para cada tipo de alerta:
 ```
 
 ### Alerta de Segurança (recebido)
+
 - Mesmo layout, mas com "Ligar Polícia (190)" e ícone de escudo.
 
 ### Alerta de Emergência (recebido)
+
 ```
 ┌──────────────────────────┐
 │   ⚠️ ALERTA DE EMERGÊNCIA │
@@ -311,10 +315,10 @@ Para evitar alertas acidentais (já que não há cooldown nem cancelamento):
 
 ## Estados de Error Handling
 
-| Erro | Tratamento |
-|------|-----------|
-| GPS desabilitado | Mostrar dialog pedindo para ativar. Link para configurações. |
-| GPS sem permissão | Solicitar permissão. Se negada, mostrar instruções. |
-| Timeout de GPS (>10s) | Mostrar erro: "Não foi possível obter sua localização." |
-| Sem internet | Mostrar erro: "Sem conexão. O alerta será enviado quando a conexão for restabelecida." (Firestore offline persistence) |
-| Sem contatos (para custom) | Botão de envio desabilitado. Mensagem: "Adicione contatos de segurança primeiro." |
+| Erro                       | Tratamento                                                                                                             |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| GPS desabilitado           | Mostrar dialog pedindo para ativar. Link para configurações.                                                           |
+| GPS sem permissão          | Solicitar permissão. Se negada, mostrar instruções.                                                                    |
+| Timeout de GPS (>10s)      | Mostrar erro: "Não foi possível obter sua localização."                                                                |
+| Sem internet               | Mostrar erro: "Sem conexão. O alerta será enviado quando a conexão for restabelecida." (Firestore offline persistence) |
+| Sem contatos (para custom) | Botão de envio desabilitado. Mensagem: "Adicione contatos de segurança primeiro."                                      |
