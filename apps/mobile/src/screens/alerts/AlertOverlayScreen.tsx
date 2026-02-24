@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert, Image } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EMERGENCY_NUMBERS } from '@alertaki/shared';
@@ -122,11 +122,15 @@ export function AlertOverlayScreen({
 
       <View style={styles.card}>
         <View style={styles.userInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {alertData.userName?.charAt(0)?.toUpperCase() || '?'}
-            </Text>
-          </View>
+          {alertData.userPhotoURL ? (
+            <Image source={{ uri: alertData.userPhotoURL }} style={styles.avatarImage} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {alertData.userName?.charAt(0)?.toUpperCase() || '?'}
+              </Text>
+            </View>
+          )}
           <Text style={styles.userName}>{alertData.userName}</Text>
         </View>
 
@@ -209,6 +213,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  avatarImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     marginBottom: 8,
   },
   avatarText: {

@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
+  Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -81,8 +82,11 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
       // Update email
       if (email.trim() !== user?.email && email.trim()) {
         try {
-          await auth().currentUser?.updateEmail(email.trim());
-          await userService.updateProfile(uid, { email: email.trim() });
+          await auth().currentUser?.verifyBeforeUpdateEmail(email.trim());
+          Alert.alert(
+            'Verificação Necessária',
+            'Um email de verificação foi enviado para o novo endereço. Após verificar, o email será atualizado.',
+          );
         } catch (error) {
           const err = error as { code?: string };
           if (err.code === 'auth/requires-recent-login') {
@@ -117,9 +121,13 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.photoSection}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{name?.charAt(0)?.toUpperCase() || '?'}</Text>
-          </View>
+          {user?.photoURL ? (
+            <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{name?.charAt(0)?.toUpperCase() || '?'}</Text>
+            </View>
+          )}
           <TouchableOpacity onPress={handleChangePhoto} disabled={loading}>
             <Text style={styles.changePhotoText}>Trocar foto</Text>
           </TouchableOpacity>
@@ -187,6 +195,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 8,
   },
   avatarText: {

@@ -10,10 +10,10 @@ import { useContactStore } from './stores/contactStore';
 import { notificationService } from './services/notificationService';
 import { userService } from './services/userService';
 import { contactService } from './services/contactService';
+import { useBackgroundLocation } from './hooks/useBackgroundLocation';
 
-// Configure Google Sign-In (replace with your actual webClientId)
 GoogleSignin.configure({
-  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+  webClientId: '807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com',
 });
 
 // Background message handler — must be registered outside component
@@ -44,13 +44,18 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     // Create notification channels on startup
-    notificationService.createChannels();
-    notificationService.requestPermission();
+    notificationService.createChannels().catch(() => {});
+    notificationService.requestPermission().catch(() => {});
 
     // Auth state listener
     const unsubAuth = auth().onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        const userData = await userService.getUser(firebaseUser.uid);
+        let userData = await userService.getUser(firebaseUser.uid);
+        if (!userData) {
+          // User doc may not exist yet (race with signIn flow) — create it
+          await userService.upsertUser(firebaseUser);
+          userData = await userService.getUser(firebaseUser.uid);
+        }
         setUser(userData);
         setLoading(false);
       } else {
@@ -62,11 +67,14 @@ function App(): React.JSX.Element {
     return unsubAuth;
   }, [setUser, setLoading]);
 
+  // Background location updates
+  useBackgroundLocation();
+
   // Set up Firestore listeners when authenticated
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.uid) return;
 
     const uid = user.uid;
     const unsubContacts = contactService.onContacts(uid, setContacts);

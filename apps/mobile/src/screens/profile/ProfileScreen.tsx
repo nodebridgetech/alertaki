@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
 import functions from '@react-native-firebase/functions';
@@ -69,11 +69,15 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.displayName?.charAt(0)?.toUpperCase() || '?'}
-          </Text>
-        </View>
+        {user?.photoURL ? (
+          <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {user?.displayName?.charAt(0)?.toUpperCase() || '?'}
+            </Text>
+          </View>
+        )}
         <Text style={styles.name}>{user?.displayName || 'Usuário'}</Text>
         <Text style={styles.email}>{user?.email || ''}</Text>
         {user?.phoneNumber && <Text style={styles.phone}>{user.phoneNumber}</Text>}
@@ -147,6 +151,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 12,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 12,
   },
   avatarText: {

@@ -14,7 +14,7 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (name: string, email: string, password: string) => Promise<void>;
+  registerWithEmail: (name: string, email: string, password: string, phone?: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: (uid: string) => Promise<void>;
 
@@ -62,10 +62,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  registerWithEmail: async (name, email, password) => {
+  registerWithEmail: async (name, email, password, phone?) => {
     set({ isLoading: true });
     try {
-      const credential = await authService.registerWithEmail(name, email, password);
+      const credential = await authService.registerWithEmail(name, email, password, phone);
       const userData = await userService.getUser(credential.user.uid);
       set({ user: userData, isAuthenticated: true });
     } finally {

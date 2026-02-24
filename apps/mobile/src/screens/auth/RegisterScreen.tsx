@@ -52,7 +52,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
 
     setLoading(true);
     try {
-      await registerWithEmail(name.trim(), email.trim(), password);
+      await registerWithEmail(name.trim(), email.trim(), password, phone.trim() || undefined);
     } catch (error) {
       Alert.alert('Erro', (error as Error).message);
     } finally {

@@ -28,8 +28,29 @@
       "Bash(do touch \"/c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/$dir/.gitkeep\")",
       "Bash(done)",
       "Bash(for dir in functions/src/alerts functions/src/invites functions/src/users functions/src/utils)",
-      "Bash(do touch \"/c/Users/Nickolas/Documents/GitHub/alertaki/$dir/.gitkeep\")"
+      "Bash(do touch \"/c/Users/Nickolas/Documents/GitHub/alertaki/$dir/.gitkeep\")",
+      "Bash(adb devices:*)",
+      "Bash(\"$ANDROID_HOME/platform-tools/adb\" devices)",
+      "Bash(node ../../node_modules/react-native/cli.js run-android:*)",
+      "Bash(./gradlew.bat app:installDebug:*)",
+      "Bash(node:*)",
+      "Bash(\"$ANDROID_HOME/platform-tools/adb\" reverse tcp:8081 tcp:8081)",
+      "Bash(keytool:*)",
+      "Bash(\"$JAVA_HOME/bin/keytool\" -list -v -keystore /c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/debug.keystore -alias androiddebugkey -storepass android)",
+      "Bash(./gradlew assembleRelease:*)",
+      "Bash(subst Z: \"C:\\\\Users\\\\Nickolas\\\\Documents\\\\GitHub\\\\alertaki\")",
+      "Read(//z/apps/mobile/android/**)",
+      "Bash(subst:*)",
+      "Bash(cmd //c \"mklink /J C:\\\\A C:\\\\Users\\\\Nickolas\\\\Documents\\\\GitHub\\\\alertaki\")",
+      "Read(//c/A/apps/mobile/android/**)",
+      "Bash(cmd //c \"rmdir C:\\\\A\")",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(xargs ls:*)",
+      "Read(//c/Users/Nickolas/Documents/GitHub/alertaki/**)",
+      "Bash(npm run build:*)"
     ],
-    "additionalDirectories": ["C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old"]
+    "additionalDirectories": [
+      "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old"
+    ]
   }
 }

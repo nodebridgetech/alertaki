@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useContactStore } from '../../stores/contactStore';
 import type { Invite } from '@alertaki/shared';
 import { COLORS } from '../../config/constants';
@@ -51,11 +51,15 @@ export function InvitesScreen(): React.JSX.Element {
   function renderInvite({ item }: { item: Invite & { id: string } }) {
     return (
       <View style={styles.inviteItem}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {item.fromDisplayName?.charAt(0)?.toUpperCase() || '?'}
-          </Text>
-        </View>
+        {item.fromPhotoURL ? (
+          <Image source={{ uri: item.fromPhotoURL }} style={styles.avatarImage} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {item.fromDisplayName?.charAt(0)?.toUpperCase() || '?'}
+            </Text>
+          </View>
+        )}
         <View style={styles.inviteInfo}>
           <Text style={styles.inviteName}>{item.fromDisplayName}</Text>
           <Text style={styles.inviteEmail}>{item.fromEmail}</Text>
@@ -120,6 +124,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     marginRight: 12,
   },
   avatarText: {

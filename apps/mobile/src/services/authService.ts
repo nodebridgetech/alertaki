@@ -99,11 +99,15 @@ async function registerWithEmail(
   name: string,
   email: string,
   password: string,
+  phone?: string,
 ): Promise<FirebaseAuthTypes.UserCredential> {
   try {
     const userCredential = await auth().createUserWithEmailAndPassword(email, password);
     await userCredential.user.updateProfile({ displayName: name });
     await userService.upsertUser(userCredential.user, name);
+    if (phone) {
+      await userService.updateProfile(userCredential.user.uid, { phoneNumber: phone });
+    }
     await notificationService.saveFcmToken(userCredential.user.uid);
     return userCredential;
   } catch (error) {

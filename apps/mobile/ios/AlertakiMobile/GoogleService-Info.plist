@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>807554654482-cfu8vfmmbmc3lu0i3lek293u9tk5l19c.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.807554654482-cfu8vfmmbmc3lu0i3lek293u9tk5l19c</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>807554654482-ddbosq78athf0cmuhop5jfaqeupr9sug.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDdNuyOkgJ9GupMHG0o5pQRdI9xRvMbI2s</string>
+	<key>GCM_SENDER_ID</key>
+	<string>807554654482</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.AlertakiMobile</string>
+	<key>PROJECT_ID</key>
+	<string>alertaki</string>
+	<key>STORAGE_BUCKET</key>
+	<string>alertaki.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:807554654482:ios:8561e550a9612b8de793cb</string>
+</dict>
+</plist>

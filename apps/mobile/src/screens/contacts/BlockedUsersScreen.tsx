@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
 import { useContactStore } from '../../stores/contactStore';
 import type { BlockedUser } from '@alertaki/shared';
@@ -29,9 +29,13 @@ export function BlockedUsersScreen(): React.JSX.Element {
   function renderBlockedUser({ item }: { item: BlockedUser }) {
     return (
       <View style={styles.item}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{item.displayName?.charAt(0)?.toUpperCase() || '?'}</Text>
-        </View>
+        {item.photoURL ? (
+          <Image source={{ uri: item.photoURL }} style={styles.avatarImage} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{item.displayName?.charAt(0)?.toUpperCase() || '?'}</Text>
+          </View>
+        )}
         <View style={styles.info}>
           <Text style={styles.name}>{item.displayName}</Text>
           <Text style={styles.email}>{item.email}</Text>
@@ -90,6 +94,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondaryText,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     marginRight: 12,
   },
   avatarText: {

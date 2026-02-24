@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
+  Modal,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
@@ -27,6 +28,9 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const { signInWithGoogle, signInWithApple, signInWithEmail } = useAuthStore();
 
@@ -68,25 +72,26 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
   }
 
   function handleForgotPassword() {
-    Alert.prompt
-      ? Alert.prompt(
-          'Recuperar Senha',
-          'Digite seu email para receber o link de recuperação:',
-          async (inputEmail) => {
-            if (inputEmail) {
-              try {
-                await authService.sendPasswordResetEmail(inputEmail.trim());
-                Alert.alert(
-                  'Sucesso',
-                  'Email de recuperação enviado. Verifique sua caixa de entrada.',
-                );
-              } catch (error) {
-                Alert.alert('Erro', (error as Error).message);
-              }
-            }
-          },
-        )
-      : Alert.alert('Recuperar Senha', 'Use a opção de recuperação com seu email de cadastro.');
+    setForgotEmail(email);
+    setShowForgotModal(true);
+  }
+
+  async function handleSendResetEmail() {
+    if (!forgotEmail.trim()) {
+      Alert.alert('Erro', 'Digite seu email.');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      await authService.sendPasswordResetEmail(forgotEmail.trim());
+      setShowForgotModal(false);
+      setForgotEmail('');
+      Alert.alert('Sucesso', 'Email de recuperação enviado. Verifique sua caixa de entrada.');
+    } catch (error) {
+      Alert.alert('Erro', (error as Error).message);
+    } finally {
+      setForgotLoading(false);
+    }
   }
 
   return (
@@ -167,6 +172,58 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        visible={showForgotModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowForgotModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Recuperar Senha</Text>
+            <Text style={styles.modalSubtitle}>
+              Digite seu email para receber o link de recuperação
+            </Text>
+
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Email"
+              placeholderTextColor={COLORS.secondaryText}
+              value={forgotEmail}
+              onChangeText={setForgotEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalCancelButton}
+                onPress={() => {
+                  setShowForgotModal(false);
+                  setForgotEmail('');
+                }}
+              >
+                <Text style={styles.modalCancelText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modalSendButton,
+                  !forgotEmail.trim() && styles.modalSendButtonDisabled,
+                ]}
+                onPress={handleSendResetEmail}
+                disabled={forgotLoading || !forgotEmail.trim()}
+              >
+                <Text style={styles.modalSendText}>
+                  {forgotLoading ? 'Enviando...' : 'Enviar'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -266,5 +323,69 @@ const styles = StyleSheet.create({
   registerTextBold: {
     color: COLORS.accent,
     fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.primaryText,
+    marginBottom: 4,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: COLORS.secondaryText,
+    marginBottom: 16,
+  },
+  modalInput: {
+    backgroundColor: COLORS.backgroundSecondary,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: COLORS.primaryText,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalCancelButton: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    color: COLORS.secondaryText,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalSendButton: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: COLORS.accent,
+    alignItems: 'center',
+  },
+  modalSendButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+  },
+  modalSendText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

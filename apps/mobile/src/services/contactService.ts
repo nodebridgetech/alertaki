@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import functions from '@react-native-firebase/functions';
 import auth from '@react-native-firebase/auth';
 import type { Contact, ContactOf, Invite, BlockedUser } from '@alertaki/shared';
 import { userService } from './userService';
@@ -96,13 +97,17 @@ function onPendingInvites(
     .where('toUid', '==', uid)
     .where('status', '==', 'pending')
     .orderBy('createdAt', 'desc')
-    .onSnapshot((snap) => {
-      const invites = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as (Invite & { id: string })[];
-      callback(invites);
-    });
+    .onSnapshot(
+      (snap) => {
+        if (!snap) return;
+        const invites = snap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as (Invite & { id: string })[];
+        callback(invites);
+      },
+      () => {},
+    );
 }
 
 function onContacts(uid: string, callback: (contacts: Contact[]) => void): () => void {
@@ -111,12 +116,16 @@ function onContacts(uid: string, callback: (contacts: Contact[]) => void): () =>
     .doc(uid)
     .collection('contacts')
     .orderBy('addedAt', 'desc')
-    .onSnapshot((snap) => {
-      const contacts = snap.docs.map((doc) => ({
-        ...doc.data(),
-      })) as Contact[];
-      callback(contacts);
-    });
+    .onSnapshot(
+      (snap) => {
+        if (!snap) return;
+        const contacts = snap.docs.map((doc) => ({
+          ...doc.data(),
+        })) as Contact[];
+        callback(contacts);
+      },
+      () => {},
+    );
 }
 
 function onContactOf(uid: string, callback: (contactOf: ContactOf[]) => void): () => void {
@@ -125,15 +134,20 @@ function onContactOf(uid: string, callback: (contactOf: ContactOf[]) => void): (
     .doc(uid)
     .collection('contactOf')
     .orderBy('addedAt', 'desc')
-    .onSnapshot((snap) => {
-      const contactOf = snap.docs.map((doc) => ({
-        ...doc.data(),
-      })) as ContactOf[];
-      callback(contactOf);
-    });
+    .onSnapshot(
+      (snap) => {
+        if (!snap) return;
+        const contactOf = snap.docs.map((doc) => ({
+          ...doc.data(),
+        })) as ContactOf[];
+        callback(contactOf);
+      },
+      () => {},
+    );
 }
 
 async function removeContact(currentUid: string, contactUid: string): Promise<void> {
+  // Delete from own contacts (allowed by rules)
   await firestore()
     .collection('users')
     .doc(currentUid)
@@ -141,12 +155,9 @@ async function removeContact(currentUid: string, contactUid: string): Promise<vo
     .doc(contactUid)
     .delete();
 
-  await firestore()
-    .collection('users')
-    .doc(contactUid)
-    .collection('contactOf')
-    .doc(currentUid)
-    .delete();
+  // Remove contactOf via Cloud Function (client can't write to other user's contactOf)
+  const removeContactOfFn = functions().httpsCallable('removeContactOf');
+  await removeContactOfFn({ contactUid, ownerUid: currentUid });
 }
 
 async function blockUser(
@@ -182,12 +193,16 @@ function onBlockedUsers(uid: string, callback: (blocked: BlockedUser[]) => void)
     .doc(uid)
     .collection('blockedUsers')
     .orderBy('blockedAt', 'desc')
-    .onSnapshot((snap) => {
-      const blocked = snap.docs.map((doc) => ({
-        ...doc.data(),
-      })) as BlockedUser[];
-      callback(blocked);
-    });
+    .onSnapshot(
+      (snap) => {
+        if (!snap) return;
+        const blocked = snap.docs.map((doc) => ({
+          ...doc.data(),
+        })) as BlockedUser[];
+        callback(blocked);
+      },
+      () => {},
+    );
 }
 
 export const contactService = {

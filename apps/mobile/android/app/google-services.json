@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "807554654482",
+    "project_id": "alertaki",
+    "storage_bucket": "alertaki.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807554654482:android:3ab5be7d94631ef6e793cb",
+        "android_client_info": {
+          "package_name": "com.alertakimobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807554654482-lorsfm8cm9tg1b3sp4b5nugb385618nn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alertakimobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq21sFUe036QVAtD9yWNOes_8rBPROab0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "807554654482-cfu8vfmmbmc3lu0i3lek293u9tk5l19c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.AlertakiMobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807554654482:android:8e259db571bd25f9e793cb",
+        "android_client_info": {
+          "package_name": "com.mycompany.alertaki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807554654482-ddbosq78athf0cmuhop5jfaqeupr9sug.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.alertaki",
+            "certificate_hash": "dfdba8a67070711a6b216eb9ee74b0983589dcc1"
+          }
+        },
+        {
+          "client_id": "807554654482-eanf7thrkfugvmg6l3f4mrb187lalfsb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.alertaki",
+            "certificate_hash": "731ecff6ae46e817e82922157a3ea6b41668bfd1"
+          }
+        },
+        {
+          "client_id": "807554654482-jo7l8r69r3hk0toodt851ft8usslkoq1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.alertaki",
+            "certificate_hash": "4684c7b570e9055105e805b1c4d3728bdf031569"
+          }
+        },
+        {
+          "client_id": "807554654482-q89j21r9tq338kcikkhgd9ig0booedbm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.alertaki",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq21sFUe036QVAtD9yWNOes_8rBPROab0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "807554654482-cfu8vfmmbmc3lu0i3lek293u9tk5l19c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.AlertakiMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

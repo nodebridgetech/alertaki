@@ -8,10 +8,7 @@
     "declaration": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "paths": {
-      "@alertaki/shared": ["../packages/shared/src"],
-      "@alertaki/shared/*": ["../packages/shared/src/*"]
-    }
+    "paths": {}
   },
   "include": ["src"],
   "exclude": ["node_modules", "lib"]

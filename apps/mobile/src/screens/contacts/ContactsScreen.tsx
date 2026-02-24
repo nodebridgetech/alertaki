@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput,
   Modal,
+  Image,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
@@ -63,9 +64,13 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   function renderMyContact({ item }: { item: Contact }) {
     return (
       <View style={styles.contactItem}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{item.displayName?.charAt(0)?.toUpperCase() || '?'}</Text>
-        </View>
+        {item.photoURL ? (
+          <Image source={{ uri: item.photoURL }} style={styles.avatarImage} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{item.displayName?.charAt(0)?.toUpperCase() || '?'}</Text>
+          </View>
+        )}
         <View style={styles.contactInfo}>
           <Text style={styles.contactName}>{item.displayName}</Text>
           <Text style={styles.contactEmail}>{item.email}</Text>
@@ -80,11 +85,15 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   function renderContactOf({ item }: { item: ContactOf }) {
     return (
       <View style={styles.contactItem}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {item.ownerDisplayName?.charAt(0)?.toUpperCase() || '?'}
-          </Text>
-        </View>
+        {item.ownerPhotoURL ? (
+          <Image source={{ uri: item.ownerPhotoURL }} style={styles.avatarImage} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {item.ownerDisplayName?.charAt(0)?.toUpperCase() || '?'}
+            </Text>
+          </View>
+        )}
         <View style={styles.contactInfo}>
           <Text style={styles.contactName}>{item.ownerDisplayName}</Text>
           <Text style={styles.contactEmail}>{item.ownerEmail}</Text>
@@ -262,6 +271,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     marginRight: 12,
   },
   avatarText: {
