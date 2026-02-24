@@ -10,7 +10,7 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
-  Image,
+  PermissionsAndroid,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -18,7 +18,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
 import { userService } from '../../services/userService';
 import { storageService } from '../../services/storageService';
-import { COLORS } from '../../config/constants';
+import { Avatar } from '../../components/Avatar';
+import { COLORS, PROFILE_PHOTO_MAX_SIZE } from '../../config/constants';
+import { isValidPhone } from '../../utils/validation';
 
 type EditProfileScreenProps = {
   navigation: NativeStackNavigationProp<Record<string, undefined>>;
@@ -35,6 +37,25 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
 
   async function handleChangePhoto() {
     try {
+      if (Platform.OS === 'android') {
+        const sdkInt = Platform.Version;
+        if (typeof sdkInt === 'number' && sdkInt < 33) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            {
+              title: 'Permissão de Fotos',
+              message: 'Alertaki precisa acessar suas fotos para alterar a foto de perfil.',
+              buttonPositive: 'Permitir',
+              buttonNegative: 'Cancelar',
+            },
+          );
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert('Permissão Negada', 'Não foi possível acessar a galeria de fotos.');
+            return;
+          }
+        }
+      }
+
       const result = await launchImageLibrary({
         mediaType: 'photo',
         quality: 0.8,
@@ -44,8 +65,14 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
 
       if (result.didCancel || !result.assets?.[0]?.uri) return;
 
+      const asset = result.assets[0];
+      if (asset.fileSize && asset.fileSize > PROFILE_PHOTO_MAX_SIZE) {
+        Alert.alert('Erro', 'A foto deve ter no máximo 5MB.');
+        return;
+      }
+
       setLoading(true);
-      const imageUri = result.assets[0].uri;
+      const imageUri = asset.uri!;
       const uid = auth().currentUser?.uid;
       if (!uid) return;
 
@@ -65,6 +92,11 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
   async function handleSave() {
     if (!name.trim()) {
       Alert.alert('Erro', 'Nome é obrigatório.');
+      return;
+    }
+
+    if (phone.trim() && !isValidPhone(phone)) {
+      Alert.alert('Erro', 'Telefone inválido. Use formato: +5511999999999');
       return;
     }
 
@@ -121,13 +153,9 @@ export function EditProfileScreen({ navigation }: EditProfileScreenProps): React
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.photoSection}>
-          {user?.photoURL ? (
-            <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
-          ) : (
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{name?.charAt(0)?.toUpperCase() || '?'}</Text>
-            </View>
-          )}
+          <View style={styles.avatarContainer}>
+            <Avatar photoURL={user?.photoURL} name={name} size={80} />
+          </View>
           <TouchableOpacity onPress={handleChangePhoto} disabled={loading}>
             <Text style={styles.changePhotoText}>Trocar foto</Text>
           </TouchableOpacity>
@@ -188,25 +216,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+  avatarContainer: {
     marginBottom: 8,
-  },
-  avatarImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 8,
-  },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 32,
-    fontWeight: 'bold',
   },
   changePhotoText: {
     color: COLORS.accent,

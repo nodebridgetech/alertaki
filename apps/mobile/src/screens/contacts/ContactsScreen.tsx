@@ -8,13 +8,14 @@ import {
   Alert,
   TextInput,
   Modal,
-  Image,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
 import { useContactStore } from '../../stores/contactStore';
+import { Avatar } from '../../components/Avatar';
 import type { Contact, ContactOf } from '@alertaki/shared';
 import { COLORS } from '../../config/constants';
+import { isValidEmailOrPhone } from '../../utils/validation';
 
 type ContactsScreenProps = {
   navigation: NativeStackNavigationProp<Record<string, undefined>>;
@@ -31,6 +32,11 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
 
   async function handleSendInvite() {
     if (!inviteInput.trim()) return;
+
+    if (!isValidEmailOrPhone(inviteInput)) {
+      Alert.alert('Erro', 'Digite um email ou telefone válido.');
+      return;
+    }
 
     setInviteLoading(true);
     try {
@@ -55,7 +61,14 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
         {
           text: 'Remover',
           style: 'destructive',
-          onPress: () => removeContact(user.uid, contact.uid),
+          onPress: async () => {
+            try {
+              await removeContact(user.uid, contact.uid);
+              Alert.alert('Sucesso', 'Contato removido.');
+            } catch (error) {
+              Alert.alert('Erro', (error as Error).message);
+            }
+          },
         },
       ],
     );
@@ -64,13 +77,9 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   function renderMyContact({ item }: { item: Contact }) {
     return (
       <View style={styles.contactItem}>
-        {item.photoURL ? (
-          <Image source={{ uri: item.photoURL }} style={styles.avatarImage} />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{item.displayName?.charAt(0)?.toUpperCase() || '?'}</Text>
-          </View>
-        )}
+        <View style={styles.avatarWrapper}>
+          <Avatar photoURL={item.photoURL} name={item.displayName} size={44} />
+        </View>
         <View style={styles.contactInfo}>
           <Text style={styles.contactName}>{item.displayName}</Text>
           <Text style={styles.contactEmail}>{item.email}</Text>
@@ -85,15 +94,9 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   function renderContactOf({ item }: { item: ContactOf }) {
     return (
       <View style={styles.contactItem}>
-        {item.ownerPhotoURL ? (
-          <Image source={{ uri: item.ownerPhotoURL }} style={styles.avatarImage} />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {item.ownerDisplayName?.charAt(0)?.toUpperCase() || '?'}
-            </Text>
-          </View>
-        )}
+        <View style={styles.avatarWrapper}>
+          <Avatar photoURL={item.ownerPhotoURL} name={item.ownerDisplayName} size={44} />
+        </View>
         <View style={styles.contactInfo}>
           <Text style={styles.contactName}>{item.ownerDisplayName}</Text>
           <Text style={styles.contactEmail}>{item.ownerEmail}</Text>
@@ -264,25 +267,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+  avatarWrapper: {
     marginRight: 12,
-  },
-  avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    marginRight: 12,
-  },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   contactInfo: {
     flex: 1,

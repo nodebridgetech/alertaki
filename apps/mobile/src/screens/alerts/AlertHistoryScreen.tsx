@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useAlertStore } from '../../stores/alertStore';
 import type { Alert as AlertType } from '@alertaki/shared';
 import { ReceivedAlertItem } from '../../services/alertService';
-import { COLORS, ALERT_COLORS } from '../../config/constants';
+import { COLORS } from '../../config/constants';
 
 const TYPE_LABELS: Record<string, string> = {
   health: '🏥 Saúde',
@@ -33,8 +33,18 @@ function formatDate(timestamp: { seconds: number } | null): string {
 export function AlertHistoryScreen(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
   const user = useAuthStore((s) => s.user);
-  const { sentAlerts, receivedAlerts, isLoading, loadSentAlerts, loadReceivedAlerts } =
-    useAlertStore();
+  const {
+    sentAlerts,
+    receivedAlerts,
+    isLoading,
+    isLoadingMore,
+    sentHasMore,
+    receivedHasMore,
+    loadSentAlerts,
+    loadMoreSentAlerts,
+    loadReceivedAlerts,
+    loadMoreReceivedAlerts,
+  } = useAlertStore();
 
   useEffect(() => {
     if (user) {
@@ -43,7 +53,7 @@ export function AlertHistoryScreen(): React.JSX.Element {
     }
   }, [user, loadSentAlerts, loadReceivedAlerts]);
 
-  function renderSentItem({ item }: { item: AlertType }) {
+  const renderSentItem = useCallback(({ item }: { item: AlertType }) => {
     return (
       <View style={styles.alertItem}>
         <View style={styles.alertHeader}>
@@ -58,9 +68,9 @@ export function AlertHistoryScreen(): React.JSX.Element {
         )}
       </View>
     );
-  }
+  }, []);
 
-  function renderReceivedItem({ item }: { item: ReceivedAlertItem }) {
+  const renderReceivedItem = useCallback(({ item }: { item: ReceivedAlertItem }) => {
     return (
       <View style={styles.alertItem}>
         <View style={styles.alertHeader}>
@@ -86,7 +96,7 @@ export function AlertHistoryScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
     );
-  }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -120,6 +130,13 @@ export function AlertHistoryScreen(): React.JSX.Element {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           ListEmptyComponent={<Text style={styles.emptyText}>Nenhum alerta enviado.</Text>}
+          onEndReached={() => user && sentHasMore && loadMoreSentAlerts(user.uid)}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator size="small" color={COLORS.accent} style={styles.footerLoader} />
+            ) : null
+          }
         />
       ) : (
         <FlatList
@@ -128,6 +145,13 @@ export function AlertHistoryScreen(): React.JSX.Element {
           keyExtractor={(item) => item.alert.id}
           contentContainerStyle={styles.list}
           ListEmptyComponent={<Text style={styles.emptyText}>Nenhum alerta recebido.</Text>}
+          onEndReached={() => user && receivedHasMore && loadMoreReceivedAlerts(user.uid)}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator size="small" color={COLORS.accent} style={styles.footerLoader} />
+            ) : null
+          }
         />
       )}
     </View>
@@ -227,5 +251,8 @@ const styles = StyleSheet.create({
     color: COLORS.secondaryText,
     textAlign: 'center',
     marginTop: 40,
+  },
+  footerLoader: {
+    paddingVertical: 16,
   },
 });

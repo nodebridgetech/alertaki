@@ -1,11 +1,13 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useContactStore } from '../../stores/contactStore';
+import { Avatar } from '../../components/Avatar';
 import type { Invite } from '@alertaki/shared';
 import { COLORS } from '../../config/constants';
 
 export function InvitesScreen(): React.JSX.Element {
   const { pendingInvites, acceptInvite, rejectInvite } = useContactStore();
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   function handleAccept(invite: Invite & { id: string }) {
     Alert.alert(
@@ -16,10 +18,13 @@ export function InvitesScreen(): React.JSX.Element {
         {
           text: 'Aceitar',
           onPress: async () => {
+            setProcessingId(invite.id);
             try {
               await acceptInvite(invite.id);
             } catch (error) {
               Alert.alert('Erro', (error as Error).message);
+            } finally {
+              setProcessingId(null);
             }
           },
         },
@@ -37,10 +42,13 @@ export function InvitesScreen(): React.JSX.Element {
           text: 'Recusar',
           style: 'destructive',
           onPress: async () => {
+            setProcessingId(invite.id);
             try {
               await rejectInvite(invite.id);
             } catch (error) {
               Alert.alert('Erro', (error as Error).message);
+            } finally {
+              setProcessingId(null);
             }
           },
         },
@@ -49,30 +57,37 @@ export function InvitesScreen(): React.JSX.Element {
   }
 
   function renderInvite({ item }: { item: Invite & { id: string } }) {
+    const isProcessing = processingId === item.id;
     return (
-      <View style={styles.inviteItem}>
-        {item.fromPhotoURL ? (
-          <Image source={{ uri: item.fromPhotoURL }} style={styles.avatarImage} />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {item.fromDisplayName?.charAt(0)?.toUpperCase() || '?'}
-            </Text>
-          </View>
-        )}
+      <View style={[styles.inviteItem, isProcessing && styles.inviteItemProcessing]}>
+        <View style={styles.avatarWrapper}>
+          <Avatar photoURL={item.fromPhotoURL} name={item.fromDisplayName} size={44} />
+        </View>
         <View style={styles.inviteInfo}>
           <Text style={styles.inviteName}>{item.fromDisplayName}</Text>
           <Text style={styles.inviteEmail}>{item.fromEmail}</Text>
           <Text style={styles.inviteText}>quer ser seu contato de segurança</Text>
         </View>
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item)}>
-            <Text style={styles.acceptText}>✓</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.rejectButton} onPress={() => handleReject(item)}>
-            <Text style={styles.rejectText}>✗</Text>
-          </TouchableOpacity>
-        </View>
+        {isProcessing ? (
+          <ActivityIndicator size="small" color={COLORS.accent} />
+        ) : (
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={styles.acceptButton}
+              onPress={() => handleAccept(item)}
+              disabled={!!processingId}
+            >
+              <Text style={styles.acceptText}>✓</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rejectButton}
+              onPress={() => handleReject(item)}
+              disabled={!!processingId}
+            >
+              <Text style={styles.rejectText}>✗</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }
@@ -117,25 +132,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+  inviteItemProcessing: {
+    opacity: 0.6,
   },
-  avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  avatarWrapper: {
     marginRight: 12,
-  },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   inviteInfo: {
     flex: 1,

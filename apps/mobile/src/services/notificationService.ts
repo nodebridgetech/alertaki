@@ -43,15 +43,31 @@ async function createChannels(): Promise<void> {
   });
 }
 
-async function saveFcmToken(uid: string): Promise<void> {
+async function saveFcmToken(uid: string, retries = 3): Promise<void> {
   const token = await messaging().getToken();
-  await firestore()
-    .collection('users')
-    .doc(uid)
-    .update({
-      tokens: firestore.FieldValue.arrayUnion(token),
-      tokenUpdatedAt: firestore.FieldValue.serverTimestamp(),
-    });
+  for (let i = 0; i < retries; i++) {
+    try {
+      const userDoc = await firestore().collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        await firestore()
+          .collection('users')
+          .doc(uid)
+          .update({
+            tokens: firestore.FieldValue.arrayUnion(token),
+            tokenUpdatedAt: firestore.FieldValue.serverTimestamp(),
+          });
+        return;
+      }
+      // Doc ainda não existe — espera e tenta novamente
+      if (i < retries - 1) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+      }
+    } catch {
+      if (i < retries - 1) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  }
 }
 
 async function removeFcmToken(uid: string): Promise<void> {

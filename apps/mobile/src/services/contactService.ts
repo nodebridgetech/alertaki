@@ -106,7 +106,7 @@ function onPendingInvites(
         })) as (Invite & { id: string })[];
         callback(invites);
       },
-      () => {},
+      (error) => console.warn('Firestore listener error:', error),
     );
 }
 
@@ -124,7 +124,7 @@ function onContacts(uid: string, callback: (contacts: Contact[]) => void): () =>
         })) as Contact[];
         callback(contacts);
       },
-      () => {},
+      (error) => console.warn('Firestore listener error:', error),
     );
 }
 
@@ -142,7 +142,7 @@ function onContactOf(uid: string, callback: (contactOf: ContactOf[]) => void): (
         })) as ContactOf[];
         callback(contactOf);
       },
-      () => {},
+      (error) => console.warn('Firestore listener error:', error),
     );
 }
 
@@ -201,7 +201,7 @@ function onBlockedUsers(uid: string, callback: (blocked: BlockedUser[]) => void)
         })) as BlockedUser[];
         callback(blocked);
       },
-      () => {},
+      (error) => console.warn('Firestore listener error:', error),
     );
 }
 

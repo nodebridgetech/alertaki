@@ -14,6 +14,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
 import { COLORS } from '../../config/constants';
+import { isValidEmail } from '../../utils/validation';
 
 type RegisterScreenProps = {
   navigation: NativeStackNavigationProp<{
@@ -41,12 +42,20 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
       Alert.alert('Erro', 'Email é obrigatório.');
       return;
     }
+    if (!isValidEmail(email)) {
+      Alert.alert('Erro', 'Email inválido.');
+      return;
+    }
     if (password.length < 6) {
       Alert.alert('Erro', 'Senha deve ter no mínimo 6 caracteres.');
       return;
     }
     if (password !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não conferem.');
+      return;
+    }
+    if (phone.trim() && !/^\+?\d{10,15}$/.test(phone.trim().replace(/[\s\-()]/g, ''))) {
+      Alert.alert('Erro', 'Telefone inválido. Use formato: +5511999999999');
       return;
     }
 

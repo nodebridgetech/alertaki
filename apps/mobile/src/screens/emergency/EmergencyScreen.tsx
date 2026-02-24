@@ -16,6 +16,8 @@ import { useContactStore } from '../../stores/contactStore';
 import { alertService } from '../../services/alertService';
 import { locationService } from '../../services/locationService';
 import { COLORS, CUSTOM_MESSAGE_MAX_LENGTH } from '../../config/constants';
+import { isOnline } from '../../utils/network';
+import { canSendAlert, markAlertSent, getRemainingCooldown } from '../../utils/rateLimit';
 import type { Contact } from '@alertaki/shared';
 
 type EmergencyScreenProps = {
@@ -55,34 +57,64 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
       return;
     }
 
-    setSending(true);
-    try {
-      const permission = await locationService.requestPermission();
-      if (!permission) {
-        locationService.showLocationSettingsAlert();
-        return;
-      }
-
-      const coords = await locationService.getCurrentPosition();
-
-      await alertService.createAlert({
-        userId: user.uid,
-        userEmail: user.email,
-        type: 'custom',
-        lat: coords.latitude,
-        lng: coords.longitude,
-        customMessage: message.trim(),
-        selectedContacts: Array.from(selectedContacts),
-      });
-
-      Alert.alert('Sucesso', 'Alerta de emergência enviado!', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
-    } catch (error) {
-      Alert.alert('Erro', (error as Error).message);
-    } finally {
-      setSending(false);
+    if (!canSendAlert()) {
+      Alert.alert('Aguarde', `Você poderá enviar outro alerta em ${getRemainingCooldown()} segundos.`);
+      return;
     }
+
+    const contactCount = selectedContacts.size;
+    Alert.alert(
+      'Confirmar Alerta',
+      `Enviar alerta de emergência para ${contactCount} ${contactCount === 1 ? 'contato' : 'contatos'}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Enviar',
+          style: 'destructive',
+          onPress: async () => {
+            setSending(true);
+            try {
+              const online = await isOnline();
+              if (!online) {
+                Alert.alert(
+                  'Sem Conexão',
+                  'Você está sem internet. Verifique sua conexão e tente novamente.',
+                );
+                return;
+              }
+
+              const permission = await locationService.requestPermission();
+              if (!permission) {
+                locationService.showLocationSettingsAlert();
+                return;
+              }
+
+              const coords = await locationService.getCurrentPosition();
+
+              await alertService.createAlert({
+                userId: user.uid,
+                userEmail: user.email,
+                type: 'custom',
+                lat: coords.latitude,
+                lng: coords.longitude,
+                customMessage: message.trim(),
+                selectedContacts: Array.from(selectedContacts),
+              });
+
+              markAlertSent();
+
+              Alert.alert('Sucesso', 'Alerta de emergência enviado!', [
+                { text: 'OK', onPress: () => navigation.goBack() },
+              ]);
+            } catch (error) {
+              Alert.alert('Erro', (error as Error).message);
+            } finally {
+              setSending(false);
+            }
+          },
+        },
+      ],
+    );
   }
 
   function renderContact({ item }: { item: Contact }) {
@@ -139,7 +171,15 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
         onChangeText={setMessage}
         textAlignVertical="top"
       />
-      <Text style={styles.charCounter}>
+      <Text
+        style={[
+          styles.charCounter,
+          message.length >= CUSTOM_MESSAGE_MAX_LENGTH && styles.charCounterLimit,
+          message.length >= CUSTOM_MESSAGE_MAX_LENGTH * 0.9 &&
+            message.length < CUSTOM_MESSAGE_MAX_LENGTH &&
+            styles.charCounterWarning,
+        ]}
+      >
         {message.length}/{CUSTOM_MESSAGE_MAX_LENGTH} caracteres
       </Text>
 
@@ -243,6 +283,13 @@ const styles = StyleSheet.create({
     color: COLORS.secondaryText,
     textAlign: 'right',
     marginTop: 4,
+  },
+  charCounterWarning: {
+    color: '#FF9800',
+  },
+  charCounterLimit: {
+    color: COLORS.error,
+    fontWeight: 'bold',
   },
   sendButton: {
     backgroundColor: COLORS.accent,

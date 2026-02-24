@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import messaging from '@react-native-firebase/messaging';
@@ -11,6 +12,9 @@ import { notificationService } from './services/notificationService';
 import { userService } from './services/userService';
 import { contactService } from './services/contactService';
 import { useBackgroundLocation } from './hooks/useBackgroundLocation';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { OfflineBanner } from './components/OfflineBanner';
 
 GoogleSignin.configure({
   webClientId: '807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com',
@@ -41,6 +45,7 @@ function App(): React.JSX.Element {
   const setContactOf = useContactStore((s) => s.setContactOf);
   const setPendingInvites = useContactStore((s) => s.setPendingInvites);
   const setBlockedUsers = useContactStore((s) => s.setBlockedUsers);
+  const pendingInitialNotification = useRef<FirebaseMessagingTypes.RemoteMessage | null>(null);
 
   useEffect(() => {
     // Create notification channels on startup
@@ -69,6 +74,9 @@ function App(): React.JSX.Element {
 
   // Background location updates
   useBackgroundLocation();
+
+  // Network status monitoring
+  const isConnected = useNetworkStatus();
 
   // Set up Firestore listeners when authenticated
   const user = useAuthStore((s) => s.user);
@@ -156,25 +164,12 @@ function App(): React.JSX.Element {
       }
     });
 
-    // Handle notification tap when app was terminated
+    // Handle notification tap when app was terminated — store for later
     messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
-        if (remoteMessage?.data?.fullscreen === '1' && navigationRef.isReady()) {
-          const data = remoteMessage.data;
-          navigationRef.navigate('AlertOverlay', {
-            alertData: {
-              alertId: (data.alertId as string) || '',
-              type: (data.type as string) || '',
-              userId: (data.userId as string) || '',
-              userName: (data.userName as string) || '',
-              userPhotoURL: (data.userPhotoURL as string) || '',
-              lat: (data.lat as string) || '',
-              lng: (data.lng as string) || '',
-              address: (data.address as string) || '',
-              customMessage: (data.customMessage as string) || '',
-            },
-          });
+        if (remoteMessage?.data) {
+          pendingInitialNotification.current = remoteMessage;
         }
       });
 
@@ -204,12 +199,51 @@ function App(): React.JSX.Element {
     };
   }, []);
 
+  // Process pending initial notification after auth is ready
+  useEffect(() => {
+    if (!user || !pendingInitialNotification.current) return;
+
+    const data = pendingInitialNotification.current.data;
+    pendingInitialNotification.current = null;
+
+    if (!data) return;
+
+    // Wait for navigation to be ready, then navigate
+    const interval = setInterval(() => {
+      if (navigationRef.isReady()) {
+        clearInterval(interval);
+        if (data.fullscreen === '1') {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: (data.alertId as string) || '',
+              type: (data.type as string) || '',
+              userId: (data.userId as string) || '',
+              userName: (data.userName as string) || '',
+              userPhotoURL: (data.userPhotoURL as string) || '',
+              lat: (data.lat as string) || '',
+              lng: (data.lng as string) || '',
+              address: (data.address as string) || '',
+              customMessage: (data.customMessage as string) || '',
+            },
+          });
+        } else if (data.screen === 'invites') {
+          navigationRef.navigate('Invites');
+        }
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   return (
-    <SafeAreaProvider>
-      <NavigationContainer ref={navigationRef}>
-        <RootNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        {!isConnected && <OfflineBanner />}
+        <NavigationContainer ref={navigationRef}>
+          <RootNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
 

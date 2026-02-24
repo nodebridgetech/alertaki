@@ -1,5 +1,7 @@
 import Geolocation from 'react-native-geolocation-service';
 import { Platform, PermissionsAndroid, Linking, Alert } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { GPS_TIMEOUT } from '../config/constants';
 
 interface LocationCoords {
@@ -58,7 +60,20 @@ function getCurrentPosition(): Promise<LocationCoords> {
           longitude: position.coords.longitude,
         });
       },
-      (error) => {
+      async (error) => {
+        // Tentar fallback para última localização conhecida do Firestore
+        if (error.code === 2 || error.code === 3) {
+          try {
+            const fallback = await getLastKnownLocation();
+            if (fallback) {
+              resolve(fallback);
+              return;
+            }
+          } catch {
+            // Fallback falhou, continua com o erro original
+          }
+        }
+
         switch (error.code) {
           case 1:
             reject(
@@ -82,6 +97,21 @@ function getCurrentPosition(): Promise<LocationCoords> {
       },
     );
   });
+}
+
+async function getLastKnownLocation(): Promise<LocationCoords | null> {
+  const uid = auth().currentUser?.uid;
+  if (!uid) return null;
+
+  const doc = await firestore().collection('users').doc(uid).get();
+  const data = doc.data();
+  if (data?.lastLocation) {
+    return {
+      latitude: data.lastLocation.lat,
+      longitude: data.lastLocation.lng,
+    };
+  }
+  return null;
 }
 
 function showLocationSettingsAlert(): void {
@@ -108,5 +138,6 @@ export const locationService = {
   requestPermission,
   requestBackgroundPermission,
   getCurrentPosition,
+  getLastKnownLocation,
   showLocationSettingsAlert,
 };

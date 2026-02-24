@@ -8,11 +8,12 @@ apply plugin: "com.google.gms.google-services"
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-    /* Monorepo: point to the root node_modules where react-native is hoisted */
-    root = file("../../../")
+    /* Monorepo: point to the RN project root (apps/mobile/) where index.js lives */
+    root = file("../../")
     reactNativeDir = file("../../../../node_modules/react-native")
     codegenDir = file("../../../../node_modules/@react-native/codegen")
     cliFile = file("../../../../node_modules/react-native/cli.js")
+    hermesCommand = "../../node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc"
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -81,6 +82,27 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // Only include ARM ABIs to reduce APK size (x86/x86_64 are for emulators only)
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+
+        // Fix Windows long path issue for CMake/New Architecture builds
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_OBJECT_PATH_MAX=1024",
+                          "-DCMAKE_MAKE_PROGRAM=C:/Users/Nickolas/AppData/Local/Android/Sdk/ninja-new/ninja.exe"
+            }
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a"
+            universalApk true // Also generate a universal APK
+        }
     }
     signingConfigs {
         debug {
@@ -98,8 +120,9 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 }

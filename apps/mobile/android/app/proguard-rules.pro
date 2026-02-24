@@ -8,3 +8,28 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+-keep class com.facebook.jni.** { *; }
+-dontwarn com.facebook.**
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.**
+
+# Notifee
+-keep class io.invertase.notifee.** { *; }
+
+# React Navigation
+-keep class com.swmansion.** { *; }
+-keep class com.th3rdwave.safeareacontext.** { *; }
+
+# Keep native methods
+-keepclassmembers class * {
+    @com.facebook.react.bridge.ReactMethod *;
+    @com.facebook.react.uimanager.annotations.ReactProp *;
+    @com.facebook.react.uimanager.annotations.ReactPropGroup *;
+}

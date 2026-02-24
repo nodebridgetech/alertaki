@@ -14,7 +14,17 @@ import { useAuthStore } from '../../stores/authStore';
 import { useContactStore } from '../../stores/contactStore';
 import { alertService } from '../../services/alertService';
 import { locationService } from '../../services/locationService';
+import { Avatar } from '../../components/Avatar';
 import { ALERT_COLORS, COLORS } from '../../config/constants';
+import { isOnline } from '../../utils/network';
+import { canSendAlert, markAlertSent, getRemainingCooldown } from '../../utils/rateLimit';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
 
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<Record<string, undefined>>;
@@ -23,10 +33,16 @@ type HomeScreenProps = {
 export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
   const [sending, setSending] = useState(false);
   const user = useAuthStore((s) => s.user);
+  const contacts = useContactStore((s) => s.contacts);
   const pendingInvites = useContactStore((s) => s.pendingInvites);
 
   async function sendAlert(type: 'health' | 'security') {
     if (!user) return;
+
+    if (!canSendAlert()) {
+      Alert.alert('Aguarde', `Você poderá enviar outro alerta em ${getRemainingCooldown()} segundos.`);
+      return;
+    }
 
     const typeLabel = type === 'health' ? 'saúde' : 'segurança';
     const emergencyNumber = type === 'health' ? EMERGENCY_NUMBERS.SAMU : EMERGENCY_NUMBERS.POLICE;
@@ -42,6 +58,15 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
           onPress: async () => {
             setSending(true);
             try {
+              const online = await isOnline();
+              if (!online) {
+                Alert.alert(
+                  'Sem Conexão',
+                  'Você está sem internet. Verifique sua conexão e tente novamente.',
+                );
+                return;
+              }
+
               const permission = await locationService.requestPermission();
               if (!permission) {
                 locationService.showLocationSettingsAlert();
@@ -57,6 +82,8 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
                 lat: coords.latitude,
                 lng: coords.longitude,
               });
+
+              markAlertSent();
 
               Alert.alert('Sucesso', `Alerta de ${typeLabel} enviado!`, [
                 {
@@ -80,8 +107,21 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Alertaki</Text>
-        <TouchableOpacity style={styles.bellButton} onPress={() => navigation.navigate('Invites')}>
+        <View style={styles.headerLeft}>
+          <Avatar photoURL={user?.photoURL} name={user?.displayName} size={40} />
+          <View style={styles.headerInfo}>
+            <Text style={styles.greeting}>{getGreeting()}, {user?.displayName?.split(' ')[0] || 'Usuário'}</Text>
+            <Text style={styles.contactCount}>
+              {contacts.length} {contacts.length === 1 ? 'contato' : 'contatos'} protegidos
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.bellButton}
+          onPress={() => navigation.navigate('Invites')}
+          accessibilityLabel={`Convites pendentes${pendingInvites.length > 0 ? `, ${pendingInvites.length} novos` : ''}`}
+          accessibilityRole="button"
+        >
           <Text style={styles.bellIcon}>🔔</Text>
           {pendingInvites.length > 0 && (
             <View style={styles.badge}>
@@ -103,6 +143,8 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
           style={[styles.alertButton, { backgroundColor: ALERT_COLORS.health.primary }]}
           onPress={() => sendAlert('health')}
           disabled={sending}
+          accessibilityLabel="Alerta de saúde. Alertar contatos e pessoas próximas"
+          accessibilityRole="button"
         >
           <Text style={styles.alertButtonTitle}>Saúde</Text>
           <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
@@ -112,6 +154,8 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
           style={[styles.alertButton, { backgroundColor: ALERT_COLORS.security.primary }]}
           onPress={() => sendAlert('security')}
           disabled={sending}
+          accessibilityLabel="Alerta de segurança. Alertar contatos e pessoas próximas"
+          accessibilityRole="button"
         >
           <Text style={styles.alertButtonTitle}>Segurança</Text>
           <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
@@ -121,6 +165,8 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
           style={[styles.alertButton, { backgroundColor: ALERT_COLORS.custom.primary }]}
           onPress={() => navigation.navigate('Emergency')}
           disabled={sending}
+          accessibilityLabel="Alerta de emergência. Alertar contatos selecionados"
+          accessibilityRole="button"
         >
           <Text style={styles.alertButtonTitle}>Emergência</Text>
           <Text style={styles.alertButtonSubtitle}>Alertar contatos selecionados</Text>
@@ -143,10 +189,24 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
   },
-  title: {
-    fontSize: 28,
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  headerInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  greeting: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.primaryText,
+  },
+  contactCount: {
+    fontSize: 13,
+    color: COLORS.secondaryText,
+    marginTop: 2,
   },
   bellButton: {
     padding: 8,

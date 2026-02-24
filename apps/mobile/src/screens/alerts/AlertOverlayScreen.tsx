@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert, Share } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EMERGENCY_NUMBERS } from '@alertaki/shared';
+import { Avatar } from '../../components/Avatar';
 import { useAuthStore } from '../../stores/authStore';
 import { contactService } from '../../services/contactService';
 import { notificationService } from '../../services/notificationService';
@@ -29,8 +30,19 @@ export function AlertOverlayScreen({
   route,
   navigation,
 }: AlertOverlayScreenProps): React.JSX.Element {
-  const { alertData } = route.params;
+  const alertData = route.params?.alertData;
   const user = useAuthStore((s) => s.user);
+
+  if (!alertData) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Dados do alerta indisponíveis</Text>
+        <TouchableOpacity style={styles.dismissButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.dismissButtonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   useEffect(() => {
     notificationService.startContinuousVibration();
@@ -50,6 +62,14 @@ export function AlertOverlayScreen({
     security: ALERT_COLORS.security.primary,
     custom: ALERT_COLORS.custom.primary,
   };
+
+  function shareAddress() {
+    const address = alertData.address || `${alertData.lat}, ${alertData.lng}`;
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${alertData.lat},${alertData.lng}`;
+    Share.share({
+      message: `${alertData.userName} enviou um alerta!\n${address}\n${mapsUrl}`,
+    });
+  }
 
   function openMaps() {
     const lat = alertData.lat;
@@ -122,19 +142,14 @@ export function AlertOverlayScreen({
 
       <View style={styles.card}>
         <View style={styles.userInfo}>
-          {alertData.userPhotoURL ? (
-            <Image source={{ uri: alertData.userPhotoURL }} style={styles.avatarImage} />
-          ) : (
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {alertData.userName?.charAt(0)?.toUpperCase() || '?'}
-              </Text>
-            </View>
-          )}
+          <Avatar photoURL={alertData.userPhotoURL} name={alertData.userName} size={64} />
           <Text style={styles.userName}>{alertData.userName}</Text>
         </View>
 
-        <Text style={styles.address}>{alertData.address || 'Endereço indisponível'}</Text>
+        <TouchableOpacity onPress={shareAddress} accessibilityLabel="Compartilhar endereço" accessibilityRole="button">
+          <Text style={styles.address}>{alertData.address || 'Endereço indisponível'}</Text>
+          <Text style={styles.shareHint}>Toque para compartilhar</Text>
+        </TouchableOpacity>
 
         {alertData.type === 'custom' && alertData.customMessage ? (
           <View style={styles.messageBox}>
@@ -160,15 +175,15 @@ export function AlertOverlayScreen({
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.mapButton} onPress={openMaps}>
+        <TouchableOpacity style={styles.mapButton} onPress={openMaps} accessibilityLabel="Abrir localização no mapa" accessibilityRole="button">
           <Text style={styles.mapButtonText}>Abrir no Mapa</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.blockButton} onPress={handleBlock}>
+        <TouchableOpacity style={styles.blockButton} onPress={handleBlock} accessibilityLabel={`Bloquear ${alertData.userName}`} accessibilityRole="button">
           <Text style={styles.blockButtonText}>Bloquear Usuário</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dismissButton} onPress={handleDismiss}>
+        <TouchableOpacity style={styles.dismissButton} onPress={handleDismiss} accessibilityLabel="Dispensar alerta" accessibilityRole="button">
           <Text style={styles.dismissButtonText}>Dispensar</Text>
         </TouchableOpacity>
       </View>
@@ -206,26 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  avatarImage: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    marginBottom: 8,
-  },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
   userName: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -235,6 +230,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.secondaryText,
     textAlign: 'center',
+  },
+  shareHint: {
+    fontSize: 11,
+    color: COLORS.accent,
+    textAlign: 'center',
+    marginTop: 2,
     marginBottom: 16,
   },
   messageBox: {

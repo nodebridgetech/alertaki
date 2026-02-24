@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
 import { authService } from '../../services/authService';
 import { COLORS } from '../../config/constants';
+import { isValidEmail } from '../../utils/validation';
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<{
@@ -37,6 +38,10 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
   async function handleEmailLogin() {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Erro', 'Preencha email e senha.');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      Alert.alert('Erro', 'Email inválido.');
       return;
     }
     setLoading(true);
@@ -79,6 +84,10 @@ export function LoginScreen({ navigation }: LoginScreenProps): React.JSX.Element
   async function handleSendResetEmail() {
     if (!forgotEmail.trim()) {
       Alert.alert('Erro', 'Digite seu email.');
+      return;
+    }
+    if (!isValidEmail(forgotEmail)) {
+      Alert.alert('Erro', 'Email inválido.');
       return;
     }
     setForgotLoading(true);

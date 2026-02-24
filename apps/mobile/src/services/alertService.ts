@@ -1,5 +1,7 @@
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type { Alert, AlertType } from '@alertaki/shared';
+
+const PAGE_SIZE = 20;
 
 interface CreateAlertParams {
   userId: string;
@@ -28,17 +30,38 @@ async function createAlert(params: CreateAlertParams): Promise<string> {
   return docRef.id;
 }
 
-async function getSentAlerts(userId: string): Promise<Alert[]> {
-  const snap = await firestore()
+interface PaginatedResult<T> {
+  items: T[];
+  lastDoc: FirebaseFirestoreTypes.QueryDocumentSnapshot | null;
+  hasMore: boolean;
+}
+
+async function getSentAlerts(
+  userId: string,
+  lastDoc?: FirebaseFirestoreTypes.QueryDocumentSnapshot | null,
+): Promise<PaginatedResult<Alert>> {
+  let query = firestore()
     .collection('alerts')
     .where('userId', '==', userId)
     .orderBy('createdAt', 'desc')
-    .get();
+    .limit(PAGE_SIZE);
 
-  return snap.docs.map((doc) => ({
+  if (lastDoc) {
+    query = query.startAfter(lastDoc);
+  }
+
+  const snap = await query.get();
+
+  const items = snap.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as Alert[];
+
+  return {
+    items,
+    lastDoc: snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null,
+    hasMore: snap.docs.length === PAGE_SIZE,
+  };
 }
 
 interface ReceivedAlertItem {
@@ -47,16 +70,23 @@ interface ReceivedAlertItem {
   receivedAt: FirebaseFirestoreTypes.Timestamp;
 }
 
-import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-
-async function getReceivedAlerts(uid: string): Promise<ReceivedAlertItem[]> {
-  const recipientSnap = await firestore()
+async function getReceivedAlerts(
+  uid: string,
+  lastDoc?: FirebaseFirestoreTypes.QueryDocumentSnapshot | null,
+): Promise<PaginatedResult<ReceivedAlertItem>> {
+  let query = firestore()
     .collectionGroup('recipients')
     .where('uid', '==', uid)
     .orderBy('receivedAt', 'desc')
-    .get();
+    .limit(PAGE_SIZE);
 
-  const results: ReceivedAlertItem[] = [];
+  if (lastDoc) {
+    query = query.startAfter(lastDoc);
+  }
+
+  const recipientSnap = await query.get();
+
+  const items: ReceivedAlertItem[] = [];
 
   for (const recipientDoc of recipientSnap.docs) {
     const alertRef = recipientDoc.ref.parent.parent;
@@ -65,14 +95,18 @@ async function getReceivedAlerts(uid: string): Promise<ReceivedAlertItem[]> {
     const alertDoc = await alertRef.get();
     if (!alertDoc.exists) continue;
 
-    results.push({
+    items.push({
       alert: { id: alertDoc.id, ...alertDoc.data() } as Alert,
       source: recipientDoc.data().source,
       receivedAt: recipientDoc.data().receivedAt,
     });
   }
 
-  return results;
+  return {
+    items,
+    lastDoc: recipientSnap.docs.length > 0 ? recipientSnap.docs[recipientSnap.docs.length - 1] : null,
+    hasMore: recipientSnap.docs.length === PAGE_SIZE,
+  };
 }
 
 export const alertService = {
@@ -81,4 +115,4 @@ export const alertService = {
   getReceivedAlerts,
 };
 
-export type { ReceivedAlertItem };
+export type { ReceivedAlertItem, PaginatedResult };

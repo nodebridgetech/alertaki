@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
 import functions from '@react-native-firebase/functions';
@@ -7,6 +7,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useContactStore } from '../../stores/contactStore';
 import { useAlertStore } from '../../stores/alertStore';
 import { authService } from '../../services/authService';
+import { Avatar } from '../../components/Avatar';
 import { COLORS } from '../../config/constants';
 
 type ProfileScreenProps = {
@@ -19,6 +20,7 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
   const resetContacts = useContactStore((s) => s.reset);
   const resetAlerts = useAlertStore((s) => s.reset);
   const pendingInvites = useContactStore((s) => s.pendingInvites);
+  const [deleting, setDeleting] = useState(false);
 
   async function handleLogout() {
     Alert.alert('Sair', 'Tem certeza que deseja sair?', [
@@ -50,6 +52,7 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
           text: 'Excluir',
           style: 'destructive',
           onPress: async () => {
+            setDeleting(true);
             try {
               const deleteAccount = functions().httpsCallable('deleteUserAccount');
               await deleteAccount({});
@@ -57,8 +60,11 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
               resetAuth();
               resetContacts();
               resetAlerts();
+              Alert.alert('Conta excluída', 'Sua conta foi excluída com sucesso.');
             } catch (error) {
               Alert.alert('Erro', 'Erro ao excluir conta. Tente novamente.');
+            } finally {
+              setDeleting(false);
             }
           },
         },
@@ -69,15 +75,9 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        {user?.photoURL ? (
-          <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user?.displayName?.charAt(0)?.toUpperCase() || '?'}
-            </Text>
-          </View>
-        )}
+        <View style={styles.avatarContainer}>
+          <Avatar photoURL={user?.photoURL} name={user?.displayName} size={80} />
+        </View>
         <Text style={styles.name}>{user?.displayName || 'Usuário'}</Text>
         <Text style={styles.email}>{user?.email || ''}</Text>
         {user?.phoneNumber && <Text style={styles.phone}>{user.phoneNumber}</Text>}
@@ -122,8 +122,12 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
       </View>
 
       <View style={styles.dangerZone}>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
-          <Text style={styles.deleteButtonText}>Excluir Conta</Text>
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount} disabled={deleting}>
+          {deleting ? (
+            <ActivityIndicator color={COLORS.error} />
+          ) : (
+            <Text style={styles.deleteButtonText}>Excluir Conta</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -144,25 +148,8 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     paddingHorizontal: 20,
   },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+  avatarContainer: {
     marginBottom: 12,
-  },
-  avatarImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
-  },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 32,
-    fontWeight: 'bold',
   },
   name: {
     fontSize: 22,
