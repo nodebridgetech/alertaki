@@ -1,0 +1,503 @@
+--------- beginning of main
+02-24 19:16:11.652  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+--------- beginning of system
+02-24 19:16:11.672  4655  4655 I SDHMS:LOAD: type: LoadsFreqs, value: 11:0:0:549379:1352000:533000:646100:1352000:533000:0:0:0
+02-24 19:16:12.236   716   716 D io_stats: !@   8,0 r 100908162 2872246764 w 18408038 275056236 d 5130962 274376800 f 0 0 iot 44585568 0 th 0 0 0 pt 0 inp 0 0 302135.507
+02-24 19:16:12.237   716   716 D io_stats: !@ Read_top(KB): .gms.persistent(28709) 312 system_server(1859) 276 ueventd(530) 156
+02-24 19:16:12.237   716   716 D io_stats: !@ Write_top(KB): com.samsung.cmh(13467) 4
+02-24 19:16:12.497  1859  2157 D ActivityManager: freezing 13467 com.samsung.cmh
+02-24 19:16:12.504  1859  2157 I UMR     : B|Compact com.samsung.cmh(13467)
+02-24 19:16:12.506  1859  2379 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+02-24 19:16:12.509  1859  2379 D InetDiagMessage: Destroyed 1 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+02-24 19:16:12.509  1859  2379 D InetDiagMessage: Destroyed live tcp sockets for uids={5004} in 6ms
+02-24 19:16:12.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971372
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:12.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:12.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:12.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:12.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:12.707  1859  2157 I UMR     : E|Compact d_rss=-12412KB
+02-24 19:16:12.775 25778 30162 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=c2634419-f9d9-4e81-86e8-a851f6536148, tags={ com.whatsapp.xmpp.messaging.XmppLifecycleWorker } ]
+02-24 19:16:12.787 25778 25778 D WM-Processor: Fr5 c2634419-f9d9-4e81-86e8-a851f6536148 executed; reschedule = false
+02-24 19:16:12.787 25778 25778 D WM-GreedyScheduler: Stopping tracking for WorkGenerationalId(workSpecId=c2634419-f9d9-4e81-86e8-a851f6536148, generation=0)
+02-24 19:16:12.789 25778 25778 D WM-SystemJobService: c2634419-f9d9-4e81-86e8-a851f6536148 executed on JobScheduler
+02-24 19:16:12.795  1859  2798 I ActivityManager: Changes in 10422 8 to 10, 136 to 0
+02-24 19:16:12.804 25778 30162 D WM-GreedyScheduler: Cancelling work ID c2634419-f9d9-4e81-86e8-a851f6536148
+02-24 19:16:12.819 25778 30162 D WM-NetworkStateTracker: Unregistering network callback
+02-24 19:16:12.829 25778 30162 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.unregisterNetworkCallback(ConnectivityManager.java:5579)] [X.DlB.A04(:20)] [X.GUX.invoke(:1027)] [X.9SQ.A00(:110)] [X.AAn.invokeSuspend(:527)] [X.0fV.resumeWith(:8)] [X.0g7.run(:98)] [X.GH7.run(:2)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)] [java.lang.Thread.run(Thread.java:1564)]
+02-24 19:16:12.833  1859  2379 D ConnectivityService:  Removing from current network [237 WIFI], leaving 265 requests.
+02-24 19:16:12.893  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:12.922  1859  2465 I SemWifiServiceDetector: Service det. suspended: T / T / 20268
+02-24 19:16:13.305  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:13.321  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45927, isSameBssidAndFreq true
+02-24 19:16:13.341  1859  2798 I ActivityManager: Changes in 10320 8 to 10, 128 to 0
+02-24 19:16:13.350  1859  2798 I ActivityManager: Killing 13386:com.samsung.android.app.reminder/u0a236 (adj 955): empty #33
+02-24 19:16:13.425  1381  1381 I Zygote  : Process 13386 exited due to signal 9 (Killed)
+02-24 19:16:13.432  1859  1975 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10236/pid_13386
+02-24 19:16:13.458 28707 28707 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.facs.internal.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.GmsInternalApiService }
+02-24 19:16:13.460  1859  2798 I ActivityManager: Changes in 10055 5 to 10, 144 to 128
+02-24 19:16:13.614 15628 15634 W System  : A resource failed to call close. 
+02-24 19:16:13.615 15628 15634 W System  : A resource failed to call close. 
+02-24 19:16:13.616 15628 15634 W System  : A resource failed to call close. 
+02-24 19:16:13.616 15628 15634 W System  : A resource failed to call close. 
+02-24 19:16:13.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971373
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:13.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:13.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:13.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:13.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:13.800 28362 13334 I eauf    : (REDACTED) appOpsListener %s %s
+02-24 19:16:13.800 28362 13334 I eauf    : (REDACTED) Ignoring irrelevant audio permission changes for package %s
+02-24 19:16:13.801  3362  3416 I RequestManager_FLP: onOpChanged, op=0 / packageName=com.whatsapp
+02-24 19:16:14.238   716   716 D io_stats: !@   8,0 r 100908363 2872251704 w 18408047 275056320 d 5130962 274376800 f 0 0 iot 44585816 0 th 0 0 0 pt 0 inp 0 0 302137.509
+02-24 19:16:14.305 28707 28729 W System  : A resource failed to call AbstractCursor.close. 
+02-24 19:16:14.306 28707 28729 W System  : A resource failed to call CursorWrapperInner.close. 
+02-24 19:16:14.306 28707 28729 W System  : A resource failed to call AbstractCursor.close. 
+02-24 19:16:14.306 28707 28729 W System  : A resource failed to call CursorWrapperInner.close. 
+02-24 19:16:14.306 28707 28729 W System  : A resource failed to call AbstractCursor.close. 
+02-24 19:16:14.308 28707 28729 W System  : A resource failed to call CursorWrapperInner.close. 
+02-24 19:16:14.509 28709 28709 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+02-24 19:16:14.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971374
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:14.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:14.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:14.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:14.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:14.660 25778 30223 D WM-SystemJobScheduler: Scheduling work ID 95e5b8b1-6196-4823-9bd7-2c1b341c6bb0Job ID 119231
+02-24 19:16:14.673  1859  2831 I ActivityManager: Changes in 10422 10 to 8, 0 to 136
+02-24 19:16:14.678 28362 13334 I eauf    : (REDACTED) appOpsListener %s %s
+02-24 19:16:14.678 28362 13334 I eauf    : (REDACTED) Ignoring irrelevant audio permission changes for package %s
+02-24 19:16:14.679  3362  3416 I RequestManager_FLP: onOpChanged, op=0 / packageName=com.whatsapp
+02-24 19:16:14.682 25778 30223 D WM-GreedyScheduler: Starting tracking for 95e5b8b1-6196-4823-9bd7-2c1b341c6bb0
+02-24 19:16:14.688  1512  1512 I SurfaceFlinger: SFWD update time=302137959269236
+02-24 19:16:14.690 25778 25778 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=95e5b8b1-6196-4823-9bd7-2c1b341c6bb0, generation=0)
+02-24 19:16:14.695 25778 30223 D WM-Processor: Fr5: processing WorkGenerationalId(workSpecId=95e5b8b1-6196-4823-9bd7-2c1b341c6bb0, generation=0)
+02-24 19:16:14.698 25778 30223 D WM-ConstraintTracker: DlB: initial state = NetworkState(isConnected=true, isValidated=true, isMetered=false, isNotRoaming=true)
+02-24 19:16:14.698 25778 30223 D WM-NetworkStateTracker: Registering network callback
+02-24 19:16:14.702 25778 30223 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5410)] [X.DlB.A03(:20)] [X.GT4.invokeSuspend(:276)] [X.GT4.invoke(:14)] [X.3UQ.A00(:2)] [X.3UP.A00(:58)] [X.3PA.invokeSuspend(:195)] [X.0fV.resumeWith(:8)] [X.0g7.run(:89)] [X.GH7.run(:2)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)] [java.lang.Thread.run(Thread.java:1564)]
+02-24 19:16:14.712  1859  2831 D ConnectivityService: requestNetwork for uid/pid:10422/25778 activeRequest: null callbackRequest: 60306 [NetworkRequest [ TRACK_DEFAULT id=60307, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10422 RequestorUid: 10422 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ], NetworkRequest [ REQUEST id=60308, [ Transports: SATELLITE Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10422 RequestorUid: 10422 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+02-24 19:16:14.714  1859  2379 D ConnectivityService:    accepting network in place of null for NetworkRequest [ TRACK_DEFAULT id=60307, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10422 RequestorUid: 10422 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+02-24 19:16:14.718 25778 30310 D WM-NetworkStateTracker: Network capabilities changed: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED LinkUpBandwidth>=49760Kbps LinkDnBandwidth>=62966Kbps TransportInfo: <SSID: <unknown ssid>, BSSID: 02:00:00:00:00:00, MAC: 02:00:00:00:00:00, IP: /192.168.100.104, Security type: 2, Supplicant state: COMPLETED, Wi-Fi standard: 11ax, RSSI: -44, Link speed: 576Mbps, Tx Link speed: 576Mbps, Max Supported Tx Link speed: 1200Mbps, Rx Link speed: 1200Mbps, Max Supported Rx Link speed: 1200Mbps, Frequency: 5180MHz, Net ID: -1, Metered hint: false, score: 60, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: -1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none><none>MLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>> SignalStrength: -44 UnderlyingNetworks: Null]
+02-24 19:16:14.724  1859  2379 D ConnectivityService: Rematched networks [computed 1ms] [applied 5ms] [issued 5]
+02-24 19:16:14.725  1859  2379 D ConnectivityService: NetworkReassignment :
+02-24 19:16:14.725  1859  2379 D ConnectivityService:   60307 : null → 237
+02-24 19:16:14.727 25778 25778 D WM-WorkerWrapper: Starting work for com.whatsapp.xmpp.messaging.XmppLifecycleWorker
+02-24 19:16:14.728 25778 30223 D WM-GreedyScheduler: Constraints met: Scheduling work ID WorkGenerationalId(workSpecId=95e5b8b1-6196-4823-9bd7-2c1b341c6bb0, generation=0)
+02-24 19:16:14.733 25778 30242 D WM-Processor: Work WorkGenerationalId(workSpecId=95e5b8b1-6196-4823-9bd7-2c1b341c6bb0, generation=0) is already enqueued for processing
+02-24 19:16:14.907  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:15.180  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:15.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971375
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:15.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:15.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:15.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:15.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:15.930  1859  2465 I SemWifiServiceDetector: Service det. resumed: T / T / 20268
+02-24 19:16:16.240   716   716 D io_stats: !@   8,0 r 100908538 2872253412 w 18408047 275056320 d 5130962 274376800 f 0 0 iot 44585916 0 th 0 0 0 pt 0 inp 0 0 302139.510
+02-24 19:16:16.240   716   716 D io_stats: !@ Read_top(KB): com.whatsapp(25778) 4308 gle.android.gms(28707) 1576 binder:1378_3(17038) 400
+02-24 19:16:16.240   716   716 D io_stats: !@ Write_top(KB): com.whatsapp(25778) 40 kworker/u16:5(11107) 40 oid.apps.photos(15628) 4
+02-24 19:16:16.368  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:16.403  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45928, isSameBssidAndFreq true
+02-24 19:16:16.405  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 2070 / 184 / 1,00 (15) / 864 / -44.0 || 100.0 : 864,00 / 0.5 : 1,00 / 0.55 : 0,09 / G (G) || 837e14645180: 0,088 / 90,617 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302139675 0 || Invalid
+02-24 19:16:16.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971376
+02-24 19:16:16.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:16.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:16.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:16.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:16.650  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:16.650  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:16.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:16.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:16.651  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:16.921  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 0ms
+02-24 19:16:17.185  1859  3375 I NSLocationMonitor: getGPSUsingApps() called
+02-24 19:16:17.186  3362  3387 I NSLocationManager_FLP: getGPSUsingApps, No change
+02-24 19:16:17.201  1859  3375 D FreecessController: FZ : com.google.android.apps.photos(10320) [15628] reason: Bg [cached:O
+02-24 19:16:17.201  1859  3375 D FreecessHandler: freeze com.google.android.apps.photos(10320) result : 0
+02-24 19:16:17.202  1859  3375 W LocationManagerService: onFreezeStateChanged, uid[10320]=true
+02-24 19:16:17.202  1859  3375 I PowerManagerService: [PWL] SetWakeLockEnableDisable uid = 10320 , disable= true
+02-24 19:16:17.202  1859  3375 I PowerManagerService: [PWL] can not change uid =  10320
+02-24 19:16:17.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971377
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:17.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:17.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:17.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:17.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:17.984  1859  1973 I ActivityManager: Killing 14488:app.revanced.android.gms/u0a534 (adj 945): empty #33
+02-24 19:16:18.074  1381  1381 I Zygote  : Process 14488 exited due to signal 9 (Killed)
+02-24 19:16:18.075  1859  1975 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10534/pid_14488
+02-24 19:16:18.242   716   716 D io_stats: !@   8,0 r 100908713 2872257692 w 18408072 275057004 d 5130962 274376800 f 0 0 iot 44586008 0 th 0 0 0 pt 0 inp 0 0 302141.512
+02-24 19:16:18.368  1859  2379 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+02-24 19:16:18.371  1859  2379 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+02-24 19:16:18.371  1859  2379 D InetDiagMessage: Destroyed live tcp sockets for uids={10320} in 6ms
+02-24 19:16:18.373  1859  2379 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+02-24 19:16:18.375  1859  2379 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+02-24 19:16:18.375  1859  2379 D InetDiagMessage: Destroyed live tcp sockets for uids={20320} in 4ms
+02-24 19:16:18.638  2616  2626 D PhoneInterfaceManager: setDataEnabledForReason() Reason=1 Pid=1859 App=system
+02-24 19:16:18.642  2616  2626 D PhoneInterfaceManager: setDataEnabledForReason() Reason=1 Pid=1859 App=system
+02-24 19:16:18.648  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971378
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:18.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:18.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:18.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:18.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:18.930  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 0ms
+02-24 19:16:19.455  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:19.472  1859  1973 W ActivityManager: Stopping service due to app idle: u0a422 -1m20s388ms com.whatsapp/.messageservice.messaging.MessageService
+02-24 19:16:19.493  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45929, isSameBssidAndFreq true
+02-24 19:16:19.495  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 2207 / 233 / 1,14 (1166) / 907 / -44.0 || 100.0 : 907,00 / 0.5 : 0,88 / 0.55 : 0,11 / G (G) || 837e14645180: 0,089 / 89,567 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302142765 0 || Invalid
+02-24 19:16:19.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971379
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:19.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:19.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:19.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:19.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:19.678  2779 19910 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 23 up
+02-24 19:16:19.838  4655  5559 I SDHMS:x : SIOP:: AP:401 BAT:381 USB:366 CHG:384 PA:409 CP:399 WIFI:408 CF:394 BLK:0 SUBBAT:0 SKIN:384 SKINF:373 SKINB:383 LRP:383 LRP2:384 LRF:373 LRB:383 LRF2:375 LRB2:384 AP2:384 CHG2:380 WIFI2:379 RCV2:375 SPK2:358 FCAM:367 UPSPK:392 DNSPK:368 VAP:404 AVGCUR:-51 AVGSYS:414 POWER:-220
+02-24 19:16:19.896 19907 19907 I wpa_supplicant: Heartbeat 890
+02-24 19:16:20.181  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:20.242   716   716 D io_stats: !@   8,0 r 100908724 2872257908 w 18408078 275057140 d 5130962 274376800 f 0 0 iot 44586064 0 th 0 0 0 pt 0 inp 0 0 302143.513
+02-24 19:16:20.243   716   716 D io_stats: !@ Read_top(KB): oneconnect:Core(10477) 3592 .osp.app.signin(6166) 552 loop13(861) 104
+02-24 19:16:20.243   716   716 D io_stats: !@ Write_top(KB): kworker/u16:4(9246) 640 system_server(1859) 136 soft.appmanager(11938) 32
+02-24 19:16:20.316  1859  1972 I ActivityManager: Changes in 10055 19 to 19, 128 to 0
+02-24 19:16:20.319 24195 24195 I ContactsProvider: [P] onTrimMemory-success
+02-24 19:16:20.516  1859  1973 I ActivityManager: Killing 9537:com.sec.hearingadjust/u0a47 (adj 945): empty #33
+02-24 19:16:20.609  1859  1975 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10047/pid_9537
+02-24 19:16:20.609  1381  1381 I Zygote  : Process 9537 exited due to signal 9 (Killed)
+02-24 19:16:20.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971380
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:20.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:20.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:20.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:20.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:20.949  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:21.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971381
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:21.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:21.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:21.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:21.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:21.780  4655  4655 I SDHMS:LOAD: type: LoadsFreqs, value: 13:0:0:541060:936000:533000:576940:1352000:533000:0:0:0
+02-24 19:16:22.244   716   716 D io_stats: !@   8,0 r 100908728 2872257996 w 18408078 275057140 d 5130962 274376800 f 0 0 iot 44586088 0 th 0 0 0 pt 0 inp 0 0 302145.514
+02-24 19:16:22.524  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:22.548  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:22.549  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:22.551  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -44 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:22.551  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -45 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:22.551  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+02-24 19:16:22.558  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45930, isSameBssidAndFreq true
+02-24 19:16:22.560  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 1995 / 217 / 1,11 (42) / 907 / -45.0 || 100.0 : 907,00 / 0.5 : 0,90 / 0.55 : 0,11 / G (G) || 837e14645180: 0,090 / 89,278 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302145830 0 || Invalid
+02-24 19:16:22.619  2616  2932 D SatelliteController: isInCarrierRoamingNbIotNtn: satellite is disabled
+02-24 19:16:22.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971382
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:22.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:22.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:22.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:22.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:22.961  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:23.520 28707 28707 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.people.contactssync.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+02-24 19:16:23.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971383
+02-24 19:16:23.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:23.650  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:23.650  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:23.650  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:23.650  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:23.650  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:23.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:23.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:23.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:23.901  2616  2932 D SatelliteController: isInCarrierRoamingNbIotNtn: satellite is disabled
+02-24 19:16:24.244   716   716 D io_stats: !@   8,0 r 100908739 2872258276 w 18408085 275057196 d 5130962 274376800 f 0 0 iot 44586120 0 th 0 0 0 pt 0 inp 0 0 302147.515
+02-24 19:16:24.245   716   716 D io_stats: !@ Read_top(KB): android.youtube(16579) 104 storaged(1677) 100 loop43(891) 80
+02-24 19:16:24.245   716   716 D io_stats: !@ Write_top(KB): kworker/u16:5(11107) 52 com.whatsapp(25778) 4
+02-24 19:16:24.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971384
+02-24 19:16:24.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:24.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:24.650  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:24.650  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:24.650  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:24.650  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:24.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:24.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:24.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:24.690  1512  1512 I SurfaceFlinger: SFWD update time=302147961109460
+02-24 19:16:24.978  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 0ms
+02-24 19:16:25.183  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:25.594  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:25.614  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45931, isSameBssidAndFreq true
+02-24 19:16:25.615  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:25.615  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:25.616  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -42 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:25.616  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -42 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:25.616  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+02-24 19:16:25.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971385
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:25.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:25.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:25.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:25.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:26.246   716   716 D io_stats: !@   8,0 r 100908754 2872258572 w 18408086 275057200 d 5130962 274376800 f 0 0 iot 44586144 0 th 0 0 0 pt 0 inp 0 0 302149.516
+02-24 19:16:26.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971386
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:26.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:26.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:26.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:26.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:26.996  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:27.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971387
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:27.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:27.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:27.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:27.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:28.246   716   716 D io_stats: !@   8,0 r 100908755 2872258576 w 18408107 275057276 d 5130962 274376800 f 0 0 iot 44586188 0 th 0 0 0 pt 0 inp 0 0 302151.517
+02-24 19:16:28.247   716   716 D io_stats: !@ Read_top(KB): chbox:googleapp(11705) 204 gle.android.gms(28707) 92 system_server(1859) 4
+02-24 19:16:28.247   716   716 D io_stats: !@ Write_top(KB): soft.appmanager(11938) 24 kworker/u16:3(24327) 20 system_server(1859) 16
+02-24 19:16:28.620  1859  2389 W DeviceStorageMonitorService: updateBroadcasts(/data) oldLevel:0, newLevel:0, seq:1
+02-24 19:16:28.628  1859  2389 D DeviceStorageMonitorService: Available File Node Number is [12234917]
+02-24 19:16:28.628  1859  2389 W DeviceStorageMonitorService: updateBroadcasts_filenode(/data) fn_oldLevel:0, fn_newLevel:0, seq:1
+02-24 19:16:28.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971388
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:28.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:28.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:28.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:28.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:28.650  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:28.673  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45932, isSameBssidAndFreq true
+02-24 19:16:28.674  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 1780 / 178 / 1,00 (15) / 864 / -39.0 || 100.0 : 864,00 / 0.5 : 1,00 / 0.55 : 0,10 / G (G) || 837e14645180: 0,089 / 89,627 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302151944 0 || Invalid
+02-24 19:16:28.677  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:28.678  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:28.679  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -39 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:28.679  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -39 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:28.679  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+02-24 19:16:29.011  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:29.156  2779 19910 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 23 up
+02-24 19:16:29.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971389
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:29.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:29.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:29.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:29.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:29.838  4655  5559 I SDHMS:x : SIOP:: AP:396 BAT:381 USB:366 CHG:378 PA:406 CP:398 WIFI:404 CF:391 BLK:0 SUBBAT:0 SKIN:382 SKINF:372 SKINB:381 LRP:381 LRP2:382 LRF:372 LRB:381 LRF2:374 LRB2:382 AP2:382 CHG2:378 WIFI2:378 RCV2:374 SPK2:358 FCAM:367 UPSPK:392 DNSPK:368 VAP:404 AVGCUR:-20 AVGSYS:351 POWER:-86
+02-24 19:16:29.898 19907 19907 I wpa_supplicant: Heartbeat 891
+02-24 19:16:30.185  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:30.247   716   716 D io_stats: !@   8,0 r 100908759 2872258736 w 18408107 275057276 d 5130962 274376800 f 0 0 iot 44586196 0 th 0 0 0 pt 0 inp 0 0 302153.518
+02-24 19:16:30.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971390
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:30.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:30.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:30.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:30.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:31.030  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:31.648  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971391
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:31.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:31.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:31.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:31.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:31.703  1859  1872 I system_server: Background concurrent copying GC freed 42MB AllocSpace bytes, 212(4796KB) LOS objects, 22% free, 169MB/217MB, paused 1.582ms,646us total 733.353ms
+02-24 19:16:31.709  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:31.727  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:31.727  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:31.727  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45933, isSameBssidAndFreq true
+02-24 19:16:31.729  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -41 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:31.729  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -41 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:31.729  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+02-24 19:16:31.898  4655  4655 I SDHMS:LOAD: type: LoadsFreqs, value: 12:0:0:536900:728000:533000:593580:1352000:533000:0:0:0
+02-24 19:16:32.052  1859  2418 D UsbStatsMonitor: 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 26822070763546
+02-24 19:16:32.249   716   716 D io_stats: !@   8,0 r 100908779 2872259036 w 18408107 275057276 d 5130962 274376800 f 0 0 iot 44586224 0 th 0 0 0 pt 0 inp 0 0 302155.520
+02-24 19:16:32.249   716   716 D io_stats: !@ Read_top(KB): com.whatsapp(25778) 172 binder:690_2(690) 120 ung.android.mdx(29935) 92
+02-24 19:16:32.466 16973 16977 W oid.setupwizard: Cleared Reference was only reachable from finalizer (only reported once)
+02-24 19:16:32.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971392
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:32.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:32.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:32.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:32.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:33.045  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 1ms
+02-24 19:16:33.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971393
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:33.650  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:33.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:33.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:33.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:34.250   716   716 D io_stats: !@   8,0 r 100908785 2872259068 w 18408108 275057280 d 5130962 274376800 f 0 0 iot 44586240 0 th 0 0 0 pt 0 inp 0 0 302157.521
+02-24 19:16:34.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971394
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:34.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:34.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:34.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:34.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:34.760  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:34.799  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45934, isSameBssidAndFreq true
+02-24 19:16:34.802  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 1101 / 161 / 1,20 (1221) / 864 / -38.0 || 100.0 : 864,00 / 0.5 : 0,83 / 0.55 : 0,15 / G (G) || 837e14645180: 0,094 / 85,478 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302158071 0 || Invalid
+02-24 19:16:34.802  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:34.803  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: isProfiling, hash=140346209, started=true
+02-24 19:16:34.805  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -38 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:34.806  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -38 highrange : -75 lowrange : -85 mIsRssiInHystersis : false
+02-24 19:16:34.806  2829  2829 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+02-24 19:16:34.862  2616  2932 D SatelliteController: isInCarrierRoamingNbIotNtn: satellite is disabled
+02-24 19:16:34.868  2829  2829 I EPDG -- SIM0 [SMARTCELLULAR]: onSignalStrengthsChanged: SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-113 rsrp=-114 rsrq=-16 rssnr=6 cqiTableIndex=2147483647 cqi=9 ta=2147483647 level=2 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=1 },rat=14,primary=CellSignalStrengthLte}
+02-24 19:16:34.869  2829  3981 I EPDG -- SIM0 [SMARTCELLULAR]: lastLteRSRP is -116 currentLteRSRP is -114 lastLteRSRQ is -14 currentLteRSRQ is -16 lastLteSNR is 4 currentLteSNR is 6
+02-24 19:16:35.051  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 0ms
+02-24 19:16:35.069  2616  3269 D PhoneInterfaceManager: setDataEnabledForReason() Reason=1 Pid=1859 App=system
+02-24 19:16:35.071  2616  3269 D PhoneInterfaceManager: setDataEnabledForReason() Reason=1 Pid=1859 App=system
+02-24 19:16:35.187  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:35.423  2616  2932 D SatelliteController: isInCarrierRoamingNbIotNtn: satellite is disabled
+02-24 19:16:35.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971395
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:35.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:35.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:35.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:35.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:36.253   716   716 D io_stats: !@   8,0 r 100908798 2872259664 w 18408114 275057416 d 5130962 274376800 f 0 0 iot 44586268 0 th 0 0 0 pt 0 inp 0 0 302159.523
+02-24 19:16:36.253   716   716 D io_stats: !@ Read_top(KB): .android.chrome(12816) 628
+02-24 19:16:36.253   716   716 D io_stats: !@ Write_top(KB): system_server(1859) 136 kworker/u16:4(9246) 4
+02-24 19:16:36.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971396
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:36.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:36.650  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:36.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:36.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:36.910  1859  1969 E Watchdog: !@Sync: 10064 heap(MB): 173 / 217 FD: 1338 [2026-02-24 19:16:36.909]
+02-24 19:16:37.065  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 0ms
+02-24 19:16:37.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971397
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:37.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:37.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:37.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:37.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:37.843  1859  2368 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+02-24 19:16:37.868  1859  4204 D SemWifiUsabilityStatsMonitor: onWifiUsabilityStats - seqNum 45935, isSameBssidAndFreq true
+02-24 19:16:37.870  1859  2467 I SemWifiLinkQualityMonitor: Link stat: 1778 / 178 / 1,00 (21) / 864 / -38.0 || 100.0 : 864,00 / 0.5 : 1,00 / 0.55 : 0,10 / G (G) || 837e14645180: 0,089 / 89,617 / N || N N / 0 0 / Y 2.0 / Y X 0 / 302161140 0 || Invalid
+02-24 19:16:38.254   716   716 D io_stats: !@   8,0 r 100909053 2872268432 w 18408131 275057484 d 5130962 274376800 f 0 0 iot 44586404 0 th 0 0 0 pt 0 inp 0 0 302161.525
+02-24 19:16:38.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971398
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:38.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:38.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:38.650  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:38.650  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:39.082  1859  2516 D NetdEventListenerService: DNS Requested by 237, 10667(com.alertakimobile), SUCCESS, 2ms
+02-24 19:16:39.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971399
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:39.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:39.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:39.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:39.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0
+02-24 19:16:39.838  4655  5559 I SDHMS:x : SIOP:: AP:394 BAT:381 USB:366 CHG:374 PA:402 CP:396 WIFI:401 CF:389 BLK:0 SUBBAT:0 SKIN:380 SKINF:371 SKINB:380 LRP:380 LRP2:380 LRF:371 LRB:380 LRF2:373 LRB2:380 AP2:380 CHG2:377 WIFI2:377 RCV2:373 SPK2:358 FCAM:367 UPSPK:392 DNSPK:367 VAP:403 AVGCUR:-9 AVGSYS:320 POWER:-38
+02-24 19:16:39.898 19907 19907 I wpa_supplicant: Heartbeat 892
+02-24 19:16:40.166  2779 19910 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 23 up
+02-24 19:16:40.190  1494  1647 I EDEN    : [Exynos][EDEN][v1.6.23][SERVICE] processAliveMointorMain:253: Try to check pid=(1444)...
+02-24 19:16:40.255   716   716 D io_stats: !@ Read_top(KB): soft.appmanager(11938) 8768
+02-24 19:16:40.255   716   716 D io_stats: !@ Write_top(KB): soft.appmanager(11938) 32 kworker/u16:4(9246) 24
+02-24 19:16:40.525  1399  1399 I android.hardware.health@2.1-service-samsung: updateLrpSysfs: write: 380
+02-24 19:16:40.649  1503  1532 E HeatmapThread: ECT Thread time in milliseconds: 1771971400
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ batteryplugType : 0
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ batteryLevel : 0  batteryTemperature : 0 
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ Heatmap currtime: 29532856
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ Heatmap prevtime: 29532836
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ Heatmap plugstarttime: 35791394
+02-24 19:16:40.649  1503  1532 D HeatmapThread: !@ Heatmap prevv_dsoh_update_time: 29523661
+02-24 19:16:40.649  1503  1532 E HeatmapThread: !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+02-24 19:16:40.649  1503  1532 E HeatmapThread: !@ CAM Could not access BSOH EFS
+02-24 19:16:40.649  1503  1532 E HeatmapThread: !@ CAM New BSOH: 0

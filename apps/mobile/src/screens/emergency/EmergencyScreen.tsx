@@ -73,7 +73,9 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
           style: 'destructive',
           onPress: async () => {
             setSending(true);
+            let step = 'init';
             try {
+              step = 'isOnline';
               const online = await isOnline();
               if (!online) {
                 Alert.alert(
@@ -83,14 +85,17 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
                 return;
               }
 
+              step = 'requestPermission';
               const permission = await locationService.requestPermission();
               if (!permission) {
                 locationService.showLocationSettingsAlert();
                 return;
               }
 
+              step = 'getCurrentPosition';
               const coords = await locationService.getCurrentPosition();
 
+              step = 'createAlert';
               await alertService.createAlert({
                 userId: user.uid,
                 userEmail: user.email,
@@ -107,7 +112,12 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
                 { text: 'OK', onPress: () => navigation.goBack() },
               ]);
             } catch (error) {
-              Alert.alert('Erro', (error as Error).message);
+              const err = error as Error;
+              console.error(`emergency sendAlert error at [${step}]:`, err.message, err.stack);
+              Alert.alert(
+                'Erro',
+                `[${step}] ${err.message || String(error)}\n\n${err.stack?.split('\n').slice(0, 5).join('\n') || 'sem stack'}`,
+              );
             } finally {
               setSending(false);
             }

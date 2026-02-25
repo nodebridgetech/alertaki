@@ -95,12 +95,25 @@
       "Bash(export MSYS_NO_PATHCONV=1)",
       "Bash(adb shell dumpsys:*)",
       "Bash(adb shell:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(adb logcat -d -t 50 -s \"ReactNativeJS\")",
+      "Bash(adb logcat -d -t 100 \"*:E\")",
+      "Bash(adb logcat -d -t 200)",
+      "Bash(findstr \"undefined function error Error\")",
+      "Bash(adb logcat -d -t 50)",
+      "Bash(adb logcat -d)",
+      "Bash(export PATH=\"$PATH:$ANDROID_HOME/platform-tools:/c/Program Files/nodejs\")",
+      "Bash(adb logcat -d -t 100)",
+      "Bash(export ANDROID_HOME=\"C:/Users/Nickolas/AppData/Local/Android/Sdk\")",
+      "Bash(adb install -r \"C:/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk\")",
+      "Bash(adb logcat -d -t 50 --pid=23199)",
+      "Bash(grep -n \"export.*locationService\\\\|export.*alertService\" /c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/src/services/*.ts)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",
       "Z:\\apps\\mobile\\android\\app\\.cxx",
-      "C:\\Users\\Nickolas\\AppData\\Local\\Android\\Sdk"
+      "C:\\Users\\Nickolas\\AppData\\Local\\Android\\Sdk",
+      "C:\\Users\\Nickolas\\Documents\\GitHub\\alertaki"
     ]
   }
 }

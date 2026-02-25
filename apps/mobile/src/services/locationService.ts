@@ -124,9 +124,13 @@ function showLocationSettingsAlert(): void {
         text: 'Configurações',
         onPress: () => {
           if (Platform.OS === 'ios') {
-            Linking.openURL('app-settings:');
+            Linking.openURL('app-settings:').catch(() => {});
+          } else if (typeof Linking.sendIntent === 'function') {
+            Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS').catch(() => {
+              Linking.openSettings().catch(() => {});
+            });
           } else {
-            Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS');
+            Linking.openSettings().catch(() => {});
           }
         },
       },

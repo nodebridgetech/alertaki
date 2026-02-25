@@ -57,7 +57,9 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
           style: 'destructive',
           onPress: async () => {
             setSending(true);
+            let step = 'init';
             try {
+              step = 'isOnline';
               const online = await isOnline();
               if (!online) {
                 Alert.alert(
@@ -67,14 +69,17 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
                 return;
               }
 
+              step = 'requestPermission';
               const permission = await locationService.requestPermission();
               if (!permission) {
                 locationService.showLocationSettingsAlert();
                 return;
               }
 
+              step = 'getCurrentPosition';
               const coords = await locationService.getCurrentPosition();
 
+              step = 'createAlert';
               await alertService.createAlert({
                 userId: user.uid,
                 userEmail: user.email,
@@ -89,12 +94,17 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
                 {
                   text: 'OK',
                   onPress: () => {
-                    Linking.openURL(`tel:${emergencyNumber}`);
+                    Linking.openURL(`tel:${emergencyNumber}`).catch(() => {});
                   },
                 },
               ]);
             } catch (error) {
-              Alert.alert('Erro', (error as Error).message);
+              const err = error as Error;
+              console.error(`sendAlert error at [${step}]:`, err.message, err.stack);
+              Alert.alert(
+                'Erro',
+                `[${step}] ${err.message || String(error)}\n\n${err.stack?.split('\n').slice(0, 5).join('\n') || 'sem stack'}`,
+              );
             } finally {
               setSending(false);
             }

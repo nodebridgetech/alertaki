@@ -1,0 +1,113 @@
+--------- beginning of main
+02-24 19:28:45.259 23199 23262 D nativeloader: Extending system_exposed_libraries: libhumantracking.arcsoft.so:libPortraitDistortionCorrection.arcsoft.so:libPortraitDistortionCorrectionCali.arcsoft.so:libface_landmark.arcsoft.so:libFacialStickerEngine.arcsoft.so:libfrtracking_engine.arcsoft.so:libFaceRecognition.arcsoft.so:libveengine.arcsoft.so:lib_pet_detection.arcsoft.so:libhigh_res.arcsoft.so:libimage_enhancement.arcsoft.so:liblow_light_hdr.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libsuperresolution.arcsoft.so:libFacialAttributeDetection.arcsoft.so:libobjectcapture_jni.arcsoft.so:libobjectcapture.arcsoft.so:libaudiomirroring_jni.audiomirroring.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libC2paDps.camera.samsung.so:libVideoClassifier.camera.samsung.so:libImageScreener.camera.samsung.so:libMyFilter.camera.samsung.so:libtflite2.myfilters.camera.samsung.so:libHIDTSnapJNI.camera.samsung.so:libSmartScan.camera.samsung.so:libRectify.camera.samsung.so:libDocRectifyWrapper.cam
+02-24 19:28:45.406 23199 23262 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.location.provider.jar
+02-24 19:28:45.406 23199 23262 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.media.remotedisplay.jar
+02-24 19:28:45.407 23199 23262 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+02-24 19:28:45.407 23199 23262 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+02-24 19:28:45.606 23199 23262 W .alertakimobile: Loading /data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/oat/arm64/base.odex non-executable as it requires an image which we failed to load
+02-24 19:28:45.817 23199 23262 D nativeloader: Configuring clns-12 for other apk /data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/lib/arm64:/data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+02-24 19:28:46.050 23199 23262 I .alertakimobile: Waiting for a blocking GC ClassLinker
+02-24 19:28:46.699 23199 23204 I .alertakimobile: Background concurrent copying GC freed 12MB AllocSpace bytes, 45(2012KB) LOS objects, 77% free, 7225KB/31MB, paused 149us,73us total 667.061ms
+02-24 19:28:46.710 23199 23262 I .alertakimobile: WaitForGcToComplete blocked ClassLinker on Background for 660.716ms
+02-24 19:28:47.535 23199 23262 D nativeloader: Load /data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/base.apk!/lib/arm64-v8a/libconscrypt_gmscore_jni.so using class loader ns clns-12 (caller=/data/app/~~5zAA019pgWQcy4bvZk8xBw==/com.google.android.gms-sjwj7YDgSdQPYTEjy2-cxQ==/base.apk): ok
+02-24 19:28:47.604 23199 23262 V NativeCrypto: Registering com/google/android/gms/org/conscrypt/NativeCrypto's 334 native methods...
+02-24 19:28:47.907 23199 23262 I .alertakimobile: hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->getCurveName()Ljava/lang/String; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app, TargetSdkVersion=36) using reflection: allowed
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: Failed to get service from broker. 
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3354)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Parcel.createException(Parcel.java:3338)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3321)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3263)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at bfbc.a(:com.google.android.gms@260632035@26.06.32 (260400-869789857):36)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at bezd.z(:com.google.android.gms@260632035@26.06.32 (260400-869789857):143)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at befj.run(:com.google.android.gms@260632035@26.06.32 (260400-869789857):42)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Handler.handleCallback(Handler.java:995)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Handler.dispatchMessage(Handler.java:103)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at ctlu.ms(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at ctlu.dispatchMessage(:com.google.android.gms@260632035@26.06.32 (260400-869789857):5)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Looper.loopOnce(Looper.java:273)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.Looper.loop(Looper.java:363)
+02-24 19:28:48.011 23199 23400 E GoogleApiManager: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+02-24 19:28:48.149 23199 23400 W GoogleApiManager: Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: Failed to register com.google.android.gms.providerinstaller#com.alertakimobile
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: garg: 17: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gari.a(:com.google.android.gms@260632035@26.06.32 (260400-869789857):13)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gyzw.d(:com.google.android.gms@260632035@26.06.32 (260400-869789857):3)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gyzy.run(:com.google.android.gms@260632035@26.06.32 (260400-869789857):130)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gzcf.execute(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gzag.f(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gzag.m(:com.google.android.gms@260632035@26.06.32 (260400-869789857):99)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gzag.r(:com.google.android.gms@260632035@26.06.32 (260400-869789857):17)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at ftfm.hB(:com.google.android.gms@260632035@26.06.32 (260400-869789857):35)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at fggh.run(:com.google.android.gms@260632035@26.06.32 (260400-869789857):12)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at gzcf.execute(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at fggi.b(:com.google.android.gms@260632035@26.06.32 (260400-869789857):18)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at fggx.b(:com.google.android.gms@260632035@26.06.32 (260400-869789857):34)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at fggz.d(:com.google.android.gms@260632035@26.06.32 (260400-869789857):25)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at becs.c(:com.google.android.gms@260632035@26.06.32 (260400-869789857):9)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at befh.q(:com.google.android.gms@260632035@26.06.32 (260400-869789857):48)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at befh.d(:com.google.android.gms@260632035@26.06.32 (260400-869789857):10)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at befh.g(:com.google.android.gms@260632035@26.06.32 (260400-869789857):191)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at befh.onConnectionFailed(:com.google.android.gms@260632035@26.06.32 (260400-869789857):2)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at befj.run(:com.google.android.gms@260632035@26.06.32 (260400-869789857):70)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at android.os.Handler.handleCallback(Handler.java:995)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at android.os.Handler.dispatchMessage(Handler.java:103)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at ctlu.ms(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at ctlu.dispatchMessage(:com.google.android.gms@260632035@26.06.32 (260400-869789857):5)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at android.os.Looper.loopOnce(Looper.java:273)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at android.os.Looper.loop(Looper.java:363)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: Caused by: beaz: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at beyp.a(:com.google.android.gms@260632035@26.06.32 (260400-869789857):15)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at becv.a(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	at becs.c(:com.google.android.gms@260632035@26.06.32 (260400-869789857):5)
+02-24 19:28:48.215 23199 23398 W FlagRegistrar: 	... 12 more
+02-24 19:28:49.251 23199 23458 I .alertakimobile: hiddenapi: Accessing hidden method Ldalvik/system/VMStack;->getStackClass2()Ljava/lang/Class; (runtime_flags=0, domain=core-platform, api=unsupported) from Lgtpc; (domain=app, TargetSdkVersion=36) using reflection: allowed
+02-24 19:28:49.795 23199 23262 I ProviderInstaller: Installed default security provider GmsCore_OpenSSL
+02-24 19:28:51.015 23199 23262 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5410)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.configureNetworkMonitoring(AndroidChannelBuilder.java:217)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.<init>(AndroidChannelBuilder.java:198)] [io.grpc.android.AndroidChannelBuilder.build(AndroidChannelBuilder.java:169)] [com.google.firebase.firestore.remote.GrpcCallProvider.initChannel(GrpcCallProvider.java:116)] [com.google.firebase.firestore.remote.GrpcCallProvider.lambda$initChannelTask$6$com-google-firebase-firestore-remote-GrpcCallProvider(GrpcCallProvider.java:242)] [com.google.firebase.firestore.remote.GrpcCallProvider$$ExternalSyntheticLambda4.call(D8$$SyntheticClass:0)] [com.google.android.gms.tasks.zzx.run(com.google.android.gms:play-services-tasks@@18.4.0:1)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor.lambda$execute$0$com-google-firebase-firestore-util-ThrottledForwardingExecutor(ThrottledForwardingExecutor.java:54)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)] [java.lang.Thread.run(Thread.java:1564)]
+02-24 19:28:51.205 23199 23476 I .alertakimobile: hiddenapi: Accessing hidden field Ljava/net/Socket;->impl:Ljava/net/SocketImpl; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app, TargetSdkVersion=36) using reflection: allowed
+02-24 19:28:51.520 23199 23476 I .alertakimobile: hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->setCurveName(Ljava/lang/String;)V (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app, TargetSdkVersion=36) using reflection: allowed
+02-24 19:28:52.298 23199 23203 I .alertakimobile: Compiler allocated 5093KB to compile void android.view.ViewRootImpl.performTraversals()
+02-24 19:28:52.308 23199 23270 D nativeloader: Load /data/app/~~_Zael6VKlU5MySR3J0BAHg==/com.alertakimobile-a0ZwQBHPOOr5IjI_awBcjw==/base.apk!/lib/arm64-v8a/librnscreens.so using class loader ns clns-9 (caller=/data/app/~~_Zael6VKlU5MySR3J0BAHg==/com.alertakimobile-a0ZwQBHPOOr5IjI_awBcjw==/base.apk!classes13.dex): ok
+02-24 19:28:53.983 23199 23199 W [RNScreens]: backTitleFontFamily prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: disableBackButtonMenu prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: backTitleVisible prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: topInsetEnabled prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: largeTitleHideShadow prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: largeTitleFontWeight prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: userInterfaceStyle prop is not available on Android
+02-24 19:28:53.984 23199 23199 W [RNScreens]: largeTitleFontFamily prop is not available on Android
+02-24 19:28:54.554 23199 23199 I Choreographer: Skipped 57 frames!  The application may be doing too much work on its main thread.
+02-24 19:28:57.122 23199 23477 V NativeCrypto: Read error: ssl=0xb400007b812f5018: I/O error during system call, Software caused connection abort
+02-24 19:28:57.126 23199 23476 V NativeCrypto: Write error: ssl=0xb400007b812f5018: I/O error during system call, Broken pipe
+02-24 19:28:57.129 23199 23345 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:28:57.131 23199 23345 W Firestore: (26.1.0) [WatchStream]: (8ac25c8) Stream closed with status: Status{code=UNAVAILABLE, description=End of stream or IOException, cause=null}.
+02-24 19:28:57.132 23199 23476 V NativeCrypto: SSL shutdown failed: ssl=0xb400007b812f5018: I/O error during system call, Success
+02-24 19:28:58.266 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: Failed to get service from broker. 
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3354)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Parcel.createException(Parcel.java:3338)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3321)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3263)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at bfbc.a(:com.google.android.gms@260632035@26.06.32 (260400-869789857):36)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at bezd.z(:com.google.android.gms@260632035@26.06.32 (260400-869789857):143)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at befj.run(:com.google.android.gms@260632035@26.06.32 (260400-869789857):42)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Handler.handleCallback(Handler.java:995)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Handler.dispatchMessage(Handler.java:103)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at ctlu.ms(:com.google.android.gms@260632035@26.06.32 (260400-869789857):1)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at ctlu.dispatchMessage(:com.google.android.gms@260632035@26.06.32 (260400-869789857):5)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Looper.loopOnce(Looper.java:273)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.Looper.loop(Looper.java:363)
+02-24 19:28:59.629 23199 23400 E GoogleApiManager: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+02-24 19:28:59.630 23199 23400 W GoogleApiManager: Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+02-24 19:29:00.072 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:29:02.456 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:29:06.277 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:29:14.005 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:29:26.051 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:29:39.579 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:30:11.075 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:32:26.172 23199 23199 I Choreographer: Skipped 14879 frames!  The application may be doing too much work on its main thread.
+02-24 19:32:26.198 23199 23468 W ManagedChannelImpl: [{0}] Failed to resolve name. status={1}
+02-24 19:32:26.438 23199 23199 I VRI[MainActivity]@93b9251: onDisplayChanged oldDisplayState=1 newDisplayState=2

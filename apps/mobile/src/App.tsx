@@ -16,27 +16,35 @@ import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineBanner } from './components/OfflineBanner';
 
-GoogleSignin.configure({
-  webClientId: '807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com',
-});
+try {
+  GoogleSignin.configure({
+    webClientId: '807554654482-nrm3bduds7k8vgbf24s3thd996lu9kgh.apps.googleusercontent.com',
+  });
+} catch (error) {
+  console.warn('GoogleSignin.configure failed:', error);
+}
 
 // Background message handler — must be registered outside component
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-  const data = remoteMessage.data;
-  if (data?.fullscreen === '1') {
-    await notificationService.showAlertNotification({
-      alertId: (data.alertId as string) || '',
-      type: (data.type as string) || '',
-      lat: (data.lat as string) || '',
-      lng: (data.lng as string) || '',
-      userName: (data.userName as string) || '',
-      userPhotoURL: (data.userPhotoURL as string) || '',
-      address: (data.address as string) || '',
-      customMessage: (data.customMessage as string) || '',
-      userId: (data.userId as string) || '',
-    });
-  }
-});
+try {
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    const data = remoteMessage.data;
+    if (data?.fullscreen === '1') {
+      await notificationService.showAlertNotification({
+        alertId: (data.alertId as string) || '',
+        type: (data.type as string) || '',
+        lat: (data.lat as string) || '',
+        lng: (data.lng as string) || '',
+        userName: (data.userName as string) || '',
+        userPhotoURL: (data.userPhotoURL as string) || '',
+        address: (data.address as string) || '',
+        customMessage: (data.customMessage as string) || '',
+        userId: (data.userId as string) || '',
+      });
+    }
+  });
+} catch (error) {
+  console.warn('setBackgroundMessageHandler failed:', error);
+}
 
 function App(): React.JSX.Element {
   const setUser = useAuthStore((s) => s.setUser);
@@ -52,24 +60,40 @@ function App(): React.JSX.Element {
     notificationService.createChannels().catch(() => {});
     notificationService.requestPermission().catch(() => {});
 
+    // Safety timeout: if auth state never resolves, force show auth screen
+    const authTimeout = setTimeout(() => {
+      if (useAuthStore.getState().isLoading) {
+        console.warn('Auth state listener timeout — forcing isLoading to false');
+        setLoading(false);
+      }
+    }, 10000);
+
     // Auth state listener
     const unsubAuth = auth().onAuthStateChanged(async (firebaseUser) => {
-      if (firebaseUser) {
-        let userData = await userService.getUser(firebaseUser.uid);
-        if (!userData) {
-          // User doc may not exist yet (race with signIn flow) — create it
-          await userService.upsertUser(firebaseUser);
-          userData = await userService.getUser(firebaseUser.uid);
+      try {
+        clearTimeout(authTimeout);
+        if (firebaseUser) {
+          let userData = await userService.getUser(firebaseUser.uid);
+          if (!userData) {
+            // User doc may not exist yet (race with signIn flow) — create it
+            await userService.upsertUser(firebaseUser);
+            userData = await userService.getUser(firebaseUser.uid);
+          }
+          setUser(userData);
+        } else {
+          setUser(null);
         }
-        setUser(userData);
-        setLoading(false);
-      } else {
-        setUser(null);
+      } catch (error) {
+        console.warn('Auth state handler error:', error);
+      } finally {
         setLoading(false);
       }
     });
 
-    return unsubAuth;
+    return () => {
+      clearTimeout(authTimeout);
+      unsubAuth();
+    };
   }, [setUser, setLoading]);
 
   // Background location updates
