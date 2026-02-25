@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EMERGENCY_NUMBERS } from '@alertaki/shared';
 import { useAuthStore } from '../../stores/authStore';
@@ -31,6 +33,7 @@ type HomeScreenProps = {
 };
 
 export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
+  const insets = useSafeAreaInsets();
   const [sending, setSending] = useState(false);
   const user = useAuthStore((s) => s.user);
   const contacts = useContactStore((s) => s.contacts);
@@ -82,7 +85,9 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
               step = 'createAlert';
               await alertService.createAlert({
                 userId: user.uid,
+                userName: user.displayName,
                 userEmail: user.email,
+                userPhotoURL: user.photoURL,
                 type,
                 lat: coords.latitude,
                 lng: coords.longitude,
@@ -115,7 +120,7 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Avatar photoURL={user?.photoURL} name={user?.displayName} size={40} />
@@ -150,36 +155,57 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
-          style={[styles.alertButton, { backgroundColor: ALERT_COLORS.health.primary }]}
           onPress={() => sendAlert('health')}
           disabled={sending}
           accessibilityLabel="Alerta de saúde. Alertar contatos e pessoas próximas"
           accessibilityRole="button"
+          activeOpacity={0.8}
         >
-          <Text style={styles.alertButtonTitle}>Saúde</Text>
-          <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
+          <LinearGradient
+            colors={ALERT_COLORS.health.gradient as unknown as string[]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.alertButton}
+          >
+            <Text style={styles.alertButtonTitle}>Saúde</Text>
+            <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.alertButton, { backgroundColor: ALERT_COLORS.security.primary }]}
           onPress={() => sendAlert('security')}
           disabled={sending}
           accessibilityLabel="Alerta de segurança. Alertar contatos e pessoas próximas"
           accessibilityRole="button"
+          activeOpacity={0.8}
         >
-          <Text style={styles.alertButtonTitle}>Segurança</Text>
-          <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
+          <LinearGradient
+            colors={ALERT_COLORS.security.gradient as unknown as string[]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.alertButton}
+          >
+            <Text style={styles.alertButtonTitle}>Segurança</Text>
+            <Text style={styles.alertButtonSubtitle}>Alertar contatos e pessoas próximas</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.alertButton, { backgroundColor: ALERT_COLORS.custom.primary }]}
           onPress={() => navigation.navigate('Emergency')}
           disabled={sending}
           accessibilityLabel="Alerta de emergência. Alertar contatos selecionados"
           accessibilityRole="button"
+          activeOpacity={0.8}
         >
-          <Text style={styles.alertButtonTitle}>Emergência</Text>
-          <Text style={styles.alertButtonSubtitle}>Alertar contatos selecionados</Text>
+          <LinearGradient
+            colors={ALERT_COLORS.custom.gradient as unknown as string[]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.alertButton}
+          >
+            <Text style={styles.alertButtonTitle}>Emergência</Text>
+            <Text style={styles.alertButtonSubtitle}>Alertar contatos selecionados</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </View>

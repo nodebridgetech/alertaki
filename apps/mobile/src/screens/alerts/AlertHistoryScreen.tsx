@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,19 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/authStore';
 import { useAlertStore } from '../../stores/alertStore';
 import type { Alert as AlertType } from '@alertaki/shared';
 import { ReceivedAlertItem } from '../../services/alertService';
-import { COLORS } from '../../config/constants';
+import LinearGradient from 'react-native-linear-gradient';
+import { ALERT_COLORS, COLORS } from '../../config/constants';
 
-const TYPE_LABELS: Record<string, string> = {
-  health: '🏥 Saúde',
-  security: '🛡️ Segurança',
-  custom: '⚠️ Emergência',
+const ALERT_TYPE_CONFIG: Record<string, { label: string; color: string; gradient: readonly string[]; icon: string }> = {
+  health: { label: 'Alerta de Saúde', color: ALERT_COLORS.health.primary, gradient: ALERT_COLORS.health.gradient, icon: '❤️' },
+  security: { label: 'Alerta de Segurança', color: ALERT_COLORS.security.primary, gradient: ALERT_COLORS.security.gradient, icon: '🛡️' },
+  custom: { label: 'Alerta de Emergência', color: ALERT_COLORS.custom.primary, gradient: ALERT_COLORS.custom.gradient, icon: '🚨' },
 };
 
 function formatDate(timestamp: { seconds: number } | null): string {
@@ -31,6 +34,7 @@ function formatDate(timestamp: { seconds: number } | null): string {
 }
 
 export function AlertHistoryScreen(): React.JSX.Element {
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
   const user = useAuthStore((s) => s.user);
   const {
@@ -46,60 +50,113 @@ export function AlertHistoryScreen(): React.JSX.Element {
     loadMoreReceivedAlerts,
   } = useAlertStore();
 
-  useEffect(() => {
-    if (user) {
-      loadSentAlerts(user.uid);
-      loadReceivedAlerts(user.uid);
-    }
-  }, [user, loadSentAlerts, loadReceivedAlerts]);
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadSentAlerts(user.uid);
+        loadReceivedAlerts(user.uid);
+      }
+    }, [user, loadSentAlerts, loadReceivedAlerts]),
+  );
 
   const renderSentItem = useCallback(({ item }: { item: AlertType }) => {
+    const config = ALERT_TYPE_CONFIG[item.type] || { label: item.type, color: '#999', gradient: ['#999', '#666'], icon: '?' };
     return (
-      <View style={styles.alertItem}>
-        <View style={styles.alertHeader}>
-          <Text style={styles.alertType}>{TYPE_LABELS[item.type] || item.type}</Text>
-          <Text style={styles.alertDate}>{formatDate(item.createdAt)}</Text>
+      <View style={[styles.card, { borderLeftColor: config.color }]}>
+        <View style={styles.cardContent}>
+          <LinearGradient
+            colors={config.gradient as unknown as string[]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconCircle}
+          >
+            <Text style={styles.iconText}>{config.icon}</Text>
+          </LinearGradient>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardTitle}>{config.label}</Text>
+            <Text style={styles.cardDetail}>
+              Usuário: {item.userName || 'Desconhecido'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Email: {item.userEmail || 'Indisponível'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Local: {item.address || 'Endereço indisponível'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Data/Hora: {formatDate(item.createdAt)}
+            </Text>
+            {item.customMessage && (
+              <Text style={styles.cardMessage} numberOfLines={2}>
+                Mensagem: "{item.customMessage}"
+              </Text>
+            )}
+            {item.lat != null && item.lng != null && (
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`,
+                  )
+                }
+              >
+                <Text style={styles.mapLinkText}>👉 Toque para abrir no mapa</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-        <Text style={styles.alertAddress}>{item.address || 'Endereço indisponível'}</Text>
-        {item.customMessage && (
-          <Text style={styles.alertMessage} numberOfLines={2}>
-            "{item.customMessage}"
-          </Text>
-        )}
       </View>
     );
   }, []);
 
   const renderReceivedItem = useCallback(({ item }: { item: ReceivedAlertItem }) => {
+    const config = ALERT_TYPE_CONFIG[item.alert.type] || { label: item.alert.type, color: '#999', gradient: ['#999', '#666'], icon: '?' };
     return (
-      <View style={styles.alertItem}>
-        <View style={styles.alertHeader}>
-          <Text style={styles.alertType}>{TYPE_LABELS[item.alert.type] || item.alert.type}</Text>
-          <Text style={styles.alertDate}>{formatDate(item.receivedAt)}</Text>
+      <View style={[styles.card, { borderLeftColor: config.color }]}>
+        <View style={styles.cardContent}>
+          <LinearGradient
+            colors={config.gradient as unknown as string[]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconCircle}
+          >
+            <Text style={styles.iconText}>{config.icon}</Text>
+          </LinearGradient>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardTitle}>{config.label}</Text>
+            <Text style={styles.cardDetail}>
+              Usuário: {item.alert.userName || 'Desconhecido'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Email: {item.alert.userEmail || 'Indisponível'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Local: {item.alert.address || 'Endereço indisponível'}
+            </Text>
+            <Text style={styles.cardDetail}>
+              Data/Hora: {formatDate(item.receivedAt)}
+            </Text>
+            {item.alert.customMessage && (
+              <Text style={styles.cardMessage} numberOfLines={2}>
+                Mensagem: "{item.alert.customMessage}"
+              </Text>
+            )}
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL(
+                  `https://www.google.com/maps/dir/?api=1&destination=${item.alert.lat},${item.alert.lng}`,
+                )
+              }
+            >
+              <Text style={styles.mapLinkText}>👉 Toque para abrir no mapa</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.senderName}>De: {item.alert.userName || 'Usuário'}</Text>
-        <Text style={styles.alertAddress}>{item.alert.address || 'Endereço indisponível'}</Text>
-        {item.alert.customMessage && (
-          <Text style={styles.alertMessage} numberOfLines={2}>
-            "{item.alert.customMessage}"
-          </Text>
-        )}
-        <TouchableOpacity
-          style={styles.mapLink}
-          onPress={() =>
-            Linking.openURL(
-              `https://www.google.com/maps/dir/?api=1&destination=${item.alert.lat},${item.alert.lng}`,
-            )
-          }
-        >
-          <Text style={styles.mapLinkText}>Abrir no Mapa</Text>
-        </TouchableOpacity>
       </View>
     );
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <Text style={styles.title}>Histórico</Text>
 
       <View style={styles.tabs}>
@@ -200,51 +257,59 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 8,
   },
-  alertItem: {
-    backgroundColor: COLORS.backgroundSecondary,
+  card: {
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     padding: 16,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    marginBottom: 12,
+    borderLeftWidth: 5,
+    borderLeftColor: COLORS.accent,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
   },
-  alertHeader: {
+  cardContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
+    alignItems: 'flex-start',
   },
-  alertType: {
-    fontSize: 14,
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  iconText: {
+    fontSize: 22,
+    color: COLORS.white,
+  },
+  cardInfo: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.primaryText,
+    marginBottom: 6,
   },
-  alertDate: {
-    fontSize: 12,
-    color: COLORS.secondaryText,
-  },
-  senderName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.primaryText,
-    marginBottom: 4,
-  },
-  alertAddress: {
+  cardDetail: {
     fontSize: 13,
-    color: COLORS.secondaryText,
+    color: COLORS.primaryText,
+    lineHeight: 20,
   },
-  alertMessage: {
+  cardMessage: {
     fontSize: 13,
     color: COLORS.primaryText,
     fontStyle: 'italic',
-    marginTop: 4,
-  },
-  mapLink: {
-    marginTop: 8,
+    marginTop: 2,
   },
   mapLinkText: {
-    color: '#4CAF50',
-    fontSize: 14,
-    fontWeight: '600',
+    color: COLORS.secondaryText,
+    fontSize: 13,
+    marginTop: 6,
   },
   emptyText: {
     fontSize: 16,

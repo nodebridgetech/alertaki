@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '../../stores/authStore';
 import { useContactStore } from '../../stores/contactStore';
@@ -22,6 +23,7 @@ type ContactsScreenProps = {
 };
 
 export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.Element {
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'mine' | 'contactOf'>('mine');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteInput, setInviteInput] = useState('');
@@ -106,7 +108,7 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <Text style={styles.title}>Contatos</Text>
 
       <TouchableOpacity style={styles.inviteButton} onPress={() => setShowInviteModal(true)}>

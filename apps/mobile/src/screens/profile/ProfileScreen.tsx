@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
 import functions from '@react-native-firebase/functions';
@@ -15,6 +16,7 @@ type ProfileScreenProps = {
 };
 
 export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Element {
+  const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const resetAuth = useAuthStore((s) => s.reset);
   const resetContacts = useContactStore((s) => s.reset);
@@ -73,7 +75,7 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Avatar photoURL={user?.photoURL} name={user?.displayName} size={80} />

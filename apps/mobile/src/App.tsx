@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { StatusBar } from 'react-native';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -262,6 +263,7 @@ function App(): React.JSX.Element {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
         {!isConnected && <OfflineBanner />}
         <NavigationContainer ref={navigationRef}>
           <RootNavigator />

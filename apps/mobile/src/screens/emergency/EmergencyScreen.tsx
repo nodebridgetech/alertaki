@@ -98,7 +98,9 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
               step = 'createAlert';
               await alertService.createAlert({
                 userId: user.uid,
+                userName: user.displayName,
                 userEmail: user.email,
+                userPhotoURL: user.photoURL,
                 type: 'custom',
                 lat: coords.latitude,
                 lng: coords.longitude,

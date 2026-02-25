@@ -1,17 +1,23 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { Text, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../../config/constants';
+
+const bellIcon = require('../../assets/bell.png');
 
 export function SplashScreen(): React.JSX.Element {
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Text style={styles.icon}>🛡️</Text>
-      </View>
+    <LinearGradient
+      colors={['#FF4444', '#FF8800']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
+      <Image source={bellIcon} style={styles.icon} resizeMode="contain" />
       <Text style={styles.title}>Alertaki</Text>
       <Text style={styles.subtitle}>Sua segurança em primeiro lugar</Text>
       <ActivityIndicator size="large" color={COLORS.white} style={styles.loader} />
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -20,19 +26,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.accent,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
   },
   icon: {
-    fontSize: 40,
+    width: 140,
+    height: 140,
+    marginBottom: 16,
   },
   title: {
     fontSize: 42,

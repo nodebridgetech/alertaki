@@ -40,7 +40,7 @@ async function upsertUser(
 async function getUser(uid: string): Promise<User | null> {
   const doc = await firestore().collection('users').doc(uid).get();
   if (!doc.exists) return null;
-  return doc.data() as User;
+  return { ...doc.data(), uid: doc.id } as User;
 }
 
 async function updateProfile(
@@ -66,7 +66,7 @@ async function updateLocation(uid: string, lat: number, lng: number): Promise<vo
 async function findUserByEmail(email: string): Promise<User | null> {
   const snap = await firestore().collection('users').where('email', '==', email).limit(1).get();
   if (snap.empty) return null;
-  return snap.docs[0].data() as User;
+  return { ...snap.docs[0].data(), uid: snap.docs[0].id } as User;
 }
 
 async function findUserByPhone(phone: string): Promise<User | null> {
@@ -76,7 +76,7 @@ async function findUserByPhone(phone: string): Promise<User | null> {
     .limit(1)
     .get();
   if (snap.empty) return null;
-  return snap.docs[0].data() as User;
+  return { ...snap.docs[0].data(), uid: snap.docs[0].id } as User;
 }
 
 export const userService = {

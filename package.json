@@ -27,6 +27,9 @@
     "prettier": "^3.4.0",
     "typescript": "~5.6.0"
   },
+  "resolutions": {
+    "hermes-compiler": "250829098.0.8"
+  },
   "engines": {
     "node": ">=20"
   }
