@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { StatusBar } from 'react-native';
+import { AppState, NativeModules, Platform, StatusBar } from 'react-native';
+import notifee from '@notifee/react-native';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ import { useContactStore } from './stores/contactStore';
 import { notificationService } from './services/notificationService';
 import { userService } from './services/userService';
 import { contactService } from './services/contactService';
+import { locationService } from './services/locationService';
 import { useBackgroundLocation } from './hooks/useBackgroundLocation';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -25,11 +27,13 @@ try {
   console.warn('GoogleSignin.configure failed:', error);
 }
 
-// Background message handler — must be registered outside component
+// Background message handler — must be registered outside component.
+// FCM sends data-only messages so this handler always fires.
+// We create a Notifee notification with fullScreenAction for overlay display.
 try {
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     const data = remoteMessage.data;
-    if (data?.fullscreen === '1') {
+    if (data?.fullscreen === '1' && Platform.OS === 'android') {
       await notificationService.showAlertNotification({
         alertId: (data.alertId as string) || '',
         type: (data.type as string) || '',
@@ -41,6 +45,29 @@ try {
         customMessage: (data.customMessage as string) || '',
         userId: (data.userId as string) || '',
       });
+
+      // Launch the app activity directly using SYSTEM_ALERT_WINDOW
+      // This bypasses Android's fullScreenIntent limitations
+      try {
+        NativeModules.AlertLauncher?.launchAlert({
+          alertId: (data.alertId as string) || '',
+          type: (data.type as string) || '',
+          userId: (data.userId as string) || '',
+          userName: (data.userName as string) || '',
+          userPhotoURL: (data.userPhotoURL as string) || '',
+          lat: (data.lat as string) || '',
+          lng: (data.lng as string) || '',
+          address: (data.address as string) || '',
+          customMessage: (data.customMessage as string) || '',
+        });
+      } catch (e) {
+        console.warn('AlertLauncher.launchAlert failed:', e);
+      }
+    } else if (data?.screen === 'invites') {
+      await notificationService.showInviteNotification(
+        (data.fromDisplayName as string) || '',
+        (data.fromEmail as string) || '',
+      );
     }
   });
 } catch (error) {
@@ -55,11 +82,41 @@ function App(): React.JSX.Element {
   const setPendingInvites = useContactStore((s) => s.setPendingInvites);
   const setBlockedUsers = useContactStore((s) => s.setBlockedUsers);
   const pendingInitialNotification = useRef<FirebaseMessagingTypes.RemoteMessage | null>(null);
+  const pendingNotifeeInitial = useRef<Record<string, string> | null>(null);
 
   useEffect(() => {
-    // Create notification channels on startup
-    notificationService.createChannels().catch(() => {});
-    notificationService.requestPermission().catch(() => {});
+    // Create notification channels (idempotent, always safe)
+    notificationService.createChannels().catch((e: unknown) => {
+      console.error('ALERTAKI: createChannels FAILED:', e);
+    });
+
+    // Sequential permission flow: check first, only request what's missing, one at a time
+    (async () => {
+      try {
+        // Step 1: Notification permission
+        const notifGranted = await notificationService.isNotificationPermissionGranted();
+        if (!notifGranted) {
+          await notificationService.requestPermission();
+        }
+
+        // Step 2: Overlay permission (only ask if notifications are granted)
+        const overlayGranted = await notificationService.isOverlayPermissionGranted();
+        if (!overlayGranted) {
+          const notifNowGranted = await notificationService.isNotificationPermissionGranted();
+          if (notifNowGranted) {
+            await notificationService.requestOverlayPermission();
+          }
+        }
+
+        // Step 3: Background location
+        const bgLocGranted = await locationService.isBackgroundLocationGranted();
+        if (!bgLocGranted) {
+          await locationService.requestBackgroundPermission();
+        }
+      } catch (e) {
+        console.warn('ALERTAKI: Permission flow error:', e);
+      }
+    })();
 
     // Safety timeout: if auth state never resolves, force show auth screen
     const authTimeout = setTimeout(() => {
@@ -133,6 +190,53 @@ function App(): React.JSX.Element {
     };
   }, [user, setContacts, setContactOf, setPendingInvites, setBlockedUsers]);
 
+  // Check for pending alert data from native AlertLauncher module.
+  // When the app is brought to foreground by AlertLauncher (SYSTEM_ALERT_WINDOW),
+  // it stores alert data that we consume here to navigate to AlertOverlay.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    function checkPendingAlert() {
+      NativeModules.AlertLauncher?.getPendingAlert()
+        .then((data: Record<string, string> | null) => {
+          if (!data?.fullscreen) return;
+
+          const tryNavigate = setInterval(() => {
+            if (!navigationRef.isReady()) return;
+            clearInterval(tryNavigate);
+            navigationRef.navigate('AlertOverlay', {
+              alertData: {
+                alertId: data.alertId || '',
+                type: data.type || '',
+                userId: data.userId || '',
+                userName: data.userName || '',
+                userPhotoURL: data.userPhotoURL || '',
+                lat: data.lat || '',
+                lng: data.lng || '',
+                address: data.address || '',
+                customMessage: data.customMessage || '',
+              },
+            });
+          }, 100);
+
+          setTimeout(() => clearInterval(tryNavigate), 5000);
+        })
+        .catch(() => {});
+    }
+
+    // Check immediately on mount
+    checkPendingAlert();
+
+    // Check whenever app comes to foreground
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        checkPendingAlert();
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
+
   // FCM foreground message handler
   useEffect(() => {
     const unsubMessage = messaging().onMessage(async (remoteMessage) => {
@@ -178,23 +282,34 @@ function App(): React.JSX.Element {
     // Handle notification tap when app is in background
     const unsubNotifOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
       const data = remoteMessage.data;
-      if (data?.fullscreen === '1' && navigationRef.isReady()) {
-        navigationRef.navigate('AlertOverlay', {
-          alertData: {
-            alertId: (data.alertId as string) || '',
-            type: (data.type as string) || '',
-            userId: (data.userId as string) || '',
-            userName: (data.userName as string) || '',
-            userPhotoURL: (data.userPhotoURL as string) || '',
-            lat: (data.lat as string) || '',
-            lng: (data.lng as string) || '',
-            address: (data.address as string) || '',
-            customMessage: (data.customMessage as string) || '',
-          },
-        });
-      } else if (data?.screen === 'invites' && navigationRef.isReady()) {
-        navigationRef.navigate('Invites');
-      }
+      if (!data) return;
+
+      // Wait for navigation to be ready before navigating
+      const tryNavigate = setInterval(() => {
+        if (!navigationRef.isReady()) return;
+        clearInterval(tryNavigate);
+
+        if (data.fullscreen === '1') {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: (data.alertId as string) || '',
+              type: (data.type as string) || '',
+              userId: (data.userId as string) || '',
+              userName: (data.userName as string) || '',
+              userPhotoURL: (data.userPhotoURL as string) || '',
+              lat: (data.lat as string) || '',
+              lng: (data.lng as string) || '',
+              address: (data.address as string) || '',
+              customMessage: (data.customMessage as string) || '',
+            },
+          });
+        } else if (data.screen === 'invites') {
+          navigationRef.navigate('Invites');
+        }
+      }, 100);
+
+      // Safety: stop polling after 5 seconds
+      setTimeout(() => clearInterval(tryNavigate), 5000);
     });
 
     // Handle notification tap when app was terminated — store for later
@@ -206,24 +321,38 @@ function App(): React.JSX.Element {
         }
       });
 
-    // Notifee foreground event handler
-    const unsubNotifee = notificationService.setupForegroundEvent((data) => {
-      if (data.fullscreen === '1' && navigationRef.isReady()) {
-        navigationRef.navigate('AlertOverlay', {
-          alertData: {
-            alertId: data.alertId || '',
-            type: data.type || '',
-            userId: data.userId || '',
-            userName: data.userName || '',
-            userPhotoURL: data.userPhotoURL || '',
-            lat: data.lat || '',
-            lng: data.lng || '',
-            address: data.address || '',
-            customMessage: data.customMessage || '',
-          },
-        });
+    // Also check Notifee initial notification (for full-screen intent or Notifee press)
+    notifee.getInitialNotification().then((initialNotification) => {
+      if (initialNotification?.notification?.data) {
+        pendingNotifeeInitial.current = initialNotification.notification.data as Record<string, string>;
       }
     });
+
+    // Notifee foreground event handler
+    const unsubNotifee = notificationService.setupForegroundEvent(
+      (data) => {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: data.alertId || '',
+              type: data.type || '',
+              userId: data.userId || '',
+              userName: data.userName || '',
+              userPhotoURL: data.userPhotoURL || '',
+              lat: data.lat || '',
+              lng: data.lng || '',
+              address: data.address || '',
+              customMessage: data.customMessage || '',
+            },
+          });
+        }
+      },
+      () => {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('Invites');
+        }
+      },
+    );
 
     return () => {
       unsubMessage();
@@ -232,12 +361,22 @@ function App(): React.JSX.Element {
     };
   }, []);
 
-  // Process pending initial notification after auth is ready
+  // Process pending initial notification after auth is ready.
+  // Handles both FCM initial notification and Notifee initial notification
+  // (full-screen intent / notification press that launched the app).
   useEffect(() => {
-    if (!user || !pendingInitialNotification.current) return;
+    if (!user) return;
 
-    const data = pendingInitialNotification.current.data;
-    pendingInitialNotification.current = null;
+    // Merge data from FCM or Notifee initial notification
+    let data: Record<string, string | object> | undefined;
+
+    if (pendingNotifeeInitial.current) {
+      data = pendingNotifeeInitial.current;
+      pendingNotifeeInitial.current = null;
+    } else if (pendingInitialNotification.current?.data) {
+      data = pendingInitialNotification.current.data;
+      pendingInitialNotification.current = null;
+    }
 
     if (!data) return;
 

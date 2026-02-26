@@ -6,18 +6,56 @@ import notifee, {
   AndroidCategory,
   EventType,
 } from '@notifee/react-native';
-import { Platform, Vibration } from 'react-native';
+import { Alert, Linking, NativeModules, Platform, Vibration } from 'react-native';
 
 let vibrationInterval: ReturnType<typeof setInterval> | null = null;
 
-const VIBRATION_PATTERN = [0, 1000, 500, 1000, 500, 1000];
+const VIBRATION_PATTERN = [1, 1000, 500, 1000, 500, 1000];
+
+async function isNotificationPermissionGranted(): Promise<boolean> {
+  const settings = await notifee.getNotificationSettings();
+  return (
+    settings.authorizationStatus === 1 || // AUTHORIZED
+    settings.authorizationStatus === 2    // PROVISIONAL
+  );
+}
+
+async function isOverlayPermissionGranted(): Promise<boolean> {
+  if (Platform.OS !== 'android') return true;
+  try {
+    return await NativeModules.AlertLauncher.canDrawOverlays();
+  } catch {
+    return false;
+  }
+}
 
 async function requestPermission(): Promise<boolean> {
-  const authStatus = await messaging().requestPermission();
-  return (
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL
-  );
+  // Use Notifee for Android 13+ (handles POST_NOTIFICATIONS properly)
+  const settings = await notifee.requestPermission();
+  const authorized =
+    settings.authorizationStatus === 1 || // AUTHORIZED
+    settings.authorizationStatus === 2;   // PROVISIONAL
+
+  if (!authorized && Platform.OS === 'android') {
+    Alert.alert(
+      'Notificações desativadas',
+      'O Alertaki precisa de notificações para enviar alertas de segurança. Sem elas, você não receberá avisos de emergência dos seus contatos.',
+      [
+        { text: 'Agora não', style: 'cancel' },
+        {
+          text: 'Ativar nas Configurações',
+          onPress: () => Linking.openSettings(),
+        },
+      ],
+    );
+  }
+
+  // Also request Firebase messaging permission for iOS
+  if (Platform.OS === 'ios') {
+    await messaging().requestPermission();
+  }
+
+  return authorized;
 }
 
 async function createChannels(): Promise<void> {
@@ -134,14 +172,17 @@ async function showAlertNotification(data: AlertNotificationData): Promise<void>
     },
     android: {
       channelId: 'alert_channel',
+      smallIcon: 'ic_launcher',
       importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
       category: AndroidCategory.ALARM,
-      fullScreenAction: { id: 'default', launchActivity: 'default' },
+      fullScreenAction: {
+        id: 'default',
+        mainComponent: 'full-screen-alert',
+      },
       ongoing: true,
       autoCancel: false,
       sound: 'default',
-      vibrationPattern: VIBRATION_PATTERN,
       pressAction: { id: 'default', launchActivity: 'default' },
       loopSound: true,
     },
@@ -156,11 +197,12 @@ async function showAlertNotification(data: AlertNotificationData): Promise<void>
 
 async function showInviteNotification(fromName: string, fromEmail: string): Promise<void> {
   await notifee.displayNotification({
-    title: 'Novo convite de segurança',
+    title: 'Novo convite!',
     body: `${fromName || fromEmail} quer ser seu contato de segurança`,
     data: { screen: 'invites' },
     android: {
       channelId: 'invite_channel',
+      smallIcon: 'ic_launcher',
       pressAction: { id: 'default' },
     },
     ios: {
@@ -193,18 +235,53 @@ function stopVibration(): void {
   }
 }
 
-function setupForegroundEvent(onAlertPress: (data: Record<string, string>) => void): () => void {
+function setupForegroundEvent(
+  onAlertPress: (data: Record<string, string>) => void,
+  onInvitePress?: () => void,
+): () => void {
   return notifee.onForegroundEvent(({ type, detail }) => {
     if (type === EventType.PRESS && detail.notification?.data) {
-      onAlertPress(detail.notification.data as Record<string, string>);
+      const data = detail.notification.data as Record<string, string>;
+      if (data.fullscreen === '1') {
+        onAlertPress(data);
+      } else if (data.screen === 'invites' && onInvitePress) {
+        onInvitePress();
+      }
       notifee.cancelAllNotifications();
       stopVibration();
     }
   });
 }
 
+function requestOverlayPermission(): Promise<void> {
+  if (Platform.OS !== 'android') return Promise.resolve();
+
+  return new Promise<void>((resolve) => {
+    Alert.alert(
+      'Permissão importante',
+      'Para que alertas de emergência apareçam imediatamente por cima de qualquer app, ative "Exibir sobre outros apps" para o Alertaki.',
+      [
+        { text: 'Agora não', style: 'cancel', onPress: () => resolve() },
+        {
+          text: 'Ativar',
+          onPress: () => {
+            Linking.sendIntent(
+              'android.settings.action.MANAGE_OVERLAY_PERMISSION',
+              [{ key: 'package', value: 'com.alertakimobile' }],
+            ).catch(() => Linking.openSettings());
+            resolve();
+          },
+        },
+      ],
+    );
+  });
+}
+
 export const notificationService = {
+  isNotificationPermissionGranted,
+  isOverlayPermissionGranted,
   requestPermission,
+  requestOverlayPermission,
   createChannels,
   saveFcmToken,
   removeFcmToken,

@@ -26,7 +26,7 @@ async function sendInvite(emailOrPhone: string, existingContactUids?: string[]):
     throw new Error('Este usuário já é seu contato.');
   }
 
-  // Check for pending invite (force server read to avoid stale cache)
+  // Delete any stale pending invites before creating a new one
   const pendingSnap = await firestore()
     .collection('invites')
     .where('fromUid', '==', currentUser.uid)
@@ -35,7 +35,7 @@ async function sendInvite(emailOrPhone: string, existingContactUids?: string[]):
     .get({ source: 'server' });
 
   if (!pendingSnap.empty) {
-    throw new Error('Já existe um convite pendente para este usuário.');
+    await Promise.all(pendingSnap.docs.map((doc) => doc.ref.delete()));
   }
 
   // Check if target blocked the sender

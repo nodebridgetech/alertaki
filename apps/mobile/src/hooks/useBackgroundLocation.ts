@@ -7,7 +7,7 @@ import auth from '@react-native-firebase/auth';
 export function useBackgroundLocation(): void {
   useEffect(() => {
     async function initBackgroundFetch() {
-      const hasPermission = await locationService.requestBackgroundPermission();
+      const hasPermission = await locationService.isBackgroundLocationGranted();
       if (!hasPermission) return;
 
       await BackgroundFetch.configure(

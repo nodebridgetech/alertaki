@@ -15,10 +15,9 @@ export const onInviteCreated = onDocumentCreated('invites/{inviteId}', async (ev
 
   await messaging.sendEachForMulticast({
     tokens,
-    notification: {
-      title: 'Novo convite de segurança',
-      body: `${invite.fromDisplayName || invite.fromEmail} quer adicioná-lo como contato de segurança`,
-    },
+    // Data-only message: no "notification" field.
+    // Notification display is handled by Notifee on the client side
+    // to avoid duplicate notifications (FCM auto-display + Notifee).
     data: {
       screen: 'invites',
       inviteId: event.params.inviteId,
@@ -27,16 +26,18 @@ export const onInviteCreated = onDocumentCreated('invites/{inviteId}', async (ev
       fromDisplayName: invite.fromDisplayName || '',
     },
     android: {
-      notification: {
-        channelId: 'invite_channel',
-        sound: 'default',
-      },
+      priority: 'high',
     },
     apns: {
       payload: {
         aps: {
+          alert: {
+            title: 'Novo convite!',
+            body: `${invite.fromDisplayName || invite.fromEmail} quer adicioná-lo como contato de segurança`,
+          },
           sound: 'default',
           'interruption-level': 'time-sensitive',
+          'content-available': 1,
         },
       },
     },

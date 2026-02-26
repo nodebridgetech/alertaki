@@ -162,7 +162,22 @@
       "Bash(adb install -r /c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/release/app-release.apk)",
       "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install -r \"C:/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/release/app-release.apk\")",
       "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install -r \"C:\\\\Users\\\\Nickolas\\\\Documents\\\\GitHub\\\\alertaki\\\\apps\\\\mobile\\\\android\\\\app\\\\build\\\\outputs\\\\apk\\\\release\\\\app-universal-release.apk\")",
-      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d -t 200)"
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d -t 200)",
+      "Bash(xargs grep -l \"notification\\\\|Notification\\\\|notifee\\\\|firebase.*messaging\")",
+      "Bash(py --version)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell getprop ro.build.version.sdk)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell getprop ro.build.version.release)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell dumpsys package com.alertakimobile)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell appops get com.alertakimobile SYSTEM_ALERT_WINDOW)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell dumpsys notification)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell settings get secure enabled_notification_listeners)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell \"dumpsys package com.alertakimobile | grep -i version\")",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell \"dumpsys notification | sed -n ''/AppSettings: com.alertakimobile/,/AppSettings:/p''\")",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell monkey -p com.alertakimobile -c android.intent.category.LAUNCHER 1)",
+      "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell \"cmd notification list_channels com.alertakimobile 2>/dev/null || echo ''cmd not available''\")",
+      "Bash(adb install -r apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(xargs grep -l \"canDrawOverlays\\\\|SYSTEM_ALERT_WINDOW\\\\|Settings\")",
+      "Bash(adb install -r /c/Users/Nickolas/Desktop/Alertaki.apk)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",

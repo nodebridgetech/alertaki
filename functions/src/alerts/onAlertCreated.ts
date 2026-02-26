@@ -110,7 +110,11 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
   for (const chunk of chunks) {
     const response = await messaging.sendEachForMulticast({
       tokens: chunk,
-      notification: { title, body },
+      // Data-only message: NO "notification" field.
+      // This ensures setBackgroundMessageHandler fires on Android and we control
+      // notification display via Notifee (with fullScreenAction for overlay).
+      // Having a competing FCM notification causes Android rate-limiting
+      // (DISABLE_HEADS_UP) which blocks the full-screen intent.
       data: {
         alertId,
         type: alertData.type,
@@ -125,15 +129,11 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
       },
       android: {
         priority: 'high',
-        notification: {
-          channelId: 'alert_channel',
-          visibility: 'public',
-          sound: 'default',
-        },
       },
       apns: {
         payload: {
           aps: {
+            alert: { title, body },
             sound: 'default',
             'interruption-level': 'critical',
             'content-available': 1,

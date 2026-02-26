@@ -38,12 +38,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Invites: create by sender, read/update by involved parties
+    // Invites: create/delete by sender, read/update by involved parties
     match /invites/{inviteId} {
       allow create: if request.auth.uid == request.resource.data.fromUid;
       allow read: if request.auth.uid == resource.data.fromUid
                   || request.auth.uid == resource.data.toUid;
       allow update: if request.auth.uid == resource.data.toUid;
+      allow delete: if request.auth.uid == resource.data.fromUid;
     }
   }
 }

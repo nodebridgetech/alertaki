@@ -51,6 +51,20 @@ async function requestBackgroundPermission(): Promise<boolean> {
   return true;
 }
 
+async function isBackgroundLocationGranted(): Promise<boolean> {
+  if (Platform.OS !== 'android') return false;
+
+  if (Platform.Version >= 29) {
+    return PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+    );
+  }
+
+  return PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  );
+}
+
 function getCurrentPosition(): Promise<LocationCoords> {
   return new Promise((resolve, reject) => {
     Geolocation.getCurrentPosition(
@@ -139,6 +153,7 @@ function showLocationSettingsAlert(): void {
 }
 
 export const locationService = {
+  isBackgroundLocationGranted,
   requestPermission,
   requestBackgroundPermission,
   getCurrentPosition,

@@ -86,7 +86,7 @@ export function InvitesScreen(): React.JSX.Element {
                 end={{ x: 1, y: 1 }}
                 style={styles.actionButton}
               >
-                <Text style={styles.actionIcon}>✓</Text>
+                <Text style={styles.actionIcon}>🛡️</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity
@@ -100,7 +100,7 @@ export function InvitesScreen(): React.JSX.Element {
                 end={{ x: 1, y: 1 }}
                 style={styles.actionButton}
               >
-                <Text style={styles.actionIcon}>✗</Text>
+                <Text style={styles.actionIcon}>🚫</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -190,9 +190,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   actionIcon: {
-    color: COLORS.white,
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 20,
   },
   emptyText: {
     fontSize: 16,
