@@ -30,11 +30,12 @@ service cloud.firestore {
     match /alerts/{alertId} {
       allow create: if request.auth.uid == request.resource.data.userId;
       allow read: if request.auth != null;
+    }
 
-      match /recipients/{recipientId} {
-        allow read: if request.auth.uid == recipientId;
-        allow write: if false;
-      }
+    // Recipients: collection group query requires recursive wildcard
+    match /{path=**}/recipients/{recipientId} {
+      allow read: if request.auth.uid == resource.data.uid;
+      allow write: if false;
     }
 
     // Invites: create by sender, read/update by involved parties

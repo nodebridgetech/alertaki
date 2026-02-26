@@ -122,15 +122,19 @@ export function HomeScreen({ navigation }: HomeScreenProps): React.JSX.Element {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <TouchableOpacity
+          style={styles.headerLeft}
+          onPress={() => navigation.navigate('Profile')}
+          activeOpacity={0.7}
+        >
           <Avatar photoURL={user?.photoURL} name={user?.displayName} size={40} />
           <View style={styles.headerInfo}>
-            <Text style={styles.greeting}>{getGreeting()}, {user?.displayName?.split(' ')[0] || 'Usuário'}</Text>
+            <Text style={styles.greeting}>{getGreeting()}, {user?.displayName?.split(' ')[0] || 'Usuário'}!</Text>
             <Text style={styles.contactCount}>
               {contacts.length} {contacts.length === 1 ? 'contato' : 'contatos'} protegidos
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.bellButton}
           onPress={() => navigation.navigate('Invites')}

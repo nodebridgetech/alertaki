@@ -7,11 +7,11 @@ export type MainTabParamList = {
   Home: undefined;
   AlertHistory: undefined;
   Contacts: undefined;
-  Profile: undefined;
 };
 
 export type RootStackParamList = {
   MainTabs: undefined;
+  Profile: undefined;
   Emergency: undefined;
   Invites: undefined;
   BlockedUsers: undefined;

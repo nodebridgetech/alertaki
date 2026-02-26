@@ -34,7 +34,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const credential = await authService.signInWithGoogle();
       const userData = await userService.getUser(credential.user.uid);
-      set({ user: userData, isAuthenticated: true });
+      const fu = credential.user;
+      set({
+        user: userData || {
+          uid: fu.uid,
+          email: fu.email || '',
+          displayName: fu.displayName || '',
+          phoneNumber: fu.phoneNumber || null,
+          photoURL: fu.photoURL || null,
+        } as User,
+        isAuthenticated: true,
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -45,7 +55,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const credential = await authService.signInWithApple();
       const userData = await userService.getUser(credential.user.uid);
-      set({ user: userData, isAuthenticated: true });
+      const fu = credential.user;
+      set({
+        user: userData || {
+          uid: fu.uid,
+          email: fu.email || '',
+          displayName: fu.displayName || '',
+          phoneNumber: fu.phoneNumber || null,
+          photoURL: fu.photoURL || null,
+        } as User,
+        isAuthenticated: true,
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -56,7 +76,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const credential = await authService.signInWithEmail(email, password);
       const userData = await userService.getUser(credential.user.uid);
-      set({ user: userData, isAuthenticated: true });
+      const fu = credential.user;
+      set({
+        user: userData || {
+          uid: fu.uid,
+          email: fu.email || '',
+          displayName: fu.displayName || '',
+          phoneNumber: fu.phoneNumber || null,
+          photoURL: fu.photoURL || null,
+        } as User,
+        isAuthenticated: true,
+      });
     } finally {
       set({ isLoading: false });
     }

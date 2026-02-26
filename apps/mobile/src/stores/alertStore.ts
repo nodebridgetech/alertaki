@@ -72,6 +72,8 @@ export const useAlertStore = create<AlertState>((set, get) => ({
         receivedLastDoc: result.lastDoc,
         receivedHasMore: result.hasMore,
       });
+    } catch (error) {
+      console.error('loadReceivedAlerts error:', (error as Error).message);
     } finally {
       set({ isLoading: false });
     }

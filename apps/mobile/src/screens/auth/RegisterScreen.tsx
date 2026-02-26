@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,25 @@ type RegisterScreenProps = {
   }>;
 };
 
+function PasswordCriterion({ met, label }: { met: boolean; label: string }) {
+  return (
+    <View style={criterionStyles.row}>
+      <Text style={[criterionStyles.icon, met && criterionStyles.iconMet]}>
+        {met ? '\u2713' : '\u2022'}
+      </Text>
+      <Text style={[criterionStyles.label, met && criterionStyles.labelMet]}>{label}</Text>
+    </View>
+  );
+}
+
+const criterionStyles = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  icon: { fontSize: 14, color: COLORS.secondaryText, width: 18 },
+  iconMet: { color: COLORS.success, fontWeight: 'bold' },
+  label: { fontSize: 13, color: COLORS.secondaryText },
+  labelMet: { color: COLORS.success },
+});
+
 export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.Element {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,6 +51,17 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
   const [loading, setLoading] = useState(false);
 
   const { registerWithEmail } = useAuthStore();
+
+  const passwordCriteria = useMemo(() => ({
+    minLength: password.length >= 6,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password),
+    symbol: /[^A-Za-z0-9]/.test(password),
+  }), [password]);
+
+  const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+  const allCriteriaMet = Object.values(passwordCriteria).every(Boolean) && passwordsMatch;
 
   async function handleRegister() {
     if (!name.trim()) {
@@ -46,12 +76,8 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
       Alert.alert('Erro', 'Email inválido.');
       return;
     }
-    if (password.length < 6) {
-      Alert.alert('Erro', 'Senha deve ter no mínimo 6 caracteres.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não conferem.');
+    if (!allCriteriaMet) {
+      Alert.alert('Erro', 'A senha não atende todos os critérios de segurança.');
       return;
     }
     if (phone.trim() && !/^\+?\d{10,15}$/.test(phone.trim().replace(/[\s\-()]/g, ''))) {
@@ -72,7 +98,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Criar Conta</Text>
@@ -109,7 +135,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
 
         <TextInput
           style={styles.input}
-          placeholder="Senha (mínimo 6 caracteres)"
+          placeholder="Senha"
           placeholderTextColor={COLORS.secondaryText}
           secureTextEntry
           value={password}
@@ -124,6 +150,15 @@ export function RegisterScreen({ navigation }: RegisterScreenProps): React.JSX.E
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
+
+        <View style={styles.criteriaContainer}>
+          <PasswordCriterion met={passwordCriteria.minLength} label="Mínimo 6 caracteres" />
+          <PasswordCriterion met={passwordCriteria.uppercase} label="Letra maiúscula" />
+          <PasswordCriterion met={passwordCriteria.lowercase} label="Letra minúscula" />
+          <PasswordCriterion met={passwordCriteria.number} label="Número" />
+          <PasswordCriterion met={passwordCriteria.symbol} label="Símbolo (!@#$...)" />
+          <PasswordCriterion met={passwordsMatch} label="Senhas conferem" />
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
           {loading ? (
@@ -175,6 +210,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
+  },
+  criteriaContainer: {
+    marginBottom: 12,
+    paddingHorizontal: 4,
   },
   button: {
     backgroundColor: COLORS.accent,

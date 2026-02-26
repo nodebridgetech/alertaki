@@ -7,33 +7,36 @@ async function upsertUser(
   displayNameOverride?: string,
 ): Promise<void> {
   const userRef = firestore().collection('users').doc(firebaseUser.uid);
-  const doc = await userRef.get();
+  const now = new Date();
 
-  if (doc.exists) {
-    await userRef.update({
-      displayName: displayNameOverride || firebaseUser.displayName || doc.data()?.displayName || '',
-      photoURL: firebaseUser.photoURL || doc.data()?.photoURL || null,
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-    });
-  } else {
-    const userData: Omit<User, 'createdAt' | 'updatedAt' | 'tokenUpdatedAt'> & {
-      createdAt: ReturnType<typeof firestore.FieldValue.serverTimestamp>;
-      updatedAt: ReturnType<typeof firestore.FieldValue.serverTimestamp>;
-      tokenUpdatedAt: ReturnType<typeof firestore.FieldValue.serverTimestamp>;
-    } = {
+  // Always use set with merge to avoid firestore/not-found errors
+  // when local cache thinks doc exists but server doc was deleted
+  await userRef.set(
+    {
       uid: firebaseUser.uid,
       email: firebaseUser.email || '',
       displayName: displayNameOverride || firebaseUser.displayName || '',
       phoneNumber: firebaseUser.phoneNumber || null,
       photoURL: firebaseUser.photoURL || null,
-      tokens: [],
-      tokenUpdatedAt: firestore.FieldValue.serverTimestamp(),
-      lastLocation: null,
-      locationUpdatedAt: null,
-      createdAt: firestore.FieldValue.serverTimestamp(),
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-    };
-    await userRef.set(userData);
+      updatedAt: now,
+    },
+    { merge: true },
+  );
+
+  // Ensure default fields exist for new documents
+  const doc = await userRef.get();
+  const data = doc.data();
+  if (!data?.createdAt) {
+    await userRef.set(
+      {
+        tokens: data?.tokens || [],
+        tokenUpdatedAt: now,
+        lastLocation: data?.lastLocation || null,
+        locationUpdatedAt: data?.locationUpdatedAt || null,
+        createdAt: now,
+      },
+      { merge: true },
+    );
   }
 }
 
@@ -45,21 +48,21 @@ async function getUser(uid: string): Promise<User | null> {
 
 async function updateProfile(
   uid: string,
-  data: Partial<Pick<User, 'displayName' | 'phoneNumber' | 'photoURL' | 'email'>>,
+  data: Partial<Pick<User, 'displayName' | 'phoneNumber' | 'photoURL' | 'email' | 'cpf' | 'address'>>,
 ): Promise<void> {
   await firestore()
     .collection('users')
     .doc(uid)
     .update({
       ...data,
-      updatedAt: firestore.FieldValue.serverTimestamp(),
+      updatedAt: new Date(),
     });
 }
 
 async function updateLocation(uid: string, lat: number, lng: number): Promise<void> {
   await firestore().collection('users').doc(uid).update({
     lastLocation: { lat, lng },
-    locationUpdatedAt: firestore.FieldValue.serverTimestamp(),
+    locationUpdatedAt: new Date(),
   });
 }
 

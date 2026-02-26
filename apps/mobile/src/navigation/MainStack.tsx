@@ -58,14 +58,6 @@ function MainTabs(): React.JSX.Element {
           tabBarIcon: ({ color }) => <TabIcon label="👥" color={color} />,
         }}
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarLabel: 'Perfil',
-          tabBarIcon: ({ color }) => <TabIcon label="👤" color={color} />,
-        }}
-      />
     </Tab.Navigator>
   );
 }
@@ -80,6 +72,11 @@ export function MainStack(): React.JSX.Element {
   return (
     <Stack.Navigator>
       <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ headerTitle: 'Perfil' }}
+      />
       <Stack.Screen
         name="Emergency"
         component={EmergencyScreen}

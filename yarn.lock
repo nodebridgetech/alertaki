@@ -4523,9 +4523,7 @@ hasown@^2.0.2:
     function-bind "^1.1.2"
 
 hermes-compiler@250829098.0.7:
-  version "250829098.0.7"
-  resolved "https://registry.npmjs.org/hermes-compiler/-/hermes-compiler-250829098.0.7.tgz"
-  integrity sha512-8QOmg1VjAWv8poFVslJDY8qkvjTy/UiO3R/hyGoC0IAchLzBdS9/TmAvI9cN1F3yLTEjimAIQQtUslpBMPXVVg==
+  version "250829098.0.8"
 
 hermes-estree@0.32.0:
   version "0.32.0"

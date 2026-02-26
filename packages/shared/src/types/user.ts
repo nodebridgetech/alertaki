@@ -8,12 +8,24 @@ export interface FirebaseTimestamp {
   nanoseconds: number;
 }
 
+export interface UserAddress {
+  cep: string;
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
 export interface User {
   uid: string;
   email: string;
   displayName: string;
   phoneNumber: string | null;
   photoURL: string | null;
+  cpf: string | null;
+  address: UserAddress | null;
   tokens: string[];
   tokenUpdatedAt: FirebaseTimestamp;
   lastLocation: {

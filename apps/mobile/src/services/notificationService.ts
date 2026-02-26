@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FieldValue } from '@react-native-firebase/firestore';
 import notifee, {
   AndroidImportance,
   AndroidVisibility,
@@ -47,14 +47,14 @@ async function saveFcmToken(uid: string, retries = 3): Promise<void> {
   const token = await messaging().getToken();
   for (let i = 0; i < retries; i++) {
     try {
-      const userDoc = await firestore().collection('users').doc(uid).get();
+      const userDoc = await firestore().collection('users').doc(uid).get({ source: 'server' });
       if (userDoc.exists) {
         await firestore()
           .collection('users')
           .doc(uid)
           .update({
-            tokens: firestore.FieldValue.arrayUnion(token),
-            tokenUpdatedAt: firestore.FieldValue.serverTimestamp(),
+            tokens: FieldValue.arrayUnion(token),
+            tokenUpdatedAt: new Date(),
           });
         return;
       }
@@ -77,7 +77,7 @@ async function removeFcmToken(uid: string): Promise<void> {
       .collection('users')
       .doc(uid)
       .update({
-        tokens: firestore.FieldValue.arrayRemove(token),
+        tokens: FieldValue.arrayRemove(token),
       });
   } catch {
     // Token removal may fail if user is being deleted

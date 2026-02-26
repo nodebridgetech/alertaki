@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useContactStore } from '../../stores/contactStore';
 import { Avatar } from '../../components/Avatar';
 import type { Invite } from '@alertaki/shared';
@@ -61,11 +62,13 @@ export function InvitesScreen(): React.JSX.Element {
     return (
       <View style={[styles.inviteItem, isProcessing && styles.inviteItemProcessing]}>
         <View style={styles.avatarWrapper}>
-          <Avatar photoURL={item.fromPhotoURL} name={item.fromDisplayName} size={44} />
+          <Avatar photoURL={item.fromPhotoURL} name={item.fromDisplayName} size={48} />
         </View>
         <View style={styles.inviteInfo}>
-          <Text style={styles.inviteName}>{item.fromDisplayName}</Text>
-          <Text style={styles.inviteEmail}>{item.fromEmail}</Text>
+          <Text style={styles.inviteName} numberOfLines={1}>
+            {item.fromDisplayName || 'Usuário'}
+          </Text>
+          <Text style={styles.inviteEmail} numberOfLines={1}>{item.fromEmail}</Text>
           <Text style={styles.inviteText}>quer ser seu contato de segurança</Text>
         </View>
         {isProcessing ? (
@@ -73,18 +76,32 @@ export function InvitesScreen(): React.JSX.Element {
         ) : (
           <View style={styles.actions}>
             <TouchableOpacity
-              style={styles.acceptButton}
               onPress={() => handleAccept(item)}
               disabled={!!processingId}
+              activeOpacity={0.8}
             >
-              <Text style={styles.acceptText}>✓</Text>
+              <LinearGradient
+                colors={['#43A047', '#66BB6A']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.actionButton}
+              >
+                <Text style={styles.actionIcon}>✓</Text>
+              </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.rejectButton}
               onPress={() => handleReject(item)}
               disabled={!!processingId}
+              activeOpacity={0.8}
             >
-              <Text style={styles.rejectText}>✗</Text>
+              <LinearGradient
+                colors={['#E53935', '#EF5350']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.actionButton}
+              >
+                <Text style={styles.actionIcon}>✗</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         )}
@@ -160,30 +177,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  acceptButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.success,
+  actionButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
-  acceptText: {
+  actionIcon: {
     color: COLORS.white,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  rejectButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.error,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  rejectText: {
-    color: COLORS.white,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   emptyText: {

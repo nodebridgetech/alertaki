@@ -28,7 +28,7 @@ interface ContactState {
   reset: () => void;
 }
 
-export const useContactStore = create<ContactState>((set) => ({
+export const useContactStore = create<ContactState>((set, get) => ({
   contacts: [],
   contactOf: [],
   pendingInvites: [],
@@ -42,9 +42,11 @@ export const useContactStore = create<ContactState>((set) => ({
   setLoading: (isLoading) => set({ isLoading }),
 
   sendInvite: async (emailOrPhone) => {
+    const { contacts } = get();
+    const existingUids = contacts.map((c) => c.uid);
     set({ isLoading: true });
     try {
-      await contactService.sendInvite(emailOrPhone);
+      await contactService.sendInvite(emailOrPhone, existingUids);
     } finally {
       set({ isLoading: false });
     }

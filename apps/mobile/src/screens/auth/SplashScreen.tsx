@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    width: 140,
-    height: 140,
+    width: 150,
+    height: 150,
     marginBottom: 16,
   },
   title: {

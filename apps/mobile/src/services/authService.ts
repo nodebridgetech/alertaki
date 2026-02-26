@@ -1,4 +1,4 @@
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes, GoogleAuthProvider, AppleAuthProvider } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { userService } from './userService';
@@ -21,6 +21,9 @@ function getErrorMessage(error: FirebaseAuthTypes.NativeFirebaseAuthError): stri
 }
 
 async function signInWithGoogle(): Promise<FirebaseAuthTypes.UserCredential> {
+  // Phase 1: Authentication (errors here should block login)
+  let userCredential: FirebaseAuthTypes.UserCredential;
+  let googleName: string | null | undefined;
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const response = await GoogleSignin.signIn();
@@ -28,20 +31,37 @@ async function signInWithGoogle(): Promise<FirebaseAuthTypes.UserCredential> {
     if (!idToken) {
       throw new Error('Não foi possível obter o token do Google.');
     }
-    const credential = auth.GoogleAuthProvider.credential(idToken);
-    const userCredential = await auth().signInWithCredential(credential);
-    await userService.upsertUser(userCredential.user);
-    await notificationService.saveFcmToken(userCredential.user.uid);
-    return userCredential;
+    googleName = response.data?.user?.name;
+    const credential = GoogleAuthProvider.credential(idToken);
+    userCredential = await auth().signInWithCredential(credential);
   } catch (error) {
     if ((error as FirebaseAuthTypes.NativeFirebaseAuthError).code) {
       throw new Error(getErrorMessage(error as FirebaseAuthTypes.NativeFirebaseAuthError));
     }
     throw error;
   }
+
+  // Phase 2: Post-auth setup (errors here should NOT block login)
+  try {
+    await userService.upsertUser(
+      userCredential.user,
+      googleName || userCredential.user.displayName || undefined,
+    );
+  } catch (error) {
+    console.warn('Post-login upsertUser failed:', error);
+  }
+  try {
+    await notificationService.saveFcmToken(userCredential.user.uid);
+  } catch (error) {
+    console.warn('Post-login saveFcmToken failed:', error);
+  }
+
+  return userCredential;
 }
 
 async function signInWithApple(): Promise<FirebaseAuthTypes.UserCredential> {
+  let userCredential: FirebaseAuthTypes.UserCredential;
+  let displayNameOverride: string | undefined;
   try {
     const appleAuthResponse = await appleAuth.performRequest({
       requestedOperation: appleAuth.Operation.LOGIN,
@@ -53,46 +73,70 @@ async function signInWithApple(): Promise<FirebaseAuthTypes.UserCredential> {
     }
 
     const { identityToken, nonce } = appleAuthResponse;
-    const credential = auth.AppleAuthProvider.credential(identityToken, nonce);
-    const userCredential = await auth().signInWithCredential(credential);
+    const credential = AppleAuthProvider.credential(identityToken, nonce);
+    userCredential = await auth().signInWithCredential(credential);
 
     // Apple only sends name on first authorization
     if (appleAuthResponse.fullName?.givenName) {
-      const displayName = [
+      displayNameOverride = [
         appleAuthResponse.fullName.givenName,
         appleAuthResponse.fullName.familyName,
       ]
         .filter(Boolean)
         .join(' ');
-      await userCredential.user.updateProfile({ displayName });
+      try {
+        await userCredential.user.updateProfile({ displayName: displayNameOverride });
+      } catch (error) {
+        console.warn('Apple updateProfile failed:', error);
+      }
     }
-
-    await userService.upsertUser(userCredential.user);
-    await notificationService.saveFcmToken(userCredential.user.uid);
-    return userCredential;
   } catch (error) {
     if ((error as FirebaseAuthTypes.NativeFirebaseAuthError).code) {
       throw new Error(getErrorMessage(error as FirebaseAuthTypes.NativeFirebaseAuthError));
     }
     throw error;
   }
+
+  try {
+    await userService.upsertUser(userCredential.user, displayNameOverride);
+  } catch (error) {
+    console.warn('Post-login upsertUser failed:', error);
+  }
+  try {
+    await notificationService.saveFcmToken(userCredential.user.uid);
+  } catch (error) {
+    console.warn('Post-login saveFcmToken failed:', error);
+  }
+
+  return userCredential;
 }
 
 async function signInWithEmail(
   email: string,
   password: string,
 ): Promise<FirebaseAuthTypes.UserCredential> {
+  let userCredential: FirebaseAuthTypes.UserCredential;
   try {
-    const userCredential = await auth().signInWithEmailAndPassword(email, password);
-    await userService.upsertUser(userCredential.user);
-    await notificationService.saveFcmToken(userCredential.user.uid);
-    return userCredential;
+    userCredential = await auth().signInWithEmailAndPassword(email, password);
   } catch (error) {
     if ((error as FirebaseAuthTypes.NativeFirebaseAuthError).code) {
       throw new Error(getErrorMessage(error as FirebaseAuthTypes.NativeFirebaseAuthError));
     }
     throw error;
   }
+
+  try {
+    await userService.upsertUser(userCredential.user);
+  } catch (error) {
+    console.warn('Post-login upsertUser failed:', error);
+  }
+  try {
+    await notificationService.saveFcmToken(userCredential.user.uid);
+  } catch (error) {
+    console.warn('Post-login saveFcmToken failed:', error);
+  }
+
+  return userCredential;
 }
 
 async function registerWithEmail(

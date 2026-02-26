@@ -13,7 +13,13 @@ react {
     reactNativeDir = file("../../../../node_modules/react-native")
     codegenDir = file("../../../../node_modules/@react-native/codegen")
     cliFile = file("../../../../node_modules/react-native/cli.js")
-    hermesCommand = "../../node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc"
+    // Win64 hermesc binary is missing from hermes-compiler v250829098+
+    // Use passthrough script on Windows (Hermes JIT-compiles at runtime)
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        hermesCommand = "node scripts/hermesc-passthrough.js"
+    } else {
+        hermesCommand = "../../node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc"
+    }
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to

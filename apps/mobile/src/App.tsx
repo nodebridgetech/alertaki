@@ -76,9 +76,17 @@ function App(): React.JSX.Element {
         if (firebaseUser) {
           let userData = await userService.getUser(firebaseUser.uid);
           if (!userData) {
-            // User doc may not exist yet (race with signIn flow) — create it
-            await userService.upsertUser(firebaseUser);
-            userData = await userService.getUser(firebaseUser.uid);
+            // Wait for signIn flow to create the user doc (avoids race condition
+            // where onAuthStateChanged fires before displayName is available)
+            for (let i = 0; i < 5 && !userData; i++) {
+              await new Promise((r) => setTimeout(r, 600));
+              userData = await userService.getUser(firebaseUser.uid);
+            }
+            if (!userData) {
+              // Fallback: create doc if signIn flow didn't (e.g. app restart edge case)
+              await userService.upsertUser(firebaseUser);
+              userData = await userService.getUser(firebaseUser.uid);
+            }
           }
           setUser(userData);
         } else {

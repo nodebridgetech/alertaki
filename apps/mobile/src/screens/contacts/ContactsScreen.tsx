@@ -77,13 +77,14 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   }
 
   function renderMyContact({ item }: { item: Contact }) {
+    const name = item.displayName || item.email?.split('@')[0] || 'Usuário';
     return (
       <View style={styles.contactItem}>
         <View style={styles.avatarWrapper}>
-          <Avatar photoURL={item.photoURL} name={item.displayName} size={44} />
+          <Avatar photoURL={item.photoURL} name={name} size={44} />
         </View>
         <View style={styles.contactInfo}>
-          <Text style={styles.contactName}>{item.displayName}</Text>
+          <Text style={styles.contactName}>{name}</Text>
           <Text style={styles.contactEmail}>{item.email}</Text>
         </View>
         <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveContact(item)}>
@@ -94,13 +95,14 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
   }
 
   function renderContactOf({ item }: { item: ContactOf }) {
+    const name = item.ownerDisplayName || item.ownerEmail?.split('@')[0] || 'Usuário';
     return (
       <View style={styles.contactItem}>
         <View style={styles.avatarWrapper}>
-          <Avatar photoURL={item.ownerPhotoURL} name={item.ownerDisplayName} size={44} />
+          <Avatar photoURL={item.ownerPhotoURL} name={name} size={44} />
         </View>
         <View style={styles.contactInfo}>
-          <Text style={styles.contactName}>{item.ownerDisplayName}</Text>
+          <Text style={styles.contactName}>{name}</Text>
           <Text style={styles.contactEmail}>{item.ownerEmail}</Text>
         </View>
       </View>
