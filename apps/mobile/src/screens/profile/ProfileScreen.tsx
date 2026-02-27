@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import auth from '@react-native-firebase/auth';
@@ -86,6 +86,18 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
       </View>
 
       <View style={styles.menu}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() =>
+            Linking.openURL(
+              'https://play.google.com/store/account/subscriptions?sku=alertaki_monthly_sub&package=com.alertaki',
+            )
+          }
+        >
+          <Text style={styles.menuItemText}>Gerenciar Assinatura</Text>
+          <Text style={styles.menuItemArrow}>›</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => navigation.navigate('EditProfile')}

@@ -23,6 +23,12 @@
 # Notifee
 -keep class io.invertase.notifee.** { *; }
 
+# React Native IAP / Google Play Billing
+-keep class com.android.vending.billing.** { *; }
+-keep class com.amazon.** { *; }
+-dontwarn com.amazon.**
+-keep class com.dooboolab.rniap.** { *; }
+
 # React Navigation
 -keep class com.swmansion.** { *; }
 -keep class com.th3rdwave.safeareacontext.** { *; }

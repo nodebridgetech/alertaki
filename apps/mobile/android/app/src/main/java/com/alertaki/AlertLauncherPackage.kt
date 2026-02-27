@@ -1,4 +1,4 @@
-package com.alertakimobile
+package com.alertaki
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

@@ -267,7 +267,7 @@ function requestOverlayPermission(): Promise<void> {
           onPress: () => {
             Linking.sendIntent(
               'android.settings.action.MANAGE_OVERLAY_PERMISSION',
-              [{ key: 'package', value: 'com.alertakimobile' }],
+              [{ key: 'package', value: 'com.alertaki' }],
             ).catch(() => Linking.openSettings());
             resolve();
           },

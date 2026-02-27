@@ -177,7 +177,21 @@
       "Bash(/c/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe shell \"cmd notification list_channels com.alertakimobile 2>/dev/null || echo ''cmd not available''\")",
       "Bash(adb install -r apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk)",
       "Bash(xargs grep -l \"canDrawOverlays\\\\|SYSTEM_ALERT_WINDOW\\\\|Settings\")",
-      "Bash(adb install -r /c/Users/Nickolas/Desktop/Alertaki.apk)"
+      "Bash(adb install -r /c/Users/Nickolas/Desktop/Alertaki.apk)",
+      "Bash(openssl rand -base64 16)",
+      "Bash(\"$JAVA_HOME/bin/keytool\" -genkeypair -v -storetype PKCS12 -keystore alertaki-release.keystore -alias alertaki-key -keyalg RSA -keysize 2048 -validity 10000 -storepass \"HyMOXMNfmsLAbw2ZkUwX\" -keypass \"HyMOXMNfmsLAbw2ZkUwX\" -dname \"CN=Alertaki, OU=Mobile, O=Alertaki, L=Brazil, ST=Brazil, C=BR\")",
+      "Bash(./gradlew bundleRelease)",
+      "WebFetch(domain:nodebridge.com.br)",
+      "Bash(export PATH=\"$PATH:$HOME/AppData/Local/Android/Sdk/platform-tools\")",
+      "Bash(\"$JAVA_HOME/bin/keytool\" -list -v -keystore /c/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/alertaki-release.keystore -alias alertaki-key -storepass HyMOXMNfmsLAbw2ZkUwX)",
+      "Bash(adb logcat -c)",
+      "Bash(timeout 90 adb logcat \"*:W\")",
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" devices)",
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -c)",
+      "Bash(timeout 60 \"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d)",
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -t 45.0)",
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d)",
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install -r \"c:/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/release/app-release.apk\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",

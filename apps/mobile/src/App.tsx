@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { AppState, NativeModules, Platform, StatusBar } from 'react-native';
+import { AppState, NativeModules, PermissionsAndroid, Platform, Settings, StatusBar } from 'react-native';
 import notifee from '@notifee/react-native';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,6 +18,10 @@ import { useBackgroundLocation } from './hooks/useBackgroundLocation';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineBanner } from './components/OfflineBanner';
+import { useSubscriptionStore } from './stores/subscriptionStore';
+import { billingService } from './services/billingService';
+import { finishTransaction } from 'react-native-iap';
+import firestore from '@react-native-firebase/firestore';
 
 try {
   GoogleSignin.configure({
@@ -108,10 +112,28 @@ function App(): React.JSX.Element {
           }
         }
 
-        // Step 3: Background location
-        const bgLocGranted = await locationService.isBackgroundLocationGranted();
-        if (!bgLocGranted) {
-          await locationService.requestBackgroundPermission();
+        // Step 3: Foreground location (required before background on Android 10+)
+        const fineLocGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (!fineLocGranted) {
+          await locationService.requestPermission();
+        }
+
+        // Step 4: Background location (only ask once — Android doesn't reliably
+        // report the grant via PermissionsAndroid after the Settings redirect)
+        const fineLocNow = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (fineLocNow) {
+          const bgLocGranted = await locationService.isBackgroundLocationGranted();
+          if (!bgLocGranted) {
+            const alreadyAsked = Settings.get('bg_location_asked');
+            if (!alreadyAsked) {
+              await locationService.requestBackgroundPermission();
+              Settings.set({ bg_location_asked: '1' });
+            }
+          }
         }
       } catch (e) {
         console.warn('ALERTAKI: Permission flow error:', e);
@@ -189,6 +211,82 @@ function App(): React.JSX.Element {
       unsubTokenRefresh();
     };
   }, [user, setContacts, setContactOf, setPendingInvites, setBlockedUsers]);
+
+  // IAP: Initialize billing, check subscription, listen for changes
+  const setSubscribed = useSubscriptionStore((s) => s.setSubscribed);
+  const checkSubscriptionStatus = useSubscriptionStore((s) => s.checkSubscriptionStatus);
+
+  useEffect(() => {
+    if (!user?.uid) {
+      useSubscriptionStore.getState().reset();
+      return;
+    }
+
+    let purchaseCleanup: (() => void) | null = null;
+    let errorCleanup: (() => void) | null = null;
+
+    (async () => {
+      try {
+        await billingService.initialize();
+        await checkSubscriptionStatus(user.uid);
+
+        const listeners = billingService.setupPurchaseListeners(
+          async (purchase) => {
+            if (purchase.purchaseToken && purchase.productId) {
+              try {
+                const result = await billingService.validatePurchase(
+                  purchase.purchaseToken,
+                  purchase.productId,
+                );
+                if (result.isValid) {
+                  setSubscribed(true);
+                }
+                await finishTransaction({ purchase, isConsumable: false });
+              } catch (err) {
+                console.warn('Purchase validation error:', err);
+              }
+            }
+          },
+          (error) => {
+            if (error.code !== 'E_USER_CANCELLED') {
+              console.warn('IAP purchase error:', error);
+            }
+          },
+        );
+
+        purchaseCleanup = listeners.removePurchaseListener;
+        errorCleanup = listeners.removeErrorListener;
+      } catch (err) {
+        console.warn('IAP initialization error:', err);
+        useSubscriptionStore.getState().setSubscribed(false);
+        useSubscriptionStore.getState().setChecking(false);
+      }
+    })();
+
+    // Real-time Firestore listener for subscription changes
+    const unsubFirestore = firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((doc) => {
+        const data = doc.data();
+        if (data?.subscription) {
+          const now = Date.now() / 1000;
+          const isActive = !!(
+            data.subscription.isActive &&
+            data.subscription.expiresAt?.seconds > now
+          );
+          useSubscriptionStore.getState().setSubscribed(isActive);
+          useSubscriptionStore.getState().setChecking(false);
+        }
+      });
+
+    return () => {
+      purchaseCleanup?.();
+      errorCleanup?.();
+      unsubFirestore();
+      billingService.close();
+    };
+  }, [user?.uid, setSubscribed, checkSubscriptionStatus]);
 
   // Check for pending alert data from native AlertLauncher module.
   // When the app is brought to foreground by AlertLauncher (SYSTEM_ALERT_WINDOW),

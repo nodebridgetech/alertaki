@@ -1,4 +1,4 @@
-package com.alertakimobile
+package com.alertaki
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity

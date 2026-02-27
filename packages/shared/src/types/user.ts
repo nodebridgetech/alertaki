@@ -18,6 +18,16 @@ export interface UserAddress {
   state: string;
 }
 
+export interface UserSubscription {
+  isActive: boolean;
+  productId: string | null;
+  purchaseToken: string | null;
+  expiresAt: FirebaseTimestamp | null;
+  startedAt: FirebaseTimestamp | null;
+  autoRenewing: boolean;
+  lastValidatedAt: FirebaseTimestamp | null;
+}
+
 export interface User {
   uid: string;
   email: string;
@@ -33,6 +43,7 @@ export interface User {
     lng: number;
   } | null;
   locationUpdatedAt: FirebaseTimestamp | null;
+  subscription: UserSubscription | null;
   createdAt: FirebaseTimestamp;
   updatedAt: FirebaseTimestamp;
 }

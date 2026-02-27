@@ -1,4 +1,4 @@
-package com.alertakimobile
+package com.alertaki
 
 import android.app.Application
 import com.facebook.react.PackageList

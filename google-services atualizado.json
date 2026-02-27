@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "807554654482-3rfc0djg1l3ttppsltjsv8iremt28jv6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alertaki",
-            "certificate_hash": "10d287e433f6821af88d964ad8f1d55a7b088dcb"
-          }
-        },
-        {
           "client_id": "807554654482-nnig6nl14af1jgif0t7hbhnfmv121hk9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

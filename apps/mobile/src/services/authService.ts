@@ -17,7 +17,11 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 };
 
 function getErrorMessage(error: FirebaseAuthTypes.NativeFirebaseAuthError): string {
-  return AUTH_ERROR_MESSAGES[error.code] || 'Erro de autenticação. Tente novamente.';
+  const mapped = AUTH_ERROR_MESSAGES[error.code];
+  if (!mapped) {
+    console.error(`[Auth] Unmapped Firebase error code: ${error.code}`, error.message);
+  }
+  return mapped || `Erro de autenticação (${error.code}). Tente novamente.`;
 }
 
 async function signInWithGoogle(): Promise<FirebaseAuthTypes.UserCredential> {

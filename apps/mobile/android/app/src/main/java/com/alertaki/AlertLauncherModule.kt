@@ -1,4 +1,4 @@
-package com.alertakimobile
+package com.alertaki
 
 import android.content.Context
 import android.content.Intent
@@ -55,7 +55,7 @@ class AlertLauncherModule(reactContext: ReactApplicationContext) :
         }
 
         val intent = Intent(context, MainActivity::class.java).apply {
-            action = "com.alertakimobile.ALERT_OVERLAY"
+            action = "com.alertaki.ALERT_OVERLAY"
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or

@@ -76,18 +76,25 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+// Load keystore properties for release signing
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.alertakimobile"
+    namespace "com.alertaki"
     defaultConfig {
-        applicationId "com.alertakimobile"
+        applicationId "com.alertaki"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.1.2"
 
         // Only include ARM ABIs to reduce APK size (x86/x86_64 are for emulators only)
         ndk {
@@ -102,12 +109,11 @@ android {
             }
         }
     }
+    // ABI splits disabled — AAB handles per-ABI delivery automatically.
+    // Re-enable only for standalone APK builds (assembleRelease).
     splits {
         abi {
-            enable true
-            reset()
-            include "armeabi-v7a", "arm64-v8a"
-            universalApk true // Also generate a universal APK
+            enable false
         }
     }
     signingConfigs {
@@ -117,15 +123,19 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file(keystoreProperties['RELEASE_STORE_FILE'] ?: 'debug.keystore')
+            storePassword keystoreProperties['RELEASE_STORE_PASSWORD'] ?: 'android'
+            keyAlias keystoreProperties['RELEASE_KEY_ALIAS'] ?: 'androiddebugkey'
+            keyPassword keystoreProperties['RELEASE_KEY_PASSWORD'] ?: 'android'
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
