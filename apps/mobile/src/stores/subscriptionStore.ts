@@ -1,12 +1,12 @@
 import { create } from 'zustand';
-import type { Subscription as IAPSubscription } from 'react-native-iap';
+import type { Product } from 'react-native-iap';
 import { billingService } from '../services/billingService';
 
 interface SubscriptionState {
   isSubscribed: boolean;
   isChecking: boolean;
   isPurchasing: boolean;
-  availableProducts: IAPSubscription[];
+  availableProducts: Product[];
   error: string | null;
 
   setSubscribed: (subscribed: boolean) => void;
@@ -72,15 +72,21 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   restorePurchases: async (uid) => {
     set({ isChecking: true, error: null });
     try {
-      const purchases = await billingService.restorePurchases();
-      if (purchases.length > 0) {
-        const latest = purchases[purchases.length - 1];
-        if (latest.purchaseToken) {
-          const result = await billingService.validatePurchase(
-            latest.purchaseToken,
-            latest.productId,
-          );
-          set({ isSubscribed: result.isValid });
+      const result = await billingService.restorePurchases();
+      if (result.isValid) {
+        set({ isSubscribed: true });
+      } else {
+        // Fallback: check Firestore in case validation happened elsewhere
+        const subscription = await billingService.getSubscriptionStatus(uid);
+        const now = Date.now() / 1000;
+        const isActive = !!(
+          subscription?.isActive &&
+          subscription.expiresAt &&
+          subscription.expiresAt.seconds > now
+        );
+        set({ isSubscribed: isActive });
+        if (!isActive) {
+          set({ error: 'Nenhuma assinatura ativa encontrada.' });
         }
       }
     } catch (error) {

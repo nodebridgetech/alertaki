@@ -21,6 +21,7 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { useSubscriptionStore } from './stores/subscriptionStore';
 import { billingService } from './services/billingService';
 import { finishTransaction } from 'react-native-iap';
+// Note: react-native-iap v14 uses fetchProducts/requestPurchase instead of getSubscriptions/requestSubscription
 import firestore from '@react-native-firebase/firestore';
 
 try {
@@ -244,12 +245,14 @@ function App(): React.JSX.Element {
                 await finishTransaction({ purchase, isConsumable: false });
               } catch (err) {
                 console.warn('Purchase validation error:', err);
+                useSubscriptionStore.getState().setChecking(false);
               }
             }
           },
           (error) => {
             if (error.code !== 'E_USER_CANCELLED') {
               console.warn('IAP purchase error:', error);
+              useSubscriptionStore.getState().setChecking(false);
             }
           },
         );

@@ -2,15 +2,12 @@ import { Platform } from 'react-native';
 import {
   initConnection,
   endConnection,
-  getSubscriptions,
-  requestSubscription,
+  fetchProducts,
+  requestPurchase,
   purchaseUpdatedListener,
   purchaseErrorListener,
-  finishTransaction,
   getAvailablePurchases,
-  type ProductPurchase,
-  type SubscriptionPurchase,
-  type Subscription,
+  type Product,
   type PurchaseError,
 } from 'react-native-iap';
 import functions from '@react-native-firebase/functions';
@@ -29,23 +26,34 @@ async function close(): Promise<void> {
   await endConnection();
 }
 
-async function getAvailableSubscriptions(): Promise<Subscription[]> {
-  return getSubscriptions({ skus: [SUBSCRIPTION_SKU] });
+async function getAvailableSubscriptions(): Promise<Product[]> {
+  return fetchProducts({ skus: [SUBSCRIPTION_SKU], type: 'subs' });
 }
 
 async function purchaseSubscription(): Promise<void> {
-  const subscriptions = await getSubscriptions({ skus: [SUBSCRIPTION_SKU] });
-  if (subscriptions.length === 0) {
+  const products = await fetchProducts({ skus: [SUBSCRIPTION_SKU], type: 'subs' });
+  if (products.length === 0) {
     throw new Error('Assinatura não encontrada na Play Store.');
   }
 
-  const sub = subscriptions[0];
-  const offerToken =
-    sub.subscriptionOfferDetails?.[0]?.offerToken ?? undefined;
+  const sub = products[0] as any;
+  // v14 uses subscriptionOfferDetailsAndroid for Android
+  const offerDetails = sub.subscriptionOfferDetailsAndroid || sub.subscriptionOfferDetails || sub.subscriptionOffers;
+  const offerToken = offerDetails?.[0]?.offerToken;
 
-  await requestSubscription({
-    sku: SUBSCRIPTION_SKU,
-    ...(offerToken ? { subscriptionOffers: [{ sku: SUBSCRIPTION_SKU, offerToken }] } : {}),
+  if (!offerToken) {
+    console.warn('Product details:', JSON.stringify(sub));
+    throw new Error('Oferta de assinatura não encontrada.');
+  }
+
+  await requestPurchase({
+    type: 'subs',
+    request: {
+      google: {
+        skus: [SUBSCRIPTION_SKU],
+        offerToken,
+      },
+    },
   });
 }
 
@@ -63,12 +71,21 @@ async function getSubscriptionStatus(uid: string): Promise<UserSubscription | nu
   return doc.data()?.subscription || null;
 }
 
-async function restorePurchases(): Promise<(ProductPurchase | SubscriptionPurchase)[]> {
-  return getAvailablePurchases();
+async function doRestorePurchases(): Promise<{ isValid: boolean }> {
+  const purchases = await getAvailablePurchases();
+  for (const purchase of purchases) {
+    if (purchase.purchaseToken && purchase.productId) {
+      const result = await validatePurchase(purchase.purchaseToken, purchase.productId);
+      if (result.isValid) {
+        return { isValid: true };
+      }
+    }
+  }
+  return { isValid: false };
 }
 
 function setupPurchaseListeners(
-  onPurchaseUpdate: (purchase: ProductPurchase | SubscriptionPurchase) => void,
+  onPurchaseUpdate: (purchase: any) => void,
   onPurchaseError: (error: PurchaseError) => void,
 ): { removePurchaseListener: () => void; removeErrorListener: () => void } {
   const purchaseListener = purchaseUpdatedListener(onPurchaseUpdate);
@@ -86,8 +103,7 @@ export const billingService = {
   purchaseSubscription,
   validatePurchase,
   getSubscriptionStatus,
-  restorePurchases,
+  restorePurchases: doRestorePurchases,
   setupPurchaseListeners,
-  finishTransaction,
   SUBSCRIPTION_SKU,
 };

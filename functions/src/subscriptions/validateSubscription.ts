@@ -2,8 +2,46 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 import { google } from 'googleapis';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const PACKAGE_NAME = 'com.alertaki';
+
+function loadServiceAccountCredentials() {
+  // Try multiple possible paths for the key file
+  const possiblePaths = [
+    path.join(__dirname, '..', '..', 'alertaki-907d7aca1a5f.json'),
+    path.join(__dirname, '..', 'alertaki-907d7aca1a5f.json'),
+    path.join(process.cwd(), 'alertaki-907d7aca1a5f.json'),
+    '/workspace/alertaki-907d7aca1a5f.json',
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      logger.info(`Found service account key at: ${p}`);
+      return JSON.parse(fs.readFileSync(p, 'utf8'));
+    }
+  }
+
+  logger.error('Service account key file not found. Tried paths:', possiblePaths);
+  logger.error('__dirname:', __dirname);
+  logger.error('cwd:', process.cwd());
+
+  // List files in potential directories to debug
+  try {
+    const parentDir = path.join(__dirname, '..');
+    logger.info('Files in parent dir:', fs.readdirSync(parentDir));
+  } catch (e) { /* ignore */ }
+  try {
+    const grandparentDir = path.join(__dirname, '..', '..');
+    logger.info('Files in grandparent dir:', fs.readdirSync(grandparentDir));
+  } catch (e) { /* ignore */ }
+  try {
+    logger.info('Files in cwd:', fs.readdirSync(process.cwd()));
+  } catch (e) { /* ignore */ }
+
+  return null;
+}
 
 export const validateSubscription = onCall(async (request) => {
   const uid = request.auth?.uid;
@@ -21,7 +59,16 @@ export const validateSubscription = onCall(async (request) => {
   }
 
   try {
+    const credentials = loadServiceAccountCredentials();
+
+    if (!credentials) {
+      throw new Error('Service account key file not found in any expected location');
+    }
+
+    logger.info(`Using service account: ${credentials.client_email}`);
+
     const auth = new google.auth.GoogleAuth({
+      credentials,
       scopes: ['https://www.googleapis.com/auth/androidpublisher'],
     });
 

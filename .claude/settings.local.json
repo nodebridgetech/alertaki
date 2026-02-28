@@ -191,7 +191,18 @@
       "Bash(timeout 60 \"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d)",
       "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -t 45.0)",
       "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat -d)",
-      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install -r \"c:/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/release/app-release.apk\")"
+      "Bash(\"C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install -r \"c:/Users/Nickolas/Documents/GitHub/alertaki/apps/mobile/android/app/build/outputs/apk/release/app-release.apk\")",
+      "Bash(adb logcat -d -s ReactNativeJS:* BillingClient:* IAPModule:*)",
+      "Bash(export PATH=\"$PATH:$HOME/AppData/Local/Android/Sdk/platform-tools:$HOME/AppData/Local/Android/Sdk/tools:$HOME/AppData/Local/Android/Sdk/tools/bin:/usr/bin:/bin\")",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(adb logcat -d -t 100 -s \"ReactNativeJS\")",
+      "Bash(C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe install apps/mobile/android/app/build/outputs/apk/release/app-release.apk)",
+      "Bash(C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe logcat -d -t 200 -s \"ReactNativeJS\")",
+      "Bash(C:/Users/Nickolas/AppData/Local/Android/Sdk/platform-tools/adb.exe logcat -d -t 300)",
+      "WebFetch(domain:support.google.com)",
+      "WebFetch(domain:developers.google.com)",
+      "Bash(node_modules/.bin/tsc)",
+      "Bash(./node_modules/.bin/tsc)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",
