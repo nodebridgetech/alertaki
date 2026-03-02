@@ -20,6 +20,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineBanner } from './components/OfflineBanner';
 import { useSubscriptionStore } from './stores/subscriptionStore';
 import { billingService } from './services/billingService';
+import { preferencesService } from './services/preferencesService';
 import { finishTransaction } from 'react-native-iap';
 // Note: react-native-iap v14 uses fetchProducts/requestPurchase instead of getSubscriptions/requestSubscription
 import firestore from '@react-native-firebase/firestore';
@@ -39,6 +40,7 @@ try {
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     const data = remoteMessage.data;
     if (data?.fullscreen === '1' && Platform.OS === 'android') {
+      const prefs = await preferencesService.getPreferences();
       await notificationService.showAlertNotification({
         alertId: (data.alertId as string) || '',
         type: (data.type as string) || '',
@@ -49,7 +51,7 @@ try {
         address: (data.address as string) || '',
         customMessage: (data.customMessage as string) || '',
         userId: (data.userId as string) || '',
-      });
+      }, prefs);
 
       // Launch the app activity directly using SYSTEM_ALERT_WINDOW
       // This bypasses Android's fullScreenIntent limitations
@@ -204,6 +206,9 @@ function App(): React.JSX.Element {
     const unsubBlocked = contactService.onBlockedUsers(uid, setBlockedUsers);
     const unsubTokenRefresh = notificationService.onTokenRefresh(uid);
 
+    // Sync alert preferences from Firestore to local cache
+    preferencesService.syncFromFirestore(uid).catch(() => {});
+
     return () => {
       unsubContacts();
       unsubContactOf();
@@ -345,6 +350,7 @@ function App(): React.JSX.Element {
       if (!data) return;
 
       if (data.fullscreen === '1') {
+        const prefs = await preferencesService.getPreferences();
         await notificationService.showAlertNotification({
           alertId: (data.alertId as string) || '',
           type: (data.type as string) || '',
@@ -355,7 +361,7 @@ function App(): React.JSX.Element {
           address: (data.address as string) || '',
           customMessage: (data.customMessage as string) || '',
           userId: (data.userId as string) || '',
-        });
+        }, prefs);
 
         if (navigationRef.isReady()) {
           navigationRef.navigate('AlertOverlay', {

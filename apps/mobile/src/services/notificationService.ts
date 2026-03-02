@@ -7,6 +7,7 @@ import notifee, {
   EventType,
 } from '@notifee/react-native';
 import { Alert, Linking, NativeModules, Platform, Vibration } from 'react-native';
+import { stopAlertSound, stopStrobe } from './nativeModules';
 
 let vibrationInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -59,15 +60,43 @@ async function requestPermission(): Promise<boolean> {
 }
 
 async function createChannels(): Promise<void> {
+  // Legacy channel (kept for existing installs, no longer used for new alerts)
   await notifee.createChannel({
     id: 'alert_channel',
-    name: 'Alertas de Emergência',
-    description: 'Notificações de alertas de saúde, segurança e emergência',
+    name: 'Alertas de Emergência (Legado)',
+    description: 'Canal legado - alertas agora usam alert_channel_v2',
     importance: AndroidImportance.HIGH,
     visibility: AndroidVisibility.PUBLIC,
     sound: 'default',
     vibration: true,
     vibrationPattern: VIBRATION_PATTERN,
+    lights: true,
+    badge: true,
+  });
+
+  // New channel: sound handled by AlertAudioModule (bypasses silent mode)
+  await notifee.createChannel({
+    id: 'alert_channel_v2',
+    name: 'Alertas de Emergência',
+    description: 'Notificações de alertas de saúde, segurança e emergência',
+    importance: AndroidImportance.HIGH,
+    visibility: AndroidVisibility.PUBLIC,
+    sound: 'none',
+    vibration: true,
+    vibrationPattern: VIBRATION_PATTERN,
+    lights: true,
+    badge: true,
+  });
+
+  // Silent channel: no sound, no vibration (both handled manually)
+  await notifee.createChannel({
+    id: 'alert_channel_silent',
+    name: 'Alertas de Emergência (Silencioso)',
+    description: 'Canal para alertas sem vibração do sistema',
+    importance: AndroidImportance.HIGH,
+    visibility: AndroidVisibility.PUBLIC,
+    sound: 'none',
+    vibration: false,
     lights: true,
     badge: true,
   });
@@ -140,7 +169,12 @@ interface AlertNotificationData {
   userId: string;
 }
 
-async function showAlertNotification(data: AlertNotificationData): Promise<void> {
+interface AlertPrefs {
+  sound?: boolean;
+  vibration?: boolean;
+}
+
+async function showAlertNotification(data: AlertNotificationData, prefs?: AlertPrefs): Promise<void> {
   const titleMap: Record<string, string> = {
     health: '🏥 Alerta de Saúde!',
     security: '🛡️ Alerta de Segurança!',
@@ -154,6 +188,11 @@ async function showAlertNotification(data: AlertNotificationData): Promise<void>
       ? `${data.userName}: ${data.customMessage.substring(0, 100)}`
       : `${data.userName} enviou um alerta de emergência!`,
   };
+
+  // Select channel based on vibration preference
+  // Sound is handled by AlertAudioModule (bypasses silent mode), not the channel
+  const useVibration = prefs?.vibration !== false;
+  const channelId = useVibration ? 'alert_channel_v2' : 'alert_channel_silent';
 
   await notifee.displayNotification({
     title: titleMap[data.type] || '🚨 Alerta!',
@@ -171,7 +210,7 @@ async function showAlertNotification(data: AlertNotificationData): Promise<void>
       fullscreen: '1',
     },
     android: {
-      channelId: 'alert_channel',
+      channelId,
       smallIcon: 'ic_launcher',
       importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
@@ -182,9 +221,8 @@ async function showAlertNotification(data: AlertNotificationData): Promise<void>
       },
       ongoing: true,
       autoCancel: false,
-      sound: 'default',
+      sound: 'none',
       pressAction: { id: 'default', launchActivity: 'default' },
-      loopSound: true,
     },
     ios: {
       sound: 'default',
@@ -214,6 +252,8 @@ async function showInviteNotification(fromName: string, fromEmail: string): Prom
 
 async function dismissAlertNotification(): Promise<void> {
   stopVibration();
+  stopAlertSound();
+  stopStrobe();
   await notifee.cancelAllNotifications();
 }
 
@@ -249,6 +289,8 @@ function setupForegroundEvent(
       }
       notifee.cancelAllNotifications();
       stopVibration();
+      stopAlertSound();
+      stopStrobe();
     }
   });
 }

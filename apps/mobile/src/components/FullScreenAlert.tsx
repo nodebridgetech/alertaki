@@ -10,8 +10,10 @@ import {
   Vibration,
   BackHandler,
 } from 'react-native';
+import { NativeModules } from 'react-native';
 import notifee from '@notifee/react-native';
 import { Avatar } from './Avatar';
+import { preferencesService } from '../services/preferencesService';
 
 const EMERGENCY_NUMBERS = { SAMU: '192', POLICE: '190' } as const;
 
@@ -54,9 +56,17 @@ export function FullScreenAlert({ notification }: FullScreenAlertProps): React.J
   const customMessage = data.customMessage || '';
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      Vibration.vibrate(VIBRATION_PATTERN, true);
-    }
+    preferencesService.getPreferences().then((prefs) => {
+      if (prefs.vibration && Platform.OS === 'android') {
+        Vibration.vibrate(VIBRATION_PATTERN, true);
+      }
+      if (prefs.sound) {
+        NativeModules.AlertAudio?.startAlertSound();
+      }
+      if (prefs.flashlight) {
+        NativeModules.Torch?.startStrobe();
+      }
+    });
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       handleDismiss();
@@ -65,6 +75,8 @@ export function FullScreenAlert({ notification }: FullScreenAlertProps): React.J
 
     return () => {
       Vibration.cancel();
+      NativeModules.AlertAudio?.stopAlertSound();
+      NativeModules.Torch?.stopStrobe();
       backHandler.remove();
     };
   }, []);
@@ -79,6 +91,8 @@ export function FullScreenAlert({ notification }: FullScreenAlertProps): React.J
 
   async function handleDismiss() {
     Vibration.cancel();
+    NativeModules.AlertAudio?.stopAlertSound();
+    NativeModules.Torch?.stopStrobe();
     await notifee.cancelAllNotifications();
   }
 

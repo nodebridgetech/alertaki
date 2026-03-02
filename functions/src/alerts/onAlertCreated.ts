@@ -4,6 +4,15 @@ import { getMessaging } from 'firebase-admin/messaging';
 import { haversineDistance } from '../utils/haversine';
 import { chunkArray, getAlertTitle, getAlertBody, reverseGeocode } from '../utils/helpers';
 
+function isSubscriptionActive(userData: FirebaseFirestore.DocumentData | undefined): boolean {
+  if (!userData) return false;
+  const sub = userData.subscription;
+  if (!sub || !sub.isActive) return false;
+  if (!sub.expiresAt) return false;
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  return sub.expiresAt.seconds > nowSeconds;
+}
+
 export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event) => {
   const alertId = event.params.alertId;
   const alertData = event.data?.data();
@@ -15,6 +24,12 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
   // 1. Fetch sender data and update alert
   const senderDoc = await db.collection('users').doc(alertData.userId).get();
   const sender = senderDoc.data();
+
+  // Defense-in-depth: sender must have an active subscription
+  if (!isSubscriptionActive(sender)) {
+    console.info(`onAlertCreated: sender ${alertData.userId} has no active subscription. Alert suppressed.`);
+    return;
+  }
 
   await event.data!.ref.update({
     userName: sender?.displayName || 'Usuário',
@@ -48,7 +63,7 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
       db,
       alertData.lat,
       alertData.lng,
-      alertData.radiusKm || 5,
+      alertData.radiusKm || 2,
     );
     nearbyUsers.forEach((uid) => recipientUids.add(uid));
   }
@@ -63,6 +78,7 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
   const tokenToUid = new Map<string, string>();
 
   for (const uid of recipientUids) {
+    // Check if recipient blocked the sender
     const blockedDoc = await db
       .collection('users')
       .doc(uid)
@@ -71,9 +87,22 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
       .get();
     if (blockedDoc.exists) continue;
 
-    validRecipients.push(uid);
+    // Fetch recipient data for subscription + preference checks
     const userDoc = await db.collection('users').doc(uid).get();
-    const tokens: string[] = userDoc.data()?.tokens || [];
+    const userData = userDoc.data();
+
+    // Skip recipients without active subscription
+    if (!isSubscriptionActive(userData)) continue;
+
+    // Skip proximity-only recipients who opted out of proximity alerts
+    const isContactRecipient = contactUids.has(uid);
+    if (!isContactRecipient) {
+      const receiveProximity = userData?.alertPreferences?.receiveProximityAlerts === true;
+      if (!receiveProximity) continue;
+    }
+
+    validRecipients.push(uid);
+    const tokens: string[] = userData?.tokens || [];
     tokens.forEach((token) => {
       allTokens.push(token);
       tokenToUid.set(token, uid);

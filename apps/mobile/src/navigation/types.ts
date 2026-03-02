@@ -17,6 +17,7 @@ export type RootStackParamList = {
   BlockedUsers: undefined;
   EditProfile: undefined;
   PrivacyPolicy: undefined;
+  AlertPreferences: undefined;
   AlertOverlay: {
     alertData: {
       alertId: string;

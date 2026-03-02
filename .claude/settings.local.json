@@ -202,7 +202,8 @@
       "WebFetch(domain:support.google.com)",
       "WebFetch(domain:developers.google.com)",
       "Bash(node_modules/.bin/tsc)",
-      "Bash(./node_modules/.bin/tsc)"
+      "Bash(./node_modules/.bin/tsc)",
+      "Bash(git -C \"c:/Users/Nickolas/Documents/GitHub/alertaki\" log --oneline -20)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",

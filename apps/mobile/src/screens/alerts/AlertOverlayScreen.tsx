@@ -7,6 +7,8 @@ import { Avatar } from '../../components/Avatar';
 import { useAuthStore } from '../../stores/authStore';
 import { contactService } from '../../services/contactService';
 import { notificationService } from '../../services/notificationService';
+import { preferencesService } from '../../services/preferencesService';
+import { startAlertSound, stopAlertSound, startStrobe, stopStrobe } from '../../services/nativeModules';
 import { COLORS, ALERT_COLORS } from '../../config/constants';
 
 type AlertData = {
@@ -45,9 +47,22 @@ export function AlertOverlayScreen({
   }
 
   useEffect(() => {
-    notificationService.startContinuousVibration();
+    preferencesService.getPreferences().then((prefs) => {
+      if (prefs.vibration) {
+        notificationService.startContinuousVibration();
+      }
+      if (prefs.sound) {
+        startAlertSound();
+      }
+      if (prefs.flashlight) {
+        startStrobe();
+      }
+    });
+
     return () => {
       notificationService.stopVibration();
+      stopAlertSound();
+      stopStrobe();
     };
   }, []);
 
@@ -119,7 +134,17 @@ export function AlertOverlayScreen({
                 email: '',
                 photoURL: alertData.userPhotoURL || null,
               });
-              Alert.alert('Sucesso', 'Usuário bloqueado.');
+              Alert.alert(
+                'Sucesso',
+                'Usuário bloqueado. Você não receberá mais alertas desta pessoa.',
+                [{
+                  text: 'OK',
+                  onPress: async () => {
+                    await notificationService.dismissAlertNotification();
+                    navigation.goBack();
+                  },
+                }],
+              );
             } catch (error) {
               Alert.alert('Erro', (error as Error).message);
             }

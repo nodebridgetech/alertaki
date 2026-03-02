@@ -1,7 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
-import { google } from 'googleapis';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -66,6 +65,9 @@ export const validateSubscription = onCall(async (request) => {
     }
 
     logger.info(`Using service account: ${credentials.client_email}`);
+
+    // Lazy-load googleapis to avoid deployment timeout (package is ~5s to import)
+    const { google } = await import('googleapis');
 
     const auth = new google.auth.GoogleAuth({
       credentials,

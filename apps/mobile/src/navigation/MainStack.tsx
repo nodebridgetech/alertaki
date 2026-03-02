@@ -10,6 +10,7 @@ import { InvitesScreen } from '../screens/contacts/InvitesScreen';
 import { BlockedUsersScreen } from '../screens/contacts/BlockedUsersScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { PrivacyPolicyScreen } from '../screens/profile/PrivacyPolicyScreen';
+import { AlertPreferencesScreen } from '../screens/profile/AlertPreferencesScreen';
 import { AlertOverlayScreen } from '../screens/alerts/AlertOverlayScreen';
 import { RootStackParamList, MainTabParamList } from './types';
 import { COLORS } from '../config/constants';
@@ -101,6 +102,11 @@ export function MainStack(): React.JSX.Element {
         name="PrivacyPolicy"
         component={PrivacyPolicyScreen}
         options={{ headerTitle: 'Política de Privacidade' }}
+      />
+      <Stack.Screen
+        name="AlertPreferences"
+        component={AlertPreferencesScreen}
+        options={{ headerTitle: 'Preferências de Alerta' }}
       />
       <Stack.Screen
         name="AlertOverlay"

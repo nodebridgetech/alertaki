@@ -18,6 +18,13 @@ export interface UserAddress {
   state: string;
 }
 
+export interface AlertPreferences {
+  sound: boolean;
+  vibration: boolean;
+  flashlight: boolean;
+  receiveProximityAlerts: boolean;
+}
+
 export interface UserSubscription {
   isActive: boolean;
   productId: string | null;
@@ -44,6 +51,7 @@ export interface User {
   } | null;
   locationUpdatedAt: FirebaseTimestamp | null;
   subscription: UserSubscription | null;
+  alertPreferences: AlertPreferences | null;
   createdAt: FirebaseTimestamp;
   updatedAt: FirebaseTimestamp;
 }

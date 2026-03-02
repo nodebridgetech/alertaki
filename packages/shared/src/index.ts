@@ -1,5 +1,5 @@
 // Types
-export type { User, UserAddress, UserSubscription, Contact, ContactOf, BlockedUser, FirebaseTimestamp } from './types/user';
+export type { User, UserAddress, UserSubscription, AlertPreferences, Contact, ContactOf, BlockedUser, FirebaseTimestamp } from './types/user';
 export type { Alert, AlertType, AlertRecipient, RecipientSource } from './types/alert';
 export type { Invite, InviteStatus } from './types/invite';
 

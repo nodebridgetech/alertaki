@@ -106,6 +106,14 @@ export function ProfileScreen({ navigation }: ProfileScreenProps): React.JSX.Ele
           <Text style={styles.menuItemArrow}>›</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('AlertPreferences')}
+        >
+          <Text style={styles.menuItemText}>Preferências de Alerta</Text>
+          <Text style={styles.menuItemArrow}>›</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Invites')}>
           <Text style={styles.menuItemText}>Convites Pendentes</Text>
           <View style={styles.menuItemRight}>
