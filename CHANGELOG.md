@@ -6,6 +6,19 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.2.1] - 2026-03-03 (versionCode 9)
+
+### Adicionado
+- **Botão "+" em "Sou Contato De"**: permite enviar convite rapidamente para quem te adicionou como contato (só aparece se a pessoa ainda não está em "Meus Contatos")
+- **Navegação por toque na notificação**: tocar em notificação de convite abre a tela de Convites; tocar em alerta abre a tela de Alerta (funciona em foreground, background e cold start)
+
+### Alterado
+- **Som do alerta**: trocado de som de despertador (`TYPE_ALARM`) para toque de chamada (`TYPE_RINGTONE`), com volume forçado ao máximo via `AudioManager`
+- **Volume restaurado**: ao dispensar o alerta, o volume anterior é restaurado automaticamente
+- **Preferências padrão**: lanterna agora ativada por padrão (antes era desativada)
+
+---
+
 ## [1.2.0] - 2026-03-01 (versionCode 8)
 
 ### Adicionado
@@ -88,6 +101,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 | Versão | versionCode | Data | Destaque |
 |--------|-------------|------|----------|
+| 1.2.1 | 9 | 2026-03-03 | Convite rápido, navegação por notificação, som de toque max volume |
 | 1.2.0 | 8 | 2026-03-01 | Preferências de alerta, gate de assinatura, raio 2km |
 | 1.1.5 | 7 | 2026-02-28 | Fix validação de assinatura Google Play |
 | 1.1.2 | 4 | 2026-02-27 | Refatoração e melhorias de código |

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { AppState, NativeModules, PermissionsAndroid, Platform, Settings, StatusBar } from 'react-native';
-import notifee from '@notifee/react-native';
+import notifee, { EventType } from '@notifee/react-native';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -80,6 +80,16 @@ try {
 } catch (error) {
   console.warn('setBackgroundMessageHandler failed:', error);
 }
+
+// Notifee background event handler — fires when user taps notification while app is in background.
+// Store data so the foreground component can navigate when app resumes.
+let pendingNotifeeBackgroundPress: Record<string, string> | null = null;
+
+notifee.onBackgroundEvent(async ({ type, detail }) => {
+  if (type === EventType.PRESS && detail.notification?.data) {
+    pendingNotifeeBackgroundPress = detail.notification.data as Record<string, string>;
+  }
+});
 
 function App(): React.JSX.Element {
   const setUser = useAuthStore((s) => s.setUser);
@@ -277,21 +287,31 @@ function App(): React.JSX.Element {
       .doc(user.uid)
       .onSnapshot((doc) => {
         const data = doc.data();
-        if (data?.subscription) {
-          const now = Date.now() / 1000;
-          const isActive = !!(
-            data.subscription.isActive &&
-            data.subscription.expiresAt?.seconds > now
-          );
-          useSubscriptionStore.getState().setSubscribed(isActive);
+        const sub = data?.subscription;
+        if (!sub || !sub.isActive) {
+          useSubscriptionStore.getState().setSubscribed(false);
           useSubscriptionStore.getState().setChecking(false);
+          return;
         }
+        const now = Date.now() / 1000;
+        const expirySeconds = sub.expiresAt?.seconds ?? 0;
+        const isActive = expirySeconds > now;
+        useSubscriptionStore.getState().setSubscribed(isActive);
+        useSubscriptionStore.getState().setChecking(false);
       });
+
+    // Re-check subscription when app comes to foreground (catches expiration while in background)
+    const appStateSub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        checkSubscriptionStatus(user.uid);
+      }
+    });
 
     return () => {
       purchaseCleanup?.();
       errorCleanup?.();
       unsubFirestore();
+      appStateSub.remove();
       billingService.close();
     };
   }, [user?.uid, setSubscribed, checkSubscriptionStatus]);
@@ -299,6 +319,7 @@ function App(): React.JSX.Element {
   // Check for pending alert data from native AlertLauncher module.
   // When the app is brought to foreground by AlertLauncher (SYSTEM_ALERT_WINDOW),
   // it stores alert data that we consume here to navigate to AlertOverlay.
+  // Also processes pending Notifee background press events.
   useEffect(() => {
     if (Platform.OS !== 'android') return;
 
@@ -330,13 +351,46 @@ function App(): React.JSX.Element {
         .catch(() => {});
     }
 
+    function checkPendingNotifeePress() {
+      const data = pendingNotifeeBackgroundPress;
+      if (!data) return;
+      pendingNotifeeBackgroundPress = null;
+
+      const tryNavigate = setInterval(() => {
+        if (!navigationRef.isReady()) return;
+        clearInterval(tryNavigate);
+
+        if (data.fullscreen === '1') {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: data.alertId || '',
+              type: data.type || '',
+              userId: data.userId || '',
+              userName: data.userName || '',
+              userPhotoURL: data.userPhotoURL || '',
+              lat: data.lat || '',
+              lng: data.lng || '',
+              address: data.address || '',
+              customMessage: data.customMessage || '',
+            },
+          });
+        } else if (data.screen === 'invites') {
+          navigationRef.navigate('Invites');
+        }
+      }, 100);
+
+      setTimeout(() => clearInterval(tryNavigate), 5000);
+    }
+
     // Check immediately on mount
     checkPendingAlert();
+    checkPendingNotifeePress();
 
     // Check whenever app comes to foreground
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         checkPendingAlert();
+        checkPendingNotifeePress();
       }
     });
 

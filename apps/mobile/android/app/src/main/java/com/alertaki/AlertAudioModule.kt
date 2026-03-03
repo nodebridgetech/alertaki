@@ -1,6 +1,8 @@
 package com.alertaki
 
+import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import com.facebook.react.bridge.ReactApplicationContext
@@ -13,13 +15,20 @@ class AlertAudioModule(reactContext: ReactApplicationContext) :
     override fun getName() = "AlertAudio"
 
     private var mediaPlayer: MediaPlayer? = null
+    private var previousVolume: Int = -1
 
     @ReactMethod
     fun startAlertSound() {
         stopAlertSound()
         try {
-            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            val ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
                 ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+            // Force alarm stream volume to maximum
+            val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            previousVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM)
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0)
 
             mediaPlayer = MediaPlayer().apply {
                 val audioAttributes = AudioAttributes.Builder()
@@ -27,7 +36,7 @@ class AlertAudioModule(reactContext: ReactApplicationContext) :
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build()
                 setAudioAttributes(audioAttributes)
-                setDataSource(reactApplicationContext, alarmUri)
+                setDataSource(reactApplicationContext, ringtoneUri)
                 isLooping = true
                 prepare()
                 start()
@@ -48,5 +57,16 @@ class AlertAudioModule(reactContext: ReactApplicationContext) :
             // Ignore
         }
         mediaPlayer = null
+
+        // Restore previous volume
+        if (previousVolume >= 0) {
+            try {
+                val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                audioManager.setStreamVolume(AudioManager.STREAM_ALARM, previousVolume, 0)
+            } catch (_: Exception) {
+                // Ignore
+            }
+            previousVolume = -1
+        }
     }
 }

@@ -94,8 +94,18 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
     );
   }
 
+  async function handleQuickInvite(contactOfItem: ContactOf) {
+    try {
+      await sendInvite(contactOfItem.ownerEmail);
+      Alert.alert('Sucesso', 'Convite enviado!');
+    } catch (error) {
+      Alert.alert('Erro', (error as Error).message);
+    }
+  }
+
   function renderContactOf({ item }: { item: ContactOf }) {
     const name = item.ownerDisplayName || item.ownerEmail?.split('@')[0] || 'Usuário';
+    const alreadyMyContact = contacts.some((c) => c.uid === item.ownerUid);
     return (
       <View style={styles.contactItem}>
         <View style={styles.avatarWrapper}>
@@ -105,6 +115,11 @@ export function ContactsScreen({ navigation }: ContactsScreenProps): React.JSX.E
           <Text style={styles.contactName}>{name}</Text>
           <Text style={styles.contactEmail}>{item.ownerEmail}</Text>
         </View>
+        {!alreadyMyContact && (
+          <TouchableOpacity style={styles.addButton} onPress={() => handleQuickInvite(item)}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -298,6 +313,20 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     fontSize: 13,
     fontWeight: '600',
+  },
+  addButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: COLORS.white,
+    fontSize: 22,
+    fontWeight: 'bold',
+    lineHeight: 24,
   },
   emptyText: {
     fontSize: 16,

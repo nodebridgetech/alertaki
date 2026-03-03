@@ -7,7 +7,7 @@ const PREFS_KEY = 'alertPreferences';
 const DEFAULT_PREFS: AlertPreferences = {
   sound: true,
   vibration: true,
-  flashlight: false,
+  flashlight: true,
   receiveProximityAlerts: false,
 };
 
