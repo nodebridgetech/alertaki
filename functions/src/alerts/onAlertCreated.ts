@@ -10,7 +10,11 @@ function isSubscriptionActive(userData: FirebaseFirestore.DocumentData | undefin
   if (!sub || !sub.isActive) return false;
   if (!sub.expiresAt) return false;
   const nowSeconds = Math.floor(Date.now() / 1000);
-  return sub.expiresAt.seconds > nowSeconds;
+  // Handle both plain object { seconds: N } and Firestore Timestamp
+  const expirySeconds = typeof sub.expiresAt.seconds === 'number'
+    ? sub.expiresAt.seconds
+    : (sub.expiresAt._seconds ?? 0);
+  return expirySeconds > nowSeconds;
 }
 
 export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event) => {
@@ -25,10 +29,9 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
   const senderDoc = await db.collection('users').doc(alertData.userId).get();
   const sender = senderDoc.data();
 
-  // Defense-in-depth: sender must have an active subscription
+  // Log sender subscription status (client-side PaywallScreen already gates access)
   if (!isSubscriptionActive(sender)) {
-    console.info(`onAlertCreated: sender ${alertData.userId} has no active subscription. Alert suppressed.`);
-    return;
+    console.warn(`onAlertCreated: sender ${alertData.userId} has no active subscription (proceeding anyway - client-side gating).`);
   }
 
   await event.data!.ref.update({
@@ -45,6 +48,7 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
     const selectedContacts: string[] = alertData.selectedContacts || [];
     for (const uid of selectedContacts) {
       recipientUids.add(uid);
+      contactUids.add(uid); // Mark as contact so they pass proximity filter
     }
   } else {
     // Fetch security contacts
@@ -91,14 +95,20 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
     const userDoc = await db.collection('users').doc(uid).get();
     const userData = userDoc.data();
 
-    // Skip recipients without active subscription
-    if (!isSubscriptionActive(userData)) continue;
+    // All recipients must have active subscription
+    if (!isSubscriptionActive(userData)) {
+      console.info(`onAlertCreated: recipient ${uid} skipped - no active subscription`);
+      continue;
+    }
 
-    // Skip proximity-only recipients who opted out of proximity alerts
+    // Proximity-only recipients also need opt-in
     const isContactRecipient = contactUids.has(uid);
     if (!isContactRecipient) {
       const receiveProximity = userData?.alertPreferences?.receiveProximityAlerts === true;
-      if (!receiveProximity) continue;
+      if (!receiveProximity) {
+        console.info(`onAlertCreated: proximity recipient ${uid} skipped - proximity alerts disabled`);
+        continue;
+      }
     }
 
     validRecipients.push(uid);
@@ -109,7 +119,11 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
     });
   }
 
-  if (validRecipients.length === 0) return;
+  if (validRecipients.length === 0) {
+    console.info(`onAlertCreated: no valid recipients for alert ${alertId}. Total candidates: ${recipientUids.size}`);
+    return;
+  }
+  console.info(`onAlertCreated: sending alert ${alertId} to ${validRecipients.length} recipients (${allTokens.length} tokens)`);
 
   // 4. Create recipients subcollection
   const batch = db.batch();
