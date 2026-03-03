@@ -124,7 +124,7 @@ export function PaywallScreen(): React.JSX.Element {
           disabled={restoring}
         >
           <Text style={styles.restoreButtonText}>
-            {restoring ? 'Restaurando...' : 'Restaurar compras'}
+            {restoring ? 'Verificando...' : 'Já sou assinante'}
           </Text>
         </TouchableOpacity>
 

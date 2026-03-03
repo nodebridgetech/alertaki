@@ -6,6 +6,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.2.2] - 2026-03-03 (versionCode 10)
+
+### Alterado
+- **Botão "Restaurar compras"**: renomeado para "Já sou assinante" (mais intuitivo para o usuário leigo)
+- **Botão "+" em "Sou Contato De"**: cor alterada de vermelho para verde (fundo verde claro com "+" verde escuro)
+
+---
+
 ## [1.2.1] - 2026-03-03 (versionCode 9)
 
 ### Adicionado
@@ -101,6 +109,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 | Versão | versionCode | Data | Destaque |
 |--------|-------------|------|----------|
+| 1.2.2 | 10 | 2026-03-03 | UX: "Já sou assinante", botão verde no convite rápido |
 | 1.2.1 | 9 | 2026-03-03 | Convite rápido, navegação por notificação, som de toque max volume |
 | 1.2.0 | 8 | 2026-03-01 | Preferências de alerta, gate de assinatura, raio 2km |
 | 1.1.5 | 7 | 2026-02-28 | Fix validação de assinatura Google Play |

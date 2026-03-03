@@ -203,7 +203,9 @@
       "WebFetch(domain:developers.google.com)",
       "Bash(node_modules/.bin/tsc)",
       "Bash(./node_modules/.bin/tsc)",
-      "Bash(git -C \"c:/Users/Nickolas/Documents/GitHub/alertaki\" log --oneline -20)"
+      "Bash(git -C \"c:/Users/Nickolas/Documents/GitHub/alertaki\" log --oneline -20)",
+      "Bash(./gradlew bundleRelease --no-daemon)",
+      "Bash(GRADLE_OPTS=\"-Xmx1536m\" ./gradlew bundleRelease --no-daemon -Dorg.gradle.workers.max=2)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",
