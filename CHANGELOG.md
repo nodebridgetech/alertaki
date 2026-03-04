@@ -6,6 +6,17 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.2.3] - 2026-03-04 (versionCode 11)
+
+### Corrigido
+- **Permissão de sobreposição**: botão "Ativar" agora abre corretamente a tela de configuração "Exibir sobre outros apps"
+
+### Alterado
+- **Notificação persistente durante alerta**: a notificação na barra de status permanece enquanto o alerta não for dispensado, permitindo o usuário voltar à tela de alerta tocando nela
+- **Som/vibração continuam**: ao sair da tela de alerta (apertar home), som e vibração continuam até o usuário clicar "Dispensar"
+
+---
+
 ## [1.2.2] - 2026-03-03 (versionCode 10)
 
 ### Alterado
@@ -109,6 +120,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 | Versão | versionCode | Data | Destaque |
 |--------|-------------|------|----------|
+| 1.2.3 | 11 | 2026-03-04 | Fix sobreposição, notificação persistente, som contínuo |
 | 1.2.2 | 10 | 2026-03-03 | UX: "Já sou assinante", botão verde no convite rápido |
 | 1.2.1 | 9 | 2026-03-03 | Convite rápido, navegação por notificação, som de toque max volume |
 | 1.2.0 | 8 | 2026-03-01 | Preferências de alerta, gate de assinatura, raio 2km |

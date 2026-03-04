@@ -59,11 +59,9 @@ export function AlertOverlayScreen({
       }
     });
 
-    return () => {
-      notificationService.stopVibration();
-      stopAlertSound();
-      stopStrobe();
-    };
+    // No cleanup here — sound/vibration/strobe continue if user leaves screen
+    // They are only stopped when user taps "Dispensar" via dismissAlertNotification()
+    return () => {};
   }, []);
 
   const titleMap: Record<string, string> = {

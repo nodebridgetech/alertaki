@@ -160,7 +160,7 @@ export function EmergencyScreen({ navigation }: EmergencyScreenProps): React.JSX
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>Alerta de Emergência</Text>
 
       <Text style={styles.sectionLabel}>Selecione os contatos:</Text>

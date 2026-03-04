@@ -2,6 +2,7 @@ package com.alertaki
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
 import com.facebook.react.bridge.Arguments
@@ -81,5 +82,16 @@ class AlertLauncherModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun canDrawOverlays(promise: Promise) {
         promise.resolve(Settings.canDrawOverlays(reactApplicationContext))
+    }
+
+    @ReactMethod
+    fun openOverlaySettings() {
+        val intent = Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+            Uri.parse("package:${reactApplicationContext.packageName}")
+        ).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        reactApplicationContext.startActivity(intent)
     }
 }

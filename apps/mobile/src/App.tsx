@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { AppState, NativeModules, PermissionsAndroid, Platform, Settings, StatusBar } from 'react-native';
+import { AppState, KeyboardAvoidingView, NativeModules, PermissionsAndroid, Platform, Settings, StatusBar, StyleSheet } from 'react-native';
 import notifee, { EventType } from '@notifee/react-native';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
@@ -571,14 +571,24 @@ function App(): React.JSX.Element {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        {!isConnected && <OfflineBanner />}
-        <NavigationContainer ref={navigationRef}>
-          <RootNavigator />
-        </NavigationContainer>
+        <KeyboardAvoidingView
+          style={appStyles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        >
+          <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+          {!isConnected && <OfflineBanner />}
+          <NavigationContainer ref={navigationRef}>
+            <RootNavigator />
+          </NavigationContainer>
+        </KeyboardAvoidingView>
       </SafeAreaProvider>
     </ErrorBoundary>
   );
 }
+
+const appStyles = StyleSheet.create({
+  flex: { flex: 1 },
+});
 
 export default App;

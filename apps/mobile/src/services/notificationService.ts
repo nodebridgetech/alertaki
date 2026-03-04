@@ -283,14 +283,15 @@ function setupForegroundEvent(
     if (type === EventType.PRESS && detail.notification?.data) {
       const data = detail.notification.data as Record<string, string>;
       if (data.fullscreen === '1') {
+        // Only navigate — keep notification alive as anchor until user taps "Dispensar"
         onAlertPress(data);
-      } else if (data.screen === 'invites' && onInvitePress) {
-        onInvitePress();
+      } else if (data.screen === 'invites') {
+        if (onInvitePress) onInvitePress();
+        notifee.cancelAllNotifications();
+        stopVibration();
+        stopAlertSound();
+        stopStrobe();
       }
-      notifee.cancelAllNotifications();
-      stopVibration();
-      stopAlertSound();
-      stopStrobe();
     }
   });
 }
@@ -307,10 +308,11 @@ function requestOverlayPermission(): Promise<void> {
         {
           text: 'Ativar',
           onPress: () => {
-            Linking.sendIntent(
-              'android.settings.action.MANAGE_OVERLAY_PERMISSION',
-              [{ key: 'package', value: 'com.alertaki' }],
-            ).catch(() => Linking.openSettings());
+            try {
+              NativeModules.AlertLauncher.openOverlaySettings();
+            } catch {
+              Linking.openSettings();
+            }
             resolve();
           },
         },
