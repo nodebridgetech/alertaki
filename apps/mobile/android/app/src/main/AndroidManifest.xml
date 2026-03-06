@@ -34,6 +34,11 @@
         android:resource="@color/notification_color"
         tools:replace="android:resource" />
 
+      <!-- Google Maps API key for map preview -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyDicxkwzBkGneJLnl5LF4dB7VDaimmjxFk" />
+
       <!-- Notifee: Full-screen intent activity for alert notifications -->
       <activity
         android:name="io.invertase.notifee.NotifeeFullScreenActivity"

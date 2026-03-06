@@ -6,6 +6,19 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.2.4] - 2026-03-05 (versionCode 12)
+
+### Corrigido
+- **Permissão de sobreposição**: fluxo agora espera o usuário voltar da tela de configurações antes de pedir a próxima permissão
+- **Toque na notificação de alerta**: agora navega corretamente para a tela de alerta (fix AsyncStorage bridge entre contextos JS)
+
+### Alterado
+- **Botões de convite**: ícones substituídos por texto "Aceitar" (verde) e "Recusar" (vermelho) com gradiente
+- **Pré-visualização do mapa**: alertas de saúde e segurança agora exibem um mini-mapa com a localização na tela de alerta
+- **Mensagem de emergência**: texto da mensagem personalizada agora é exibido em tamanho maior para melhor leitura
+
+---
+
 ## [1.2.3] - 2026-03-04 (versionCode 11)
 
 ### Corrigido

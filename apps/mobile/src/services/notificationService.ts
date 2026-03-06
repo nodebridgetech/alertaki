@@ -6,12 +6,15 @@ import notifee, {
   AndroidCategory,
   EventType,
 } from '@notifee/react-native';
-import { Alert, Linking, NativeModules, Platform, Vibration } from 'react-native';
+import { Alert, AppState, Linking, NativeModules, Platform, Vibration } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { stopAlertSound, stopStrobe } from './nativeModules';
 
 let vibrationInterval: ReturnType<typeof setInterval> | null = null;
+let activeAlertData: AlertNotificationData | null = null;
 
 const VIBRATION_PATTERN = [1, 1000, 500, 1000, 500, 1000];
+const ACTIVE_ALERT_KEY = '@activeAlert';
 
 async function isNotificationPermissionGranted(): Promise<boolean> {
   const settings = await notifee.getNotificationSettings();
@@ -174,7 +177,27 @@ interface AlertPrefs {
   vibration?: boolean;
 }
 
+async function setActiveAlert(data: AlertNotificationData | null): Promise<void> {
+  activeAlertData = data;
+  if (data) {
+    await AsyncStorage.setItem(ACTIVE_ALERT_KEY, JSON.stringify(data));
+  } else {
+    await AsyncStorage.removeItem(ACTIVE_ALERT_KEY);
+  }
+}
+
+async function getActiveAlert(): Promise<AlertNotificationData | null> {
+  if (activeAlertData) return activeAlertData;
+  const stored = await AsyncStorage.getItem(ACTIVE_ALERT_KEY);
+  if (stored) {
+    activeAlertData = JSON.parse(stored);
+    return activeAlertData;
+  }
+  return null;
+}
+
 async function showAlertNotification(data: AlertNotificationData, prefs?: AlertPrefs): Promise<void> {
+  await setActiveAlert(data);
   const titleMap: Record<string, string> = {
     health: '🏥 Alerta de Saúde!',
     security: '🛡️ Alerta de Segurança!',
@@ -241,7 +264,7 @@ async function showInviteNotification(fromName: string, fromEmail: string): Prom
     android: {
       channelId: 'invite_channel',
       smallIcon: 'ic_launcher',
-      pressAction: { id: 'default' },
+      pressAction: { id: 'default', launchActivity: 'default' },
     },
     ios: {
       sound: 'default',
@@ -251,6 +274,7 @@ async function showInviteNotification(fromName: string, fromEmail: string): Prom
 }
 
 async function dismissAlertNotification(): Promise<void> {
+  await setActiveAlert(null);
   stopVibration();
   stopAlertSound();
   stopStrobe();
@@ -313,7 +337,13 @@ function requestOverlayPermission(): Promise<void> {
             } catch {
               Linking.openSettings();
             }
-            resolve();
+            // Wait for user to return from settings before continuing permission flow
+            const sub = AppState.addEventListener('change', (state: string) => {
+              if (state === 'active') {
+                sub.remove();
+                resolve();
+              }
+            });
           },
         },
       ],
@@ -336,4 +366,6 @@ export const notificationService = {
   startContinuousVibration,
   stopVibration,
   setupForegroundEvent,
+  setActiveAlert,
+  getActiveAlert,
 };

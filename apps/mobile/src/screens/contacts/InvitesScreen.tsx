@@ -61,24 +61,25 @@ export function InvitesScreen(): React.JSX.Element {
     const isProcessing = processingId === item.id;
     return (
       <View style={[styles.inviteItem, isProcessing && styles.inviteItemProcessing]}>
-        <View style={styles.avatarWrapper}>
+        <View style={styles.inviteHeader}>
           <Avatar photoURL={item.fromPhotoURL} name={item.fromDisplayName} size={48} />
+          <View style={styles.inviteInfo}>
+            <Text style={styles.inviteName} numberOfLines={1}>
+              {item.fromDisplayName || 'Usuário'}
+            </Text>
+            <Text style={styles.inviteEmail} numberOfLines={1}>{item.fromEmail}</Text>
+          </View>
         </View>
-        <View style={styles.inviteInfo}>
-          <Text style={styles.inviteName} numberOfLines={1}>
-            {item.fromDisplayName || 'Usuário'}
-          </Text>
-          <Text style={styles.inviteEmail} numberOfLines={1}>{item.fromEmail}</Text>
-          <Text style={styles.inviteText}>quer ser seu contato de segurança</Text>
-        </View>
+        <Text style={styles.inviteText}>Quer ser seu contato de segurança</Text>
         {isProcessing ? (
-          <ActivityIndicator size="small" color={COLORS.accent} />
+          <ActivityIndicator size="small" color={COLORS.accent} style={styles.loader} />
         ) : (
           <View style={styles.actions}>
             <TouchableOpacity
               onPress={() => handleAccept(item)}
               disabled={!!processingId}
               activeOpacity={0.8}
+              style={styles.actionTouchable}
             >
               <LinearGradient
                 colors={['#43A047', '#66BB6A']}
@@ -86,13 +87,14 @@ export function InvitesScreen(): React.JSX.Element {
                 end={{ x: 1, y: 1 }}
                 style={styles.actionButton}
               >
-                <Text style={styles.actionIcon}>🛡️</Text>
+                <Text style={styles.actionText}>Aceitar</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handleReject(item)}
               disabled={!!processingId}
               activeOpacity={0.8}
+              style={styles.actionTouchable}
             >
               <LinearGradient
                 colors={['#E53935', '#EF5350']}
@@ -100,7 +102,7 @@ export function InvitesScreen(): React.JSX.Element {
                 end={{ x: 1, y: 1 }}
                 style={styles.actionButton}
               >
-                <Text style={styles.actionIcon}>🚫</Text>
+                <Text style={styles.actionText}>Recusar</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -140,23 +142,24 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   inviteItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: COLORS.backgroundSecondary,
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   inviteItemProcessing: {
     opacity: 0.6,
   },
-  avatarWrapper: {
-    marginRight: 12,
+  inviteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   inviteInfo: {
     flex: 1,
+    marginLeft: 12,
   },
   inviteName: {
     fontSize: 16,
@@ -168,19 +171,23 @@ const styles = StyleSheet.create({
     color: COLORS.secondaryText,
   },
   inviteText: {
-    fontSize: 12,
+    fontSize: 14,
     color: COLORS.secondaryText,
-    marginTop: 2,
-    fontStyle: 'italic',
+    marginBottom: 14,
+  },
+  loader: {
+    marginTop: 8,
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
+  },
+  actionTouchable: {
+    flex: 1,
   },
   actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    paddingVertical: 12,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
@@ -189,8 +196,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
   },
-  actionIcon: {
-    fontSize: 20,
+  actionText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: COLORS.white,
   },
   emptyText: {
     fontSize: 16,

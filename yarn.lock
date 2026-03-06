@@ -4599,10 +4599,10 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hermes-compiler@250829098.0.7:
-  version "250829098.0.7"
-  resolved "https://registry.npmjs.org/hermes-compiler/-/hermes-compiler-250829098.0.7.tgz"
-  integrity sha512-8QOmg1VjAWv8poFVslJDY8qkvjTy/UiO3R/hyGoC0IAchLzBdS9/TmAvI9cN1F3yLTEjimAIQQtUslpBMPXVVg==
+hermes-compiler@250829098.0.7, hermes-compiler@250829098.0.8:
+  version "250829098.0.8"
+  resolved "https://registry.yarnpkg.com/hermes-compiler/-/hermes-compiler-250829098.0.8.tgz#5d763ab8f136253562921048f3b1c2ae9436d0ca"
+  integrity sha512-pk1lL4RYvaS9R4uhSym07Bp8nJiyjvahfXtCiTIsYAdQUeyvn2VHadqU73vNQjui7PGapAK9agdSv0FyffnqFg==
 
 hermes-estree@0.32.0:
   version "0.32.0"

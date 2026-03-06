@@ -205,7 +205,11 @@
       "Bash(./node_modules/.bin/tsc)",
       "Bash(git -C \"c:/Users/Nickolas/Documents/GitHub/alertaki\" log --oneline -20)",
       "Bash(./gradlew bundleRelease --no-daemon)",
-      "Bash(GRADLE_OPTS=\"-Xmx1536m\" ./gradlew bundleRelease --no-daemon -Dorg.gradle.workers.max=2)"
+      "Bash(GRADLE_OPTS=\"-Xmx1536m\" ./gradlew bundleRelease --no-daemon -Dorg.gradle.workers.max=2)",
+      "WebFetch(domain:maps.googleapis.com)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(/tmp/check_imports.txt:*)",
+      "Bash(xargs grep -l \"AppRegistry\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Nickolas\\AppData\\Local\\Temp\\alertaki-old",

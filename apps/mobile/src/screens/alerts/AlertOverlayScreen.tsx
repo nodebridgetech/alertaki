@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert, Share } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Platform, Alert, Share, ScrollView, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EMERGENCY_NUMBERS } from '@alertaki/shared';
@@ -34,6 +35,7 @@ export function AlertOverlayScreen({
 }: AlertOverlayScreenProps): React.JSX.Element {
   const alertData = route.params?.alertData;
   const user = useAuthStore((s) => s.user);
+  const insets = useSafeAreaInsets();
 
   if (!alertData) {
     return (
@@ -159,57 +161,78 @@ export function AlertOverlayScreen({
 
   const accentColor = colorMap[alertData.type] || COLORS.accent;
 
+  const hasCoords = !!(alertData.lat && alertData.lng && parseFloat(alertData.lat) !== 0);
+  const showMap = hasCoords && (alertData.type === 'health' || alertData.type === 'security');
+  const MAPS_API_KEY = 'AIzaSyDicxkwzBkGneJLnl5LF4dB7VDaimmjxFk';
+  const staticMapUrl = showMap
+    ? `https://maps.googleapis.com/maps/api/staticmap?center=${alertData.lat},${alertData.lng}&zoom=15&size=600x300&scale=2&markers=color:red%7C${alertData.lat},${alertData.lng}&key=${MAPS_API_KEY}`
+    : null;
+
   return (
-    <View style={[styles.container, { backgroundColor: accentColor }]}>
+    <View style={[styles.container, { backgroundColor: accentColor, paddingTop: insets.top }]}>
       <Text style={styles.title}>{titleMap[alertData.type] || 'ALERTA'}</Text>
 
-      <View style={styles.card}>
-        <View style={styles.userInfo}>
-          <Avatar photoURL={alertData.userPhotoURL} name={alertData.userName} size={64} />
-          <Text style={styles.userName}>{alertData.userName}</Text>
-        </View>
-
-        <TouchableOpacity onPress={shareAddress} accessibilityLabel="Compartilhar endereço" accessibilityRole="button">
-          <Text style={styles.address}>{alertData.address || 'Endereço indisponível'}</Text>
-          <Text style={styles.shareHint}>Toque para compartilhar</Text>
-        </TouchableOpacity>
-
-        {alertData.type === 'custom' && alertData.customMessage ? (
-          <View style={styles.messageBox}>
-            <Text style={styles.messageText}>"{alertData.customMessage}"</Text>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.card}>
+          <View style={styles.userInfo}>
+            <Avatar photoURL={alertData.userPhotoURL} name={alertData.userName} size={64} />
+            <Text style={styles.userName}>{alertData.userName}</Text>
           </View>
-        ) : null}
 
-        {alertData.type === 'health' && (
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: ALERT_COLORS.health.primary }]}
-            onPress={() => Linking.openURL(`tel:${EMERGENCY_NUMBERS.SAMU}`)}
-          >
-            <Text style={styles.actionButtonText}>Ligar SAMU ({EMERGENCY_NUMBERS.SAMU})</Text>
+          <TouchableOpacity onPress={shareAddress} accessibilityLabel="Compartilhar endereço" accessibilityRole="button">
+            <Text style={styles.address}>{alertData.address || 'Endereço indisponível'}</Text>
+            <Text style={styles.shareHint}>Toque para compartilhar</Text>
           </TouchableOpacity>
-        )}
 
-        {alertData.type === 'security' && (
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: ALERT_COLORS.security.primary }]}
-            onPress={() => Linking.openURL(`tel:${EMERGENCY_NUMBERS.POLICE}`)}
-          >
-            <Text style={styles.actionButtonText}>Ligar Polícia ({EMERGENCY_NUMBERS.POLICE})</Text>
+          {showMap && staticMapUrl && (
+            <TouchableOpacity onPress={openMaps} activeOpacity={0.9} style={styles.mapPreviewContainer}>
+              <Image
+                source={{ uri: staticMapUrl }}
+                style={styles.mapPreview}
+                resizeMode="cover"
+              />
+              <Text style={styles.mapPreviewHint}>Toque para navegar</Text>
+            </TouchableOpacity>
+          )}
+
+          {alertData.type === 'custom' && alertData.customMessage ? (
+            <View style={styles.messageBox}>
+              <Text style={styles.messageLabel}>Mensagem:</Text>
+              <Text style={styles.messageText}>"{alertData.customMessage}"</Text>
+            </View>
+          ) : null}
+
+          {alertData.type === 'health' && (
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: ALERT_COLORS.health.primary }]}
+              onPress={() => Linking.openURL(`tel:${EMERGENCY_NUMBERS.SAMU}`)}
+            >
+              <Text style={styles.actionButtonText}>Ligar SAMU ({EMERGENCY_NUMBERS.SAMU})</Text>
+            </TouchableOpacity>
+          )}
+
+          {alertData.type === 'security' && (
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: ALERT_COLORS.security.primary }]}
+              onPress={() => Linking.openURL(`tel:${EMERGENCY_NUMBERS.POLICE}`)}
+            >
+              <Text style={styles.actionButtonText}>Ligar Polícia ({EMERGENCY_NUMBERS.POLICE})</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.mapButton} onPress={openMaps} accessibilityLabel="Abrir localização no mapa" accessibilityRole="button">
+            <Text style={styles.mapButtonText}>Abrir no Mapa</Text>
           </TouchableOpacity>
-        )}
 
-        <TouchableOpacity style={styles.mapButton} onPress={openMaps} accessibilityLabel="Abrir localização no mapa" accessibilityRole="button">
-          <Text style={styles.mapButtonText}>Abrir no Mapa</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.blockButton} onPress={handleBlock} accessibilityLabel={`Bloquear ${alertData.userName}`} accessibilityRole="button">
+            <Text style={styles.blockButtonText}>Bloquear Usuário</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.blockButton} onPress={handleBlock} accessibilityLabel={`Bloquear ${alertData.userName}`} accessibilityRole="button">
-          <Text style={styles.blockButtonText}>Bloquear Usuário</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.dismissButton} onPress={handleDismiss} accessibilityLabel="Dispensar alerta" accessibilityRole="button">
-          <Text style={styles.dismissButtonText}>Dispensar</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.dismissButton} onPress={handleDismiss} accessibilityLabel="Dispensar alerta" accessibilityRole="button">
+            <Text style={styles.dismissButtonText}>Dispensar</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -217,15 +240,23 @@ export function AlertOverlayScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  scrollView: {
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: COLORS.white,
-    marginBottom: 24,
+    marginTop: 48,
+    marginBottom: 16,
     textAlign: 'center',
   },
   card: {
@@ -261,18 +292,42 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 16,
   },
+  mapPreviewContainer: {
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 16,
+  },
+  mapPreview: {
+    width: '100%',
+    height: 150,
+  },
+  mapPreviewHint: {
+    fontSize: 11,
+    color: COLORS.accent,
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 2,
+  },
   messageBox: {
     backgroundColor: COLORS.backgroundSecondary,
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     width: '100%',
     marginBottom: 16,
   },
+  messageLabel: {
+    fontSize: 13,
+    color: COLORS.secondaryText,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
   messageText: {
-    fontSize: 16,
+    fontSize: 22,
     color: COLORS.primaryText,
     fontStyle: 'italic',
     textAlign: 'center',
+    lineHeight: 30,
   },
   actionButton: {
     borderRadius: 12,

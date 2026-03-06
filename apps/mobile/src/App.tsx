@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { AppState, KeyboardAvoidingView, NativeModules, PermissionsAndroid, Platform, Settings, StatusBar, StyleSheet } from 'react-native';
-import notifee, { EventType } from '@notifee/react-native';
-import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import notifee from '@notifee/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import messaging from '@react-native-firebase/messaging';
@@ -81,15 +80,10 @@ try {
   console.warn('setBackgroundMessageHandler failed:', error);
 }
 
-// Notifee background event handler — fires when user taps notification while app is in background.
-// Store data so the foreground component can navigate when app resumes.
-let pendingNotifeeBackgroundPress: Record<string, string> | null = null;
+// AsyncStorage key shared with index.js onBackgroundEvent handler
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-notifee.onBackgroundEvent(async ({ type, detail }) => {
-  if (type === EventType.PRESS && detail.notification?.data) {
-    pendingNotifeeBackgroundPress = detail.notification.data as Record<string, string>;
-  }
-});
+const PENDING_NOTIFEE_KEY = '@pendingNotifeePress';
 
 function App(): React.JSX.Element {
   const setUser = useAuthStore((s) => s.setUser);
@@ -98,7 +92,6 @@ function App(): React.JSX.Element {
   const setContactOf = useContactStore((s) => s.setContactOf);
   const setPendingInvites = useContactStore((s) => s.setPendingInvites);
   const setBlockedUsers = useContactStore((s) => s.setBlockedUsers);
-  const pendingInitialNotification = useRef<FirebaseMessagingTypes.RemoteMessage | null>(null);
   const pendingNotifeeInitial = useRef<Record<string, string> | null>(null);
 
   useEffect(() => {
@@ -351,11 +344,17 @@ function App(): React.JSX.Element {
         .catch(() => {});
     }
 
-    function checkPendingNotifeePress() {
-      const data = pendingNotifeeBackgroundPress;
-      if (!data) return;
-      pendingNotifeeBackgroundPress = null;
+    async function checkPendingNotifeePress() {
+      try {
+        const stored = await AsyncStorage.getItem(PENDING_NOTIFEE_KEY);
+        if (!stored) return;
+        await AsyncStorage.removeItem(PENDING_NOTIFEE_KEY);
+        const data = JSON.parse(stored) as Record<string, string>;
+        navigateFromNotificationData(data);
+      } catch {}
+    }
 
+    function navigateFromNotificationData(data: Record<string, string>) {
       const tryNavigate = setInterval(() => {
         if (!navigationRef.isReady()) return;
         clearInterval(tryNavigate);
@@ -378,7 +377,6 @@ function App(): React.JSX.Element {
           navigationRef.navigate('Invites');
         }
       }, 100);
-
       setTimeout(() => clearInterval(tryNavigate), 5000);
     }
 
@@ -387,10 +385,39 @@ function App(): React.JSX.Element {
     checkPendingNotifeePress();
 
     // Check whenever app comes to foreground
-    const sub = AppState.addEventListener('change', (state) => {
+    const sub = AppState.addEventListener('change', async (state) => {
       if (state === 'active') {
         checkPendingAlert();
-        checkPendingNotifeePress();
+
+        // Small delay to let onBackgroundEvent finish writing to AsyncStorage
+        setTimeout(() => checkPendingNotifeePress(), 500);
+
+        // Check Notifee initial notification (captures tap that brought app to foreground)
+        try {
+          const initial = await notifee.getInitialNotification();
+          if (initial?.notification?.data) {
+            const data = initial.notification.data as Record<string, string>;
+            navigateFromNotificationData(data);
+          }
+        } catch {}
+
+        // If there's an active alert that hasn't been dismissed, re-navigate to it
+        const active = await notificationService.getActiveAlert();
+        if (active && navigationRef.isReady()) {
+          navigationRef.navigate('AlertOverlay', {
+            alertData: {
+              alertId: active.alertId,
+              type: active.type,
+              userId: active.userId,
+              userName: active.userName,
+              userPhotoURL: active.userPhotoURL || '',
+              lat: active.lat,
+              lng: active.lng,
+              address: active.address,
+              customMessage: active.customMessage || '',
+            },
+          });
+        }
       }
     });
 
@@ -440,47 +467,9 @@ function App(): React.JSX.Element {
       }
     });
 
-    // Handle notification tap when app is in background
-    const unsubNotifOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
-      const data = remoteMessage.data;
-      if (!data) return;
-
-      // Wait for navigation to be ready before navigating
-      const tryNavigate = setInterval(() => {
-        if (!navigationRef.isReady()) return;
-        clearInterval(tryNavigate);
-
-        if (data.fullscreen === '1') {
-          navigationRef.navigate('AlertOverlay', {
-            alertData: {
-              alertId: (data.alertId as string) || '',
-              type: (data.type as string) || '',
-              userId: (data.userId as string) || '',
-              userName: (data.userName as string) || '',
-              userPhotoURL: (data.userPhotoURL as string) || '',
-              lat: (data.lat as string) || '',
-              lng: (data.lng as string) || '',
-              address: (data.address as string) || '',
-              customMessage: (data.customMessage as string) || '',
-            },
-          });
-        } else if (data.screen === 'invites') {
-          navigationRef.navigate('Invites');
-        }
-      }, 100);
-
-      // Safety: stop polling after 5 seconds
-      setTimeout(() => clearInterval(tryNavigate), 5000);
-    });
-
-    // Handle notification tap when app was terminated — store for later
-    messaging()
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage?.data) {
-          pendingInitialNotification.current = remoteMessage;
-        }
-      });
+    // Note: messaging().onNotificationOpenedApp() is NOT used because all
+    // notifications are created via Notifee (not FCM). Notifee handles tap
+    // events via onBackgroundEvent (index.js) and setupForegroundEvent.
 
     // Also check Notifee initial notification (for full-screen intent or Notifee press)
     notifee.getInitialNotification().then((initialNotification) => {
@@ -517,27 +506,17 @@ function App(): React.JSX.Element {
 
     return () => {
       unsubMessage();
-      unsubNotifOpen();
       unsubNotifee();
     };
   }, []);
 
-  // Process pending initial notification after auth is ready.
-  // Handles both FCM initial notification and Notifee initial notification
-  // (full-screen intent / notification press that launched the app).
+  // Process pending Notifee initial notification after auth is ready.
+  // Handles notification press / full-screen intent that launched the app.
   useEffect(() => {
     if (!user) return;
 
-    // Merge data from FCM or Notifee initial notification
-    let data: Record<string, string | object> | undefined;
-
-    if (pendingNotifeeInitial.current) {
-      data = pendingNotifeeInitial.current;
-      pendingNotifeeInitial.current = null;
-    } else if (pendingInitialNotification.current?.data) {
-      data = pendingInitialNotification.current.data;
-      pendingInitialNotification.current = null;
-    }
+    const data = pendingNotifeeInitial.current;
+    pendingNotifeeInitial.current = null;
 
     if (!data) return;
 

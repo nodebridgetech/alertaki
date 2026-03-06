@@ -4,21 +4,31 @@
 
 import { AppRegistry } from 'react-native';
 import notifee, { EventType } from '@notifee/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import App from './src/App';
 import { FullScreenAlert } from './src/components/FullScreenAlert';
 import { name as appName } from './app.json';
 
-// Notifee background event handler — must be registered outside component.
-// Handles notification taps and full-screen intent interactions when app is
-// in background or terminated.
+const PENDING_NOTIFEE_KEY = '@pendingNotifeePress';
+
+// SINGLE Notifee background event handler — must be registered outside component.
+// Runs in a SEPARATE headless JS context on Android — module-level variables
+// are NOT shared with the foreground JS, so we use AsyncStorage as a bridge.
+// IMPORTANT: Only ONE onBackgroundEvent can be registered. Having multiple
+// causes unpredictable behavior where only one fires.
 notifee.onBackgroundEvent(async ({ type, detail }) => {
-  const { notification } = detail;
   if (
     (type === EventType.PRESS || type === EventType.ACTION_PRESS) &&
-    notification
+    detail.notification?.data
   ) {
-    // Cancel notifications and let the app handle navigation when it opens
-    await notifee.cancelAllNotifications();
+    // Save notification data to AsyncStorage so the foreground JS can read it
+    // and navigate to the correct screen when the app opens
+    await AsyncStorage.setItem(
+      PENDING_NOTIFEE_KEY,
+      JSON.stringify(detail.notification.data),
+    );
+    // Do NOT cancel notifications here — alert notifications are ongoing
+    // and should only be dismissed by the user tapping "Dispensar"
   }
 });
 
