@@ -37,3 +37,11 @@ functions/.env
 
 # TypeScript
 *.tsbuildinfo
+
+# Crash dumps da JVM (Gradle)
+hs_err_pid*.log
+replay_pid*.log
+
+# Arquivos soltos de QA e rascunhos
+Junk/
+/google-services *.json

@@ -6,6 +6,23 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.3.1] - 2026-03-06 (versionCode 19)
+
+Os builds de versionCode 13 a 18 foram de teste interno e não tiveram registro separado. As mudanças abaixo foram reconstruídas a partir do commit que fechou a versão.
+
+### Adicionado
+- **Voltar para o alerta ativo**: se o usuário sai do app sem dispensar um alerta, ao voltar o app abre direto na tela de alerta
+- **Toque na notificação de convite**: agora abre o app mesmo quando ele está fechado
+
+### Alterado
+- **Tela de alerta com rolagem**: o conteúdo rola em telas pequenas e não fica mais embaixo da barra de status
+- **Mensagem de emergência**: ganhou o rótulo "Mensagem:" acima do texto
+
+### Corrigido
+- **Toque em notificação com o app em segundo plano**: havia dois tratadores de toque registrados e só um disparava; agora existe um só, e o FCM deixou de tratar toques (todas as notificações passam pelo Notifee)
+
+---
+
 ## [1.2.4] - 2026-03-05 (versionCode 12)
 
 ### Corrigido
