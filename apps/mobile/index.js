@@ -5,8 +5,10 @@
 import { AppRegistry } from 'react-native';
 import notifee, { EventType } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackgroundFetch from 'react-native-background-fetch';
 import App from './src/App';
 import { FullScreenAlert } from './src/components/FullScreenAlert';
+import { runBackgroundLocationTask } from './src/services/backgroundLocationTask';
 import { name as appName } from './app.json';
 
 const PENDING_NOTIFEE_KEY = '@pendingNotifeePress';
@@ -36,5 +38,8 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 // This renders inside a separate activity when the full-screen intent fires
 // (device locked / screen off), independent of the main app lifecycle.
 AppRegistry.registerComponent('full-screen-alert', () => FullScreenAlert);
+
+// Com o app fechado (stopOnTerminate: false), o Android chama esta tarefa sem abrir a UI.
+BackgroundFetch.registerHeadlessTask(runBackgroundLocationTask);
 
 AppRegistry.registerComponent(appName, () => App);
