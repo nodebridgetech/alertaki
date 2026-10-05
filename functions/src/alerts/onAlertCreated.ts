@@ -1,8 +1,8 @@
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
-import { haversineDistance } from '../utils/haversine';
 import { chunkArray, getAlertTitle, getAlertBody, reverseGeocode } from '../utils/helpers';
+import { findNearbyUsers } from './findNearbyUsers';
 
 function isSubscriptionActive(userData: FirebaseFirestore.DocumentData | undefined): boolean {
   if (!userData) return false;
@@ -63,12 +63,7 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
     });
 
     // Fetch nearby users
-    const nearbyUsers = await findNearbyUsers(
-      db,
-      alertData.lat,
-      alertData.lng,
-      alertData.radiusKm || 2,
-    );
+    const nearbyUsers = await findNearbyUsers(db, alertData.lat, alertData.lng);
     nearbyUsers.forEach((uid) => recipientUids.add(uid));
   }
 
@@ -203,34 +198,3 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
     }
   }
 });
-
-async function findNearbyUsers(
-  db: FirebaseFirestore.Firestore,
-  lat: number,
-  lng: number,
-  radiusKm: number,
-): Promise<string[]> {
-  const snapshot = await db
-    .collection('users')
-    .where('locationUpdatedAt', '!=', null)
-    .orderBy('locationUpdatedAt', 'desc')
-    .limit(500)
-    .get();
-
-  const nearbyUids: string[] = [];
-  snapshot.forEach((doc) => {
-    const userData = doc.data();
-    if (userData.lastLocation) {
-      const distance = haversineDistance(
-        lat,
-        lng,
-        userData.lastLocation.lat,
-        userData.lastLocation.lng,
-      );
-      if (distance <= radiusKm) {
-        nearbyUids.push(doc.id);
-      }
-    }
-  });
-  return nearbyUids;
-}

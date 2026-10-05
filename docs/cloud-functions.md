@@ -67,13 +67,8 @@ export const onAlertCreated = onDocumentCreated('alerts/{alertId}', async (event
 
     contactsSnap.forEach((doc) => recipientUids.add(doc.id));
 
-    // 3b. Buscar usuários próximos (raio de 5km)
-    const nearbyUsers = await findNearbyUsers(
-      db,
-      alertData.lat,
-      alertData.lng,
-      alertData.radiusKm || 5,
-    );
+    // 3b. Buscar usuários próximos (raio fixo de 2km, definido no servidor)
+    const nearbyUsers = await findNearbyUsers(db, alertData.lat, alertData.lng);
 
     nearbyUsers.forEach((uid) => recipientUids.add(uid));
   }
@@ -227,54 +222,40 @@ function getAlertBody(type: string, name?: string, message?: string): string {
   }
 }
 
-// Buscar usuários próximos usando Haversine
+// Busca por geohash (geofire-common): lê só os usuários das células que cobrem o raio.
+// O app grava lastLocation.geohash junto com lat/lng.
+// O raio é definido aqui, não pelo app: versões antigas e clientes adulterados não conseguem ampliá-lo.
+const PROXIMITY_RADIUS_KM = 2;
+
 async function findNearbyUsers(
   db: FirebaseFirestore.Firestore,
   lat: number,
   lng: number,
-  radiusKm: number,
 ): Promise<string[]> {
-  const snapshot = await db
-    .collection('users')
-    .where('locationUpdatedAt', '!=', null)
-    .orderBy('locationUpdatedAt', 'desc')
-    .limit(500)
-    .get();
+  const center: [number, number] = [lat, lng];
+  const bounds = geohashQueryBounds(center, PROXIMITY_RADIUS_KM * 1000);
 
-  const nearbyUids: string[] = [];
+  const snapshots = await Promise.all(
+    bounds.map(([start, end]) =>
+      db
+        .collection('users')
+        .orderBy('lastLocation.geohash')
+        .startAt(start)
+        .endAt(end)
+        .get(),
+    ),
+  );
 
-  snapshot.forEach((doc) => {
-    const userData = doc.data();
-    if (userData.lastLocation) {
-      const distance = haversineDistance(
-        lat,
-        lng,
-        userData.lastLocation.lat,
-        userData.lastLocation.lng,
-      );
-      if (distance <= radiusKm) {
-        nearbyUids.push(doc.id);
+  const nearbyUids = new Set<string>();
+  for (const snapshot of snapshots) {
+    for (const doc of snapshot.docs) {
+      const { lat: userLat, lng: userLng } = doc.data().lastLocation;
+      if (distanceBetween([userLat, userLng], center) <= PROXIMITY_RADIUS_KM) {
+        nearbyUids.add(doc.id);
       }
     }
-  });
-
-  return nearbyUids;
-}
-
-// Fórmula de Haversine (distância entre dois pontos em km)
-function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371; // Raio da Terra em km
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function toRad(deg: number): number {
-  return deg * (Math.PI / 180);
+  }
+  return [...nearbyUids];
 }
 
 // Reverse geocoding (usar Google Geocoding API ou alternativa)

@@ -54,7 +54,7 @@ Seus dados são compartilhados **apenas** nas seguintes situações:
 
 ### 4.1 Com outros usuários do Alertaki
 
-- Quando você envia um alerta, seus **contatos de segurança** e **usuários próximos** (em um raio de 5km) recebem: seu nome, sua localização no momento do alerta e, no caso de alerta de emergência, sua mensagem personalizada.
+- Quando você envia um alerta, seus **contatos de segurança** e **usuários próximos** (em um raio de 2km) recebem: seu nome, sua localização no momento do alerta e, no caso de alerta de emergência, sua mensagem personalizada.
 - Quando você convida alguém, o destinatário vê seu nome, email e foto.
 
 ### 4.2 Com prestadores de serviço

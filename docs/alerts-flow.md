@@ -4,8 +4,8 @@
 
 | Tipo       | Identificador | Destinatários             | Discagem Rápida | Mensagem Personalizada |
 | ---------- | ------------- | ------------------------- | --------------- | ---------------------- |
-| Saúde      | `health`      | Contatos + Próximos (5km) | SAMU (192)      | Não                    |
-| Segurança  | `security`    | Contatos + Próximos (5km) | Polícia (190)   | Não                    |
+| Saúde      | `health`      | Contatos + Próximos (2km) | SAMU (192)      | Não                    |
+| Segurança  | `security`    | Contatos + Próximos (2km) | Polícia (190)   | Não                    |
 | Emergência | `custom`      | Contatos selecionados     | Não             | Sim (até 500 chars)    |
 
 ---
@@ -130,9 +130,8 @@ Trigger: `onDocumentCreated('alerts/{alertId}')`
      a. Buscar todos os contatos de segurança do remetente
         → users/{userId}/contacts (todos os docs)
      b. Buscar usuários próximos:
-        → users onde locationUpdatedAt != null
-        → Ordenar por locationUpdatedAt desc, limit 500
-        → Filtrar por distância Haversine <= radiusKm
+        → users nas células de geohash que cobrem o raio (lastLocation.geohash)
+        → Filtrar por distância real <= 2km (raio fixo no servidor)
      c. Merge dos dois conjuntos (sem duplicatas)
      d. Remover o próprio remetente
 

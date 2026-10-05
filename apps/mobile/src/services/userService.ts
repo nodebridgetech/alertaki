@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import { geohashForLocation } from 'geofire-common';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import type { User } from '@alertaki/shared';
 
@@ -61,7 +62,7 @@ async function updateProfile(
 
 async function updateLocation(uid: string, lat: number, lng: number): Promise<void> {
   await firestore().collection('users').doc(uid).update({
-    lastLocation: { lat, lng },
+    lastLocation: { lat, lng, geohash: geohashForLocation([lat, lng]) },
     locationUpdatedAt: new Date(),
   });
 }

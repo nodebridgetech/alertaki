@@ -48,6 +48,7 @@ export interface User {
   lastLocation: {
     lat: number;
     lng: number;
+    geohash?: string;
   } | null;
   locationUpdatedAt: FirebaseTimestamp | null;
   subscription: UserSubscription | null;
