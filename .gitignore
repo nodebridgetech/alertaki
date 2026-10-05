@@ -19,6 +19,7 @@ apps/mobile/ios/build/
 firebase-debug.log
 firebase-debug.*.log
 ui-debug.log
+firestore-debug.log
 
 # IDE
 .idea/
@@ -37,3 +38,11 @@ functions/.env
 
 # TypeScript
 *.tsbuildinfo
+
+# Crash dumps da JVM (Gradle)
+hs_err_pid*.log
+replay_pid*.log
+
+# Arquivos soltos de QA e rascunhos
+Junk/
+/google-services *.json

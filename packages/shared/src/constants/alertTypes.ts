@@ -7,7 +7,7 @@ export const ALERT_TYPE_LABELS: Record<AlertType, string> = {
 };
 
 export const ALERT_RADIUS_KM: Record<AlertType, number> = {
-  health: 5,
-  security: 5,
+  health: 2,
+  security: 2,
   custom: 0,
 };

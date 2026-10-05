@@ -1,4 +1,5 @@
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { ALERT_RADIUS_KM } from '@alertaki/shared';
 import type { Alert, AlertType } from '@alertaki/shared';
 
 const PAGE_SIZE = 20;
@@ -88,7 +89,7 @@ async function createAlert(params: CreateAlertParams): Promise<string> {
     lat: params.lat,
     lng: params.lng,
     address,
-    radiusKm: params.type === 'custom' ? 0 : 5,
+    radiusKm: ALERT_RADIUS_KM[params.type],
     customMessage: params.customMessage || null,
     selectedContacts: params.selectedContacts || null,
     createdAt: new Date(),

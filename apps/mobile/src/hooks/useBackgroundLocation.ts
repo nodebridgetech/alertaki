@@ -1,41 +1,21 @@
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import BackgroundFetch from 'react-native-background-fetch';
-import { locationService } from '../services/locationService';
-import { userService } from '../services/userService';
-import auth from '@react-native-firebase/auth';
+import { runBackgroundLocationTask } from '../services/backgroundLocationTask';
 
 export function useBackgroundLocation(): void {
   useEffect(() => {
-    async function initBackgroundFetch() {
-      const hasPermission = await locationService.isBackgroundLocationGranted();
-      if (!hasPermission) return;
+    if (Platform.OS !== 'android') return;
 
-      await BackgroundFetch.configure(
-        {
-          minimumFetchInterval: 60, // minutes
-          stopOnTerminate: false,
-          startOnBoot: true,
-          enableHeadless: true,
-        },
-        async (taskId) => {
-          try {
-            const uid = auth().currentUser?.uid;
-            if (uid) {
-              const coords = await locationService.getCurrentPosition();
-              await userService.updateLocation(uid, coords.latitude, coords.longitude);
-            }
-          } catch {
-            // Background location update failed silently
-          }
-          BackgroundFetch.finish(taskId);
-        },
-        async (taskId) => {
-          // Task timeout handler
-          BackgroundFetch.finish(taskId);
-        },
-      );
-    }
-
-    initBackgroundFetch();
+    BackgroundFetch.configure(
+      {
+        minimumFetchInterval: 60,
+        stopOnTerminate: false,
+        startOnBoot: true,
+        enableHeadless: true,
+      },
+      (taskId) => runBackgroundLocationTask({ taskId, timeout: false }),
+      (taskId) => runBackgroundLocationTask({ taskId, timeout: true }),
+    );
   }, []);
 }
